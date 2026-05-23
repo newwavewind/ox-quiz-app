@@ -28,6 +28,11 @@ def sync_year(year: int) -> int:
         for p in (expl_src, SOURCE / f"{year}-explain.md"):
             p.write_text(text, encoding="utf-8")
         print(f"Synced explain {len(text)} chars -> {year}-explain.md")
+    elif (ROOT / f"{year}해설.md").exists() and (ROOT / f"{year}해설.md").stat().st_size > 500:
+        text = (ROOT / f"{year}해설.md").read_text(encoding="utf-8")
+        for p in (ROOT / f"{year}해설.md", SOURCE / f"{year}-explain.md"):
+            p.write_text(text, encoding="utf-8")
+        print(f"Synced explain (retry) {len(text)} chars -> {year}-explain.md")
     else:
         chunks = sorted((SOURCE / f"chunks_{year}").glob("explain_part*.txt"))
         if chunks:

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import AiLinkButtons from './AiLinkButtons'
 
 const CHOICE_MARKERS = ['①', '②', '③', '④', '⑤']
@@ -31,12 +31,24 @@ export default function StudyMode({
 
   useEffect(() => {
     setCurrentIndex(0)
+    resetQuestionState()
+  }, [filter, exams])
+
+  const indexByQuestionNo = useMemo(() => {
+    const map = new Map()
+    exams.forEach((e, i) => map.set(e.question_no, i))
+    return map
+  }, [exams])
+
+  const showQuestionJump = exams.length > 1
+
+  const exam = exams[currentIndex]
+
+  function resetQuestionState() {
     setUserAnswers({})
     setRevealedItems(new Set())
     setGraded(false)
-  }, [filter, exams])
-
-  const exam = exams[currentIndex]
+  }
 
   const allAnswered = exam
     ? exam.items.every(item => userAnswers[item.key] != null)
@@ -81,19 +93,22 @@ export default function StudyMode({
   const handleNext = () => {
     if (currentIndex < exams.length - 1) {
       setCurrentIndex(i => i + 1)
-      setUserAnswers({})
-      setRevealedItems(new Set())
-      setGraded(false)
+      resetQuestionState()
     }
   }
 
   const handlePrev = () => {
     if (currentIndex > 0) {
       setCurrentIndex(i => i - 1)
-      setUserAnswers({})
-      setRevealedItems(new Set())
-      setGraded(false)
+      resetQuestionState()
     }
+  }
+
+  const jumpToQuestion = (questionNo) => {
+    const idx = indexByQuestionNo.get(questionNo)
+    if (idx == null || idx === currentIndex) return
+    setCurrentIndex(idx)
+    resetQuestionState()
   }
 
   const isItemRevealed = (key) => graded || revealedItems.has(key)
@@ -162,6 +177,15 @@ export default function StudyMode({
 
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-2xl mx-auto px-4 py-5 space-y-4">
+          {showQuestionJump && (
+            <QuestionJumpBar
+              exams={exams}
+              currentQuestionNo={exam.question_no}
+              progress={progress}
+              onJump={jumpToQuestion}
+            />
+          )}
+
           <div className="flex flex-wrap gap-2 items-center">
             <span className="text-xs bg-slate-200 text-slate-600 rounded-full px-3 py-1 font-medium">
               {exam.category}
@@ -183,11 +207,16 @@ export default function StudyMode({
             )}
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-2xl p-5">
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3">
             <p className="text-xs font-semibold text-slate-400 mb-2">지문</p>
             <p className="text-slate-800 leading-relaxed text-base font-medium whitespace-pre-wrap">
               {exam.stem}
             </p>
+            {exam.question_type === 'composite' && exam.combo_choices?.length > 0 && (
+              <p className="text-xs text-slate-500 border-t border-slate-100 pt-3">
+                아래에서 ㄱ·ㄴ·ㄷ 등 각 보기 문장의 O/X를 고른 뒤, 맨 아래 기출 선택지와 대조하세요.
+              </p>
+            )}
           </div>
 
           <div className="space-y-3">
@@ -388,6 +417,92 @@ export default function StudyMode({
           onClose={() => setShowFilter(false)}
         />
       )}
+    </div>
+  )
+}
+
+function QuestionJumpBar({ exams, currentQuestionNo, progress, onJump }) {
+  const [open, setOpen] = useState(false)
+  const currentBtnRef = useRef(null)
+  const yearLabel =
+    new Set(exams.map(e => e.year)).size === 1 ? `${exams[0].year}년 ` : ''
+
+  const answeredCount = exams.filter(e => progress[e.id]?.answered).length
+
+  useEffect(() => {
+    if (!open || !currentBtnRef.current) return
+    currentBtnRef.current.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' })
+  }, [open, currentQuestionNo])
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="w-full flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-left hover:bg-slate-50 transition-colors"
+        aria-expanded="false"
+      >
+        <span className="text-[11px] font-semibold text-slate-500 shrink-0">
+          {yearLabel}문항
+        </span>
+        <span className="text-[11px] text-slate-400 truncate flex-1">
+          {currentQuestionNo}번 · {answeredCount}/{exams.length} 풀이
+        </span>
+        <svg className="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+    )
+  }
+
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white px-2 py-1.5">
+      <div className="flex items-center gap-2 mb-1">
+        <span className="text-[11px] font-semibold text-slate-500 shrink-0">
+          {yearLabel}바로가기
+        </span>
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          className="ml-auto text-[11px] text-slate-400 hover:text-slate-600 px-1"
+        >
+          접기
+        </button>
+      </div>
+      <div
+        className="flex gap-0.5 overflow-x-auto overscroll-x-contain pb-0.5 -mx-0.5 px-0.5 snap-x snap-mandatory"
+        role="list"
+      >
+        {exams.map(e => {
+          const isCurrent = e.question_no === currentQuestionNo
+          const rec = progress[e.id]
+          let statusClass = 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+          if (rec?.answered) {
+            statusClass = rec.correct
+              ? 'bg-green-50 text-green-700 border-green-200'
+              : 'bg-red-50 text-red-700 border-red-200'
+          }
+          if (isCurrent) {
+            statusClass = 'bg-slate-800 text-white border-slate-800'
+          }
+          return (
+            <button
+              key={e.id}
+              type="button"
+              role="listitem"
+              onClick={() => {
+                onJump(e.question_no)
+              }}
+              ref={isCurrent ? currentBtnRef : undefined}
+              aria-label={`${e.question_no}번으로 이동`}
+              aria-current={isCurrent ? 'true' : undefined}
+              className={`snap-center shrink-0 h-7 min-w-[1.75rem] rounded-md border text-[11px] font-semibold transition-colors ${statusClass}`}
+            >
+              {e.question_no}
+            </button>
+          )
+        })}
+      </div>
     </div>
   )
 }

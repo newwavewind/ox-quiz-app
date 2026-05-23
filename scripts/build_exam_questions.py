@@ -21,7 +21,7 @@ from import_md_year import (  # noqa: E402
     parse_md_questions,
     save_json,
 )
-from polish_text import polish_exam_text  # noqa: E402
+from import_md_year import strip_exam_decorations  # noqa: E402
 
 DATA = ROOT / "data"
 SOURCE = DATA / "source"
@@ -74,6 +74,15 @@ EXPLAIN_Q_HEAD = re.compile(
     r"^((?:4[1-9])|(?:5\d)|(?:6\d)|(?:7\d)|(?:80))\.\s",
     re.MULTILINE,
 )
+EXPLAIN_MD_HEAD = re.compile(
+    r"^##\s*((?:4[1-9])|(?:5\d)|(?:6\d)|(?:7\d)|(?:80))번\s*$",
+    re.MULTILINE,
+)
+ANSWER_MD = re.compile(r"^###\s*정답:\s*([①②③④⑤1-5]+)", re.MULTILINE)
+OX_ARROW = re.compile(
+    r"^\*?\s*([①②③④⑤]|[ㄱ-ㅎ])\s*(.*?)\s*→\s*([OX])\s*$"
+)
+JAMO_ARROW = re.compile(r"^([ㄱ-ㅎ])\s*→\s*(.+)$")
 ANSWER_LINE = re.compile(r"^정답:\s*(.+)$", re.MULTILINE)
 
 
@@ -116,6 +125,21 @@ def _parse_explain_blocks_standard(text: str) -> dict[int, dict]:
             if sm:
                 key = str(CHOICE_MARKERS.index(sm.group(1)) + 1)
                 _assign_item(items, key, sm.group(2), sm.group(3))
+                continue
+
+            cm = re.match(r"^([①②③④⑤])\s+", line)
+            if cm:
+                key = str(CHOICE_MARKERS.index(cm.group(1)) + 1)
+                body = line[cm.end() :].strip()
+                body = re.sub(r"\s*\[cite:\s*[^\]]+\]\s*", " ", body).strip()
+                items[key] = {"ox": "", "explanation": body}
+                continue
+
+            jm = re.match(r"^([ㄱ-ㅎ])\.\s+", line)
+            if jm:
+                body = line[jm.end() :].strip()
+                body = re.sub(r"\s*\[cite:\s*[^\]]+\]\s*", " ", body).strip()
+                items[jm.group(1)] = {"ox": "", "explanation": body}
                 continue
 
             jm = JAMO_MARK.match(line)
@@ -198,9 +222,75 @@ def _parse_explain_blocks_answer_line(text: str) -> dict[int, dict]:
     return out
 
 
+def _parse_explain_blocks_markdown(text: str) -> dict[int, dict]:
+    """2021해설.md 형식: ## 41번 / ### 정답: ⑤ / ① → O"""
+    out: dict[int, dict] = {}
+    matches = list(EXPLAIN_MD_HEAD.finditer(text))
+    for i, m in enumerate(matches):
+        qno = int(m.group(1))
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
+        block = text[m.end() : end]
+        am = ANSWER_MD.search(block)
+        if not am:
+            continue
+        correct_raw = am.group(1).strip()
+        first_mark = re.search(r"[①②③④⑤1-5]", correct_raw)
+        if not first_mark:
+            continue
+        correct_choice = circled_to_num(first_mark.group())
+
+        items: dict[str, dict] = {}
+        summary_parts: list[str] = []
+        current_key: str | None = None
+        for raw in block[am.end() :].splitlines():
+            line = raw.strip()
+            if line == "---" or line.startswith("핵심 정리"):
+                current_key = None
+                continue
+            if not line:
+                continue
+            om = OX_ARROW.match(line)
+            if om:
+                mark = om.group(1)
+                key = (
+                    str(CHOICE_MARKERS.index(mark) + 1)
+                    if mark in CHOICE_MARKERS
+                    else mark
+                )
+                body = om.group(2).strip()
+                items[key] = {"ox": om.group(3), "explanation": body}
+                current_key = key
+                continue
+            jm = JAMO_ARROW.match(line)
+            if jm:
+                key = jm.group(1)
+                label = jm.group(2).strip()
+                items[key] = {"ox": "", "explanation": label}
+                current_key = key
+                continue
+            if line.startswith("*") and current_key:
+                bullet = line.lstrip("*").strip()
+                prev = items[current_key].get("explanation", "")
+                items[current_key]["explanation"] = (
+                    f"{prev} {bullet}".strip() if prev else bullet
+                )
+            elif not line.startswith("#") and not line.startswith("*"):
+                summary_parts.append(line)
+
+        summary = " ".join(summary_parts).strip() or f"정답은 {correct_raw}입니다."
+        out[qno] = {
+            "correct_choice": correct_choice,
+            "items": items,
+            "summary": summary[:1200],
+        }
+    return out
+
+
 def parse_explain_blocks(text: str) -> dict[int, dict]:
     if EXPLAIN_HEAD.search(text):
         return _parse_explain_blocks_standard(text)
+    if EXPLAIN_MD_HEAD.search(text):
+        return _parse_explain_blocks_markdown(text)
     if ANSWER_LINE.search(text) and EXPLAIN_Q_HEAD.search(text):
         return _parse_explain_blocks_answer_line(text)
     return _parse_explain_blocks_standard(text)
@@ -229,7 +319,7 @@ def build_exam(year: int, exam_meta: dict, questions: list, explains: dict[int, 
         expl = explains.get(qno, {})
         correct_choice = expl.get("correct_choice")
         key_row = answer_keys.get(str(qno), {})
-        if key_row.get("correct_choice") is not None:
+        if correct_choice is None and key_row.get("correct_choice") is not None:
             correct_choice = key_row["correct_choice"]
 
         topic = classify_topic(
@@ -252,13 +342,13 @@ def build_exam(year: int, exam_meta: dict, questions: list, explains: dict[int, 
             for jamo, text in q["sub_items"].items():
                 expl_body = expl_items.get(jamo, {}).get("explanation", "")
                 ox = expl_items.get(jamo, {}).get("ox")
-                if ox is None:
+                if ox not in ("O", "X"):
                     ox = "O" if jamo in correct_set else "X"
                 items.append(
                     {
                         "key": jamo,
                         "label": f"{jamo}.",
-                        "text": polish_exam_text(text, expl_body),
+                        "text": strip_exam_decorations(text),
                         "answer": ox,
                         "explanation": expl_body,
                     }
@@ -289,20 +379,19 @@ def build_exam(year: int, exam_meta: dict, questions: list, explains: dict[int, 
                     {
                         "key": key,
                         "label": mark,
-                        "text": polish_exam_text(q["choices"][no], expl_body),
+                        "text": strip_exam_decorations(q["choices"][no]),
                         "answer": ox,
                         "explanation": expl_body,
                     }
                 )
 
-        stem_expl = expl.get("summary", "")
         result.append(
             {
                 "id": f"민법-{year}-Q{qno}",
                 "year": year,
                 "round": round_,
                 "question_no": qno,
-                "stem": polish_exam_text(q["stem"], stem_expl),
+                "stem": strip_exam_decorations(q["stem"]),
                 "question_type": q["question_type"],
                 "correct_choice": correct_choice,
                 "category": topic["category"],

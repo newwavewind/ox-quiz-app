@@ -51,10 +51,11 @@ def clean_explanation(text: str) -> str:
 
 
 def classify_stem_type(stem: str) -> str:
-    if re.search(r"틀린\s*것|해당하지\s*않|아닌\s*것|옳지\s*않", stem):
-        return "wrong"
+    # 「모두 고른」은 「아닌 것」보다 우선 (예: 효력규정이 아닌 것을 모두 고른 것)
     if re.search(r"모두\s*고른|모두\s*선택", stem):
         return "composite"
+    if re.search(r"틀린\s*것|해당하지\s*않|아닌\s*것|옳지\s*않", stem):
+        return "wrong"
     return "correct"
 
 
