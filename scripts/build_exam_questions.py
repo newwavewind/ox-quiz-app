@@ -169,6 +169,16 @@ def _parse_explain_blocks_answer_line(text: str) -> dict[int, dict]:
             line = raw.strip()
             if not line or line in ("[해설]", "해설", "해설:"):
                 continue
+            combo = re.match(
+                r"^((?:[①②③④⑤]\s*,\s*)+[①②③④⑤])\s+(.+)$",
+                line,
+            )
+            if combo:
+                combo_body = combo.group(2).strip()
+                for mark in re.findall(r"[①②③④⑤]", combo.group(1)):
+                    key = str(CHOICE_MARKERS.index(mark) + 1)
+                    items[key] = {"ox": "", "explanation": combo_body}
+                continue
             cm = re.match(r"^([①②③④⑤])\s+", line)
             jm = re.match(r"^([ㄱ-ㅎ])\.\s+", line)
             if cm:
@@ -264,6 +274,8 @@ def build_exam(year: int, exam_meta: dict, questions: list, explains: dict[int, 
                 mark = CHOICE_MARKERS[no - 1]
                 key = str(no)
                 ox = expl_items.get(key, {}).get("ox")
+                if not ox:
+                    ox = None
                 if ox is None and correct_choice is not None:
                     ox = ox_for_choice(q["question_type"], no, correct_choice)
                 elif ox is None:

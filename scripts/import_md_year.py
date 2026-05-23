@@ -271,8 +271,14 @@ def build_items(
                     }
                 )
         else:
+            per_choice = (meta or {}).get("items") or {}
             for choice_no, stmt in sorted(q["choices"].items()):
                 ox = ox_for_regular(q["question_type"], choice_no, correct_choice)
+                choice_expl = per_choice.get(str(choice_no), {}).get("explanation", "")
+                expl_text = choice_expl or expl_base
+                if choice_expl and correct_choice and not expl_text.startswith("정답"):
+                    mark = CHOICE_MARKERS[choice_no - 1]
+                    expl_text = f"정답은 {CHOICE_MARKERS[correct_choice - 1]}입니다. {choice_expl}"
                 items.append(
                     {
                         "id": f"민법-{year}-{qno}-{choice_no}",
@@ -285,7 +291,7 @@ def build_items(
                         "textbook_order": topic["textbook_order"],
                         "statement": stmt,
                         "answer": ox,
-                        "explanation": expl_base,
+                        "explanation": clean_explanation(expl_text),
                         "source": source,
                     }
                 )
@@ -317,6 +323,7 @@ def resolve_answers(year: int) -> dict:
                     str(qno): {
                         "correct_choice": b["correct_choice"],
                         "explanation": b.get("summary", ""),
+                        "items": b.get("items") or {},
                     }
                     for qno, b in blocks.items()
                 }
