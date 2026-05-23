@@ -1,0 +1,12 @@
+﻿python : Traceback (most recent call last):
+위치 C:\Users\상토시\AppData\Local\Temp\ps-script-73cc249b-6771-42e7-b1bd-c654e04cec28.ps1:78 문자:1
++ python -c "
++ ~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "<string>", line 8, in <module>
+    print(t[:2000])
+    ~~~~~^^^^^^^^^^
+UnicodeEncodeError: 'cp949' codec can't encode character '\ue017' in position 53: illegal multibyte sequence
+pages 12 len 355

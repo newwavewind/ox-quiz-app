@@ -1,0 +1,95 @@
+/** 보기·해설을 묶어 외부 AI 채팅으로 보낼 프롬프트·URL */
+
+/** URL에 넣으면 ChatGPT 등도 불안정해질 수 있는 길이 */
+const MAX_URL_PROMPT_LEN = 1800
+
+export const AI_SERVICES = [
+  {
+    id: 'chatgpt',
+    label: 'GPT',
+    /** chatgpt.com/?q= 프리필 (짧은 프롬프트만) */
+    mode: 'url',
+    baseUrl: 'https://chatgpt.com/',
+    buildUrl: (prompt) => `https://chatgpt.com/?q=${encodeURIComponent(prompt)}`,
+  },
+  {
+    id: 'gemini',
+    label: 'Gemini',
+    /** gemini.google.com 은 URL 프리필 미지원 → 열기 + 복사 */
+    mode: 'clipboard',
+    baseUrl: 'https://gemini.google.com/app',
+  },
+  {
+    id: 'claude',
+    label: 'Claude',
+    /** 긴 ?q= URL 시 페이지 로딩 실패 → 열기 + 복사 */
+    mode: 'clipboard',
+    baseUrl: 'https://claude.ai/new',
+  },
+]
+
+export function buildItemAiPrompt({ exam, item, userAnswer }) {
+  const meta = [
+    exam.year && `${exam.year}년`,
+    exam.round && `제${exam.round}회`,
+    exam.question_no && `${exam.question_no}번`,
+    exam.category,
+    item.label,
+  ]
+    .filter(Boolean)
+    .join(' · ')
+
+  const lines = [
+    '[공인중개사 기출 OX] 아래 내용을 바탕으로 관련 조문·판례·헷갈리는 포인트를 자세히 설명해 주세요.',
+    '',
+    meta ? `【출처】 ${meta}` : '',
+    exam.stem ? `【지문】\n${exam.stem}` : '',
+    item.text ? `【보기 ${item.label}】\n${item.text}` : '',
+    userAnswer ? `【내가 고른 답】 ${userAnswer} (정답 ${item.answer})` : '',
+    item.explanation ? `【해설】\n${item.explanation}` : '',
+  ].filter(Boolean)
+
+  return lines.join('\n\n').slice(0, 6000)
+}
+
+export async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text)
+    return true
+  } catch {
+    const ta = document.createElement('textarea')
+    ta.value = text
+    ta.setAttribute('readonly', '')
+    ta.style.cssText = 'position:fixed;left:-9999px;top:0'
+    document.body.appendChild(ta)
+    ta.select()
+    const ok = document.execCommand('copy')
+    document.body.removeChild(ta)
+    return ok
+  }
+}
+
+/**
+ * @returns {{ copied: boolean, serviceId: string }}
+ */
+export async function openAiService(serviceId, prompt) {
+  const service = AI_SERVICES.find(s => s.id === serviceId)
+  if (!service) return { copied: false, serviceId }
+
+  const useUrl =
+    service.mode === 'url' &&
+    service.buildUrl &&
+    prompt.length <= MAX_URL_PROMPT_LEN &&
+    service.buildUrl(prompt).length <= 8000
+
+  let copied = false
+
+  if (!useUrl) {
+    copied = await copyText(prompt)
+    window.open(service.baseUrl, '_blank', 'noopener,noreferrer')
+  } else {
+    window.open(service.buildUrl(prompt), '_blank', 'noopener,noreferrer')
+  }
+
+  return { copied, serviceId }
+}

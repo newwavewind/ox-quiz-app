@@ -1,0 +1,31 @@
+{
+  "name": "ox-quiz-app",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "pipeline": "python scripts/run_pipeline.py all",
+    "pipeline:extract": "python scripts/run_pipeline.py extract",
+    "pipeline:answers": "python scripts/run_pipeline.py answers",
+    "pipeline:build": "python scripts/run_pipeline.py ox app",
+    "fix:spacing": "python scripts/polish_statements.py && python scripts/force_sync_explanations.py",
+    "pipeline:reextract": "python scripts/run_pipeline.py extract ox app",
+    "import:md": "python scripts/import_md_year.py",
+    "polish:2016": "python scripts/polish_2016_md.py",
+    "build:exam": "python scripts/merge_explain_chunks.py && python scripts/restore_2016_md.py && python scripts/build_exam_questions.py 2016"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.0",
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.24",
+    "tailwindcss": "^3.3.2",
+    "vite": "^4.4.0"
+  }
+}

@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.vite/
+*.local
+.env
+.env.*
+.DS_Store
+Thumbs.db
+*.log
+.vercel
+.cursor/
+__pycache__/
+*.pyc
+.vscode/
+vite.config.js.timestamp-*

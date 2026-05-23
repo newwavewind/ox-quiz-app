@@ -1,0 +1,17 @@
+{
+  "description": "1차 1교시 민법 및 민사특별법(부동산 중개 관련) 문항 번호. 연도별로 40문항(41~80 또는 28~67 등)이며 PDF 추출 시 제2과목 마커로 자동 보정 가능.",
+  "default_min": 41,
+  "default_max": 80,
+  "exams": [
+    { "year": 2016, "round": 27, "pdf": "2016년 제27회 시험문제지_1차 A형.pdf", "min_no": 41, "max_no": 80, "source_label": "제27회 1차 A형", "hypers84_index": 1054 },
+    { "year": 2017, "round": 28, "pdf": "2017년 제28회 시험문제지_1차 1교시 A형.pdf", "min_no": 41, "max_no": 80, "source_label": "제28회 1차 1교시 A형", "hypers84_index": 1002 },
+    { "year": 2018, "round": 29, "pdf": "2018년 제29회 시험문제지_1차 1교시 A형.pdf", "min_no": 41, "max_no": 80, "source_label": "제29회 1차 1교시 A형", "hypers84_index": 1001 },
+    { "year": 2019, "round": 30, "pdf": "2019년 제30회 시험문제지_1차 1교시 A형.pdf", "min_no": 41, "max_no": 80, "source_label": "제30회 1차 1교시 A형", "hypers84_index": 1000 },
+    { "year": 2020, "round": 31, "pdf": "2020년 제31회 시험문제지_1차 1교시 A형.pdf", "min_no": 41, "max_no": 80, "source_label": "제31회 1차 1교시 A형", "hypers84_index": 991 },
+    { "year": 2021, "round": 32, "pdf": "2021년 제32회 공인중개사 자격시험 문제지_1차 1교시 A형.pdf", "min_no": 41, "max_no": 80, "source_label": "제32회 1차 1교시 A형", "hypers84_index": 895 },
+    { "year": 2022, "round": 33, "pdf": "2022년 제33회 시험문제지_1차 1교시.pdf", "min_no": 41, "max_no": 80, "source_label": "제33회 1차 1교시", "hypers84_index": 3235 },
+    { "year": 2023, "round": 34, "pdf": "2023년 제34회 시험문제지_1차 1교시.pdf", "min_no": 41, "max_no": 80, "source_label": "제34회 1차 1교시", "hypers84_index": null },
+    { "year": 2024, "round": 35, "pdf": "2024년 제35회 시험문제지 1차_1교시.pdf", "min_no": 41, "max_no": 80, "source_label": "제35회 1차 1교시", "hypers84_index": null },
+    { "year": 2025, "round": 36, "pdf": "2025년 제36회 공인중개사 1차 1교시 문제지.pdf", "min_no": 41, "max_no": 80, "source_label": "제36회 1차 1교시", "hypers84_index": null }
+  ]
+}
