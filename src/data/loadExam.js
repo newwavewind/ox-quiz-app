@@ -1,3 +1,4 @@
+import { categorySortIndex } from './categoryStyles'
 import y2016 from './exam/2016.json'
 import y2017 from './exam/2017.json'
 import y2018 from './exam/2018.json'
@@ -16,6 +17,9 @@ export const allExams = [...y2016, ...y2017, ...y2018, ...y2019, ...y2020, ...y2
 export const sortModes = {
   number: (a, b) => a.question_no - b.question_no,
   category: (a, b) => {
+    const ca = categorySortIndex(a.category)
+    const cb = categorySortIndex(b.category)
+    if (ca !== cb) return ca - cb
     if (a.category !== b.category) return a.category.localeCompare(b.category, 'ko')
     return a.question_no - b.question_no
   },

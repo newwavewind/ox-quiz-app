@@ -343,7 +343,7 @@ def choice_to_ox(
                 expl = f"정답은 {CHOICE_MARKERS[correct_choice - 1]}입니다. {expl}"
     if not expl:
         if needs_review:
-            expl = "정답·해설 검수가 필요합니다. 윌비스 기본서 및 기출 해설을 참고하세요."
+            expl = "정답·해설 검수가 필요합니다. 민법·기출 해설을 참고하세요."
         elif correct_choice:
             expl = f"정답은 {CHOICE_MARKERS[correct_choice - 1]}입니다. 관련 조문·판례를 확인하세요."
         else:

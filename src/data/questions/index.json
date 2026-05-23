@@ -3,6 +3,9 @@
     "year": 2016,
     "round": 27,
     "count": 40,
-    "file": "2016.json"
+    "file": "2016.json",
+    "category": "법률행위",
+    "subcategory": "의사표시",
+    "textbook_order": 1
   }
 ]
