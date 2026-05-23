@@ -219,14 +219,18 @@ def build_exam(year: int, exam_meta: dict, questions: list, explains: dict[int, 
     round_ = exam_meta["round"]
     result = []
 
+    answer_keys_path = DATA / "pipeline" / "answer_keys" / f"{year}.json"
+    answer_keys = (
+        load_json(answer_keys_path) if answer_keys_path.exists() else {}
+    )
+
     for q in questions:
         qno = q["question_no"]
         expl = explains.get(qno, {})
         correct_choice = expl.get("correct_choice")
-        if correct_choice is None:
-            keys = load_json(DATA / "pipeline" / "answer_keys" / f"{year}.json")
-            if str(qno) in keys:
-                correct_choice = keys[str(qno)].get("correct_choice")
+        key_row = answer_keys.get(str(qno), {})
+        if key_row.get("correct_choice") is not None:
+            correct_choice = key_row["correct_choice"]
 
         topic = classify_topic(
             q["stem"],

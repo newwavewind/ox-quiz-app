@@ -1,11 +1,12 @@
 import y2016 from './exam/2016.json'
 import y2017 from './exam/2017.json'
 import y2018 from './exam/2018.json'
+import y2019 from './exam/2019.json'
 
 /** @typedef {typeof y2016[number]} ExamQuestion */
 
 /** @type {ExamQuestion[]} */
-export const allExams = [...y2016, ...y2017, ...y2018].sort((a, b) => {
+export const allExams = [...y2016, ...y2017, ...y2018, ...y2019].sort((a, b) => {
   if (a.year !== b.year) return a.year - b.year
   return a.question_no - b.question_no
 })
