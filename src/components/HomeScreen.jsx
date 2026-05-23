@@ -96,9 +96,9 @@ export default function HomeScreen({
             </button>
             <button
               onClick={onViewWrongNotes}
-              className="bg-red-500 text-white rounded-xl py-2.5 text-sm font-semibold hover:bg-red-600 transition-colors flex items-center justify-center gap-1"
+              className="bg-pink-500 text-white rounded-xl py-2.5 text-sm font-semibold hover:bg-pink-600 transition-colors flex items-center justify-center gap-1"
             >
-              오답노트 <span className="bg-red-400 text-white text-xs rounded-full px-1.5">{totalWrong}</span>
+              오답노트 <span className="bg-pink-400 text-white text-xs rounded-full px-1.5">{totalWrong}</span>
             </button>
             <div className="bg-slate-600 rounded-xl py-2.5 text-center">
               <p className="text-xs text-slate-300">정답</p>
