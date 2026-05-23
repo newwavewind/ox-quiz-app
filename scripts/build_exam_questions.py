@@ -70,7 +70,14 @@ def _assign_item(items: dict[str, dict], key: str, ox: str, body: str) -> None:
     items[key] = {"ox": ox, "explanation": body.strip()}
 
 
-def parse_explain_blocks(text: str) -> dict[int, dict]:
+EXPLAIN_Q_HEAD = re.compile(
+    r"^((?:4[1-9])|(?:5\d)|(?:6\d)|(?:7\d)|(?:80))\.\s",
+    re.MULTILINE,
+)
+ANSWER_LINE = re.compile(r"^정답:\s*(.+)$", re.MULTILINE)
+
+
+def _parse_explain_blocks_standard(text: str) -> dict[int, dict]:
     """question_no -> { correct_choice, items: {key: {ox, text}}, summary }"""
     out: dict[int, dict] = {}
     matches = list(EXPLAIN_HEAD.finditer(text))
@@ -130,6 +137,63 @@ def parse_explain_blocks(text: str) -> dict[int, dict]:
             "summary": summary[:1200],
         }
     return out
+
+
+def _parse_explain_blocks_answer_line(text: str) -> dict[int, dict]:
+    """2018해설.md 형식: '41. 지문' 다음 줄 '정답: ④', 해설 본문."""
+    out: dict[int, dict] = {}
+    matches = list(EXPLAIN_Q_HEAD.finditer(text))
+    for i, m in enumerate(matches):
+        qno = int(m.group(1))
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
+        block = text[m.start() : end]
+        am = ANSWER_LINE.search(block)
+        if not am:
+            continue
+        correct_raw = am.group(1).strip()
+        first_mark = re.search(r"[①②③④⑤]", correct_raw)
+        if not first_mark:
+            digit = re.search(r"\d", correct_raw)
+            if not digit:
+                continue
+            correct_choice = int(digit.group())
+        else:
+            correct_choice = circled_to_num(first_mark.group())
+
+        body = block[am.end() :].strip()
+        body = re.sub(r"^해설:\s*", "", body, count=1).strip()
+
+        items: dict[str, dict] = {}
+        summary_parts: list[str] = []
+        for raw in body.splitlines():
+            line = raw.strip()
+            if not line or line in ("[해설]", "해설", "해설:"):
+                continue
+            cm = re.match(r"^([①②③④⑤])\s+", line)
+            jm = re.match(r"^([ㄱ-ㅎ])\.\s+", line)
+            if cm:
+                key = str(CHOICE_MARKERS.index(cm.group(1)) + 1)
+                items[key] = {"ox": "", "explanation": line[cm.end() :].strip()}
+            elif jm:
+                items[jm.group(1)] = {"ox": "", "explanation": line[jm.end() :].strip()}
+            elif not line.startswith("해설"):
+                summary_parts.append(line)
+
+        summary = " ".join(summary_parts).strip() or f"정답은 {correct_raw}입니다."
+        out[qno] = {
+            "correct_choice": correct_choice,
+            "items": items,
+            "summary": summary[:1200],
+        }
+    return out
+
+
+def parse_explain_blocks(text: str) -> dict[int, dict]:
+    if EXPLAIN_HEAD.search(text):
+        return _parse_explain_blocks_standard(text)
+    if ANSWER_LINE.search(text) and EXPLAIN_Q_HEAD.search(text):
+        return _parse_explain_blocks_answer_line(text)
+    return _parse_explain_blocks_standard(text)
 
 
 def ox_for_choice(qtype: str, choice_no: int, correct_choice: int) -> str:
