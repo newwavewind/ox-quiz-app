@@ -296,6 +296,17 @@ def parse_explain_blocks(text: str) -> dict[int, dict]:
     return _parse_explain_blocks_standard(text)
 
 
+
+def infer_ox_from_explanation(body: str) -> str | None:
+    """해설 본문의 (옳음)/(틀림) 표기로 보기 O/X 추론."""
+    if not body:
+        return None
+    if re.search(r"\(틀림\)|틀린\s*설명|옳지\s*않", body):
+        return "X"
+    if re.search(r"\(옳음\)", body):
+        return "O"
+    return None
+
 def ox_for_choice(qtype: str, choice_no: int, correct_choice: int) -> str:
     is_correct = choice_no == correct_choice
     if qtype == "wrong":
@@ -367,14 +378,14 @@ def build_exam(year: int, exam_meta: dict, questions: list, explains: dict[int, 
             for no in sorted(q["choices"].keys()):
                 mark = CHOICE_MARKERS[no - 1]
                 key = str(no)
+                expl_body = expl_items.get(key, {}).get("explanation", "")
                 ox = expl_items.get(key, {}).get("ox")
-                if not ox:
-                    ox = None
+                if ox not in ("O", "X"):
+                    ox = infer_ox_from_explanation(expl_body)
                 if ox is None and correct_choice is not None:
                     ox = ox_for_choice(q["question_type"], no, correct_choice)
                 elif ox is None:
                     ox = "X"
-                expl_body = expl_items.get(key, {}).get("explanation", "")
                 items.append(
                     {
                         "key": key,
