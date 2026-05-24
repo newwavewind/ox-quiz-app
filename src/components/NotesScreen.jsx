@@ -263,10 +263,10 @@ export default function NotesScreen({ notes, onToggleNote, onToggleImportant, on
 
         <div className="max-w-2xl mx-auto px-4 py-4">
 
-          <h1 className="text-lg font-bold text-slate-800">노트</h1>
+          <h1 className="text-lg font-bold text-slate-800">암기노트</h1>
 
           <p className="text-xs text-slate-500 mt-0.5">
-            학습 중 「노트저장」한 지문·보기·해설 ({Object.keys(notes).length}개
+            학습 중 「암기노트저장」한 지문·보기·해설 ({Object.keys(notes).length}개
             {importantCount > 0 ? ` · 중요 ${importantCount}개` : ''})
           </p>
 
@@ -341,13 +341,13 @@ export default function NotesScreen({ notes, onToggleNote, onToggleImportant, on
 
             <p className="text-sm">
               {noteFilter === 'important' && Object.keys(notes).length > 0
-                ? '중요 표시한 노트가 없습니다.'
-                : '저장된 노트가 없습니다.'}
+                ? '중요 표시한 암기노트가 없습니다.'
+                : '저장된 암기노트가 없습니다.'}
             </p>
             <p className="text-xs mt-2">
               {noteFilter === 'important'
-                ? '노트 카드의 ☆ 버튼으로 중요 표시를 추가하세요.'
-                : '학습 화면에서 OX 확인 후 「노트저장」을 체크하세요.'}
+                ? '암기노트의 ☆ 버튼으로 중요 표시를 추가하세요.'
+                : '학습 화면에서 OX 확인 후 「암기노트저장」을 체크하세요.'}
             </p>
 
           </div>

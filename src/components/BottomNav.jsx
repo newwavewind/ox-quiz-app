@@ -10,11 +10,11 @@ export default function BottomNav({ active, onHome, onIndex, onNotes, onStats })
         <button type="button" onClick={onHome} className={tabClass('home')}>
           학습
         </button>
+        <button type="button" onClick={onNotes} className={tabClass('notes')}>
+          암기노트
+        </button>
         <button type="button" onClick={onIndex} className={tabClass('index')}>
           용어집
-        </button>
-        <button type="button" onClick={onNotes} className={tabClass('notes')}>
-          노트
         </button>
         <button type="button" onClick={onStats} className={tabClass('stats')}>
           통계

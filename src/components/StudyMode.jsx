@@ -466,7 +466,7 @@ export default function StudyMode({
                                 className="rounded border-slate-300 text-amber-600 focus:ring-amber-400 w-4 h-4"
                               />
                               <span className={`text-xs font-semibold ${noteSaved ? 'text-amber-700' : 'text-slate-600'}`}>
-                                노트저장
+                                암기노트저장
                               </span>
                             </label>
                           )}
