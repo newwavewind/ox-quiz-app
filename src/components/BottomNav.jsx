@@ -1,4 +1,4 @@
-export default function BottomNav({ active, onHome, onIndex, onNotes, onStats }) {
+export default function BottomNav({ active, onHome, onIndex, onNotes, onCommunity }) {
   const tabClass = id =>
     `flex-1 py-3 text-xs sm:text-sm font-semibold transition-colors ${
       active === id ? 'text-slate-800 border-t-2 border-slate-800 -mt-px' : 'text-slate-400'
@@ -16,8 +16,8 @@ export default function BottomNav({ active, onHome, onIndex, onNotes, onStats })
         <button type="button" onClick={onIndex} className={tabClass('index')}>
           용어집
         </button>
-        <button type="button" onClick={onStats} className={tabClass('stats')}>
-          통계
+        <button type="button" onClick={onCommunity} className={tabClass('community')}>
+          커뮤니티
         </button>
       </div>
     </nav>

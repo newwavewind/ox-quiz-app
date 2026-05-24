@@ -2,7 +2,8 @@ import { useState, useEffect, useMemo } from 'react'
 import HomeScreen from './components/HomeScreen'
 import IndexScreen from './components/IndexScreen'
 import NotesScreen from './components/NotesScreen'
-import StatsScreen from './components/StatsScreen'
+import CommunityScreen from './components/CommunityScreen'
+import { loadCommunityPosts, saveCommunityPosts } from './data/communityPosts'
 import StudyMode from './components/StudyMode'
 import WrongNotes from './components/WrongNotes'
 import BottomNav from './components/BottomNav'
@@ -46,6 +47,8 @@ function App() {
     }
   })
 
+  const [communityPosts, setCommunityPosts] = useState(() => loadCommunityPosts())
+
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(progress))
   }, [progress])
@@ -53,6 +56,18 @@ function App() {
   useEffect(() => {
     localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notes))
   }, [notes])
+
+  useEffect(() => {
+    saveCommunityPosts(communityPosts)
+  }, [communityPosts])
+
+  const addCommunityPost = post => {
+    setCommunityPosts(prev => [post, ...prev])
+  }
+
+  const deleteCommunityPost = postId => {
+    setCommunityPosts(prev => prev.filter(p => p.id !== postId))
+  }
 
   const updateProgress = (examId, result) => {
     setProgress(prev => ({
@@ -248,12 +263,11 @@ function App() {
             openStudy({ examId, highlightTerm: null }, 'notes')
           }}
         />
-      ) : screen === 'stats' ? (
-        <StatsScreen
-          exams={allExams}
-          onStartStudy={({ category, subcategory }) => {
-            openStudy({ category, subcategory, year: null, examId: null }, 'stats')
-          }}
+      ) : screen === 'community' ? (
+        <CommunityScreen
+          posts={communityPosts}
+          onAddPost={addCommunityPost}
+          onDeletePost={deleteCommunityPost}
         />
       ) : (
         <HomeScreen
@@ -272,7 +286,7 @@ function App() {
         onHome={() => goTab('home')}
         onIndex={() => goTab('index')}
         onNotes={() => goTab('notes')}
-        onStats={() => goTab('stats')}
+        onCommunity={() => goTab('community')}
       />
     </>
   )
