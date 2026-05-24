@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import HomeScreen from './components/HomeScreen'
 import IndexScreen from './components/IndexScreen'
+import StatsScreen from './components/StatsScreen'
 import StudyMode from './components/StudyMode'
 import WrongNotes from './components/WrongNotes'
 import BottomNav from './components/BottomNav'
@@ -10,6 +11,7 @@ const STORAGE_KEY = 'ox_quiz_progress_v2'
 
 const DEFAULT_FILTER = {
   category: null,
+  subcategory: null,
   year: null,
   examId: null,
   status: 'all',
@@ -58,6 +60,9 @@ function App() {
     }
     if (studyFilter.category) {
       filtered = filtered.filter(q => q.category === studyFilter.category)
+    }
+    if (studyFilter.subcategory) {
+      filtered = filtered.filter(q => q.subcategory === studyFilter.subcategory)
     }
     if (studyFilter.year) {
       filtered = filtered.filter(q => q.year === parseInt(studyFilter.year, 10))
@@ -129,6 +134,13 @@ function App() {
             openStudy({ examId: exam.id }, 'index')
           }}
         />
+      ) : screen === 'stats' ? (
+        <StatsScreen
+          exams={allExams}
+          onStartStudy={({ category, subcategory }) => {
+            openStudy({ category, subcategory, year: null, examId: null }, 'stats')
+          }}
+        />
       ) : (
         <HomeScreen
           exams={allExams}
@@ -150,6 +162,7 @@ function App() {
         active={tab}
         onHome={() => goTab('home')}
         onIndex={() => goTab('index')}
+        onStats={() => goTab('stats')}
       />
     </>
   )
