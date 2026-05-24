@@ -23,6 +23,24 @@ export default function HomeScreen({
   onResetProgress,
 }) {
   const [expandedCategory, setExpandedCategory] = useState(null)
+  const [studyView, setStudyView] = useState('category')
+
+  const studyViews = [
+    { id: 'category', label: '카테고리별 학습' },
+    { id: 'year', label: '기출연도별 학습' },
+  ]
+  const studyViewIndex = studyViews.findIndex(view => view.id === studyView)
+  const currentStudyView = studyViews[studyViewIndex]
+
+  const goPrevStudyView = () => {
+    const nextIndex = (studyViewIndex - 1 + studyViews.length) % studyViews.length
+    setStudyView(studyViews[nextIndex].id)
+  }
+
+  const goNextStudyView = () => {
+    const nextIndex = (studyViewIndex + 1) % studyViews.length
+    setStudyView(studyViews[nextIndex].id)
+  }
 
   const totalAnswered = exams.filter(q => isExamComplete(progress, q.id)).length
   const totalCorrect = exams.filter(q => isExamCorrect(progress, q.id)).length
@@ -142,13 +160,38 @@ export default function HomeScreen({
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 items-start">
-          <div>
-            <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-              카테고리별 학습
-            </h2>
-            <p className="text-xs text-slate-400 mb-3">단원 탭 → 전체 학습 · ▶ 소분류 선택</p>
-            <div className="grid grid-cols-2 gap-3">
+        <section>
+          <div className="flex items-center gap-2 mb-3">
+            <button
+              type="button"
+              onClick={goPrevStudyView}
+              aria-label="이전 학습 방식"
+              className="shrink-0 w-9 h-9 rounded-xl border border-slate-200 bg-white text-slate-500 hover:text-slate-800 hover:border-slate-300 transition-colors"
+            >
+              ←
+            </button>
+            <div className="flex-1 text-center min-w-0">
+              <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wide truncate">
+                {currentStudyView.label}
+              </h2>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                {studyViewIndex + 1} / {studyViews.length}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={goNextStudyView}
+              aria-label="다음 학습 방식"
+              className="shrink-0 w-9 h-9 rounded-xl border border-slate-200 bg-white text-slate-500 hover:text-slate-800 hover:border-slate-300 transition-colors"
+            >
+              →
+            </button>
+          </div>
+
+          {studyView === 'category' ? (
+            <>
+              <p className="text-xs text-slate-400 mb-3">단원 탭 → 전체 학습 · ▶ 소분류 선택</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {activeCategories.map((cat) => {
                 const stats = getCategoryStats(cat.name)
                 const progressPct = stats.total > 0 ? (stats.answered / stats.total) * 100 : 0
@@ -238,14 +281,10 @@ export default function HomeScreen({
                   </div>
                 )
               })}
-            </div>
-          </div>
-
-          <div>
-            <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-              기출연도별 학습
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-3">
+              </div>
+            </>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {activeYears.map(({ year, round, total, answered, rate }) => {
                 const progressPct = total > 0 ? (answered / total) * 100 : 0
                 return (
@@ -285,8 +324,8 @@ export default function HomeScreen({
                 )
               })}
             </div>
-          </div>
-        </div>
+          )}
+        </section>
 
         <p className="text-center text-xs text-slate-400 pb-4">
           총 {exams.length}문항 · {activeYears.length}개 연도 · {activeCategories.length}개 카테고리
