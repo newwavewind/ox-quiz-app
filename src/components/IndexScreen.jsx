@@ -1,8 +1,12 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
+import { CHOSUNG_NAV, getTermChosungKey } from '../utils/koreanChosung'
+import AiLinkButtons from './AiLinkButtons'
+import HighlightText from './HighlightText'
+import { buildGlossaryTermAiPrompt } from '../utils/aiLinks'
 import {
   buildGlossaryIndex,
   formatExamRef,
-  groupGlossaryByCategory,
+  getTermMatchInfo,
 } from '../data/glossaryIndex'
 
 export default function IndexScreen({ exams, onOpenQuestion }) {
@@ -23,26 +27,36 @@ export default function IndexScreen({ exams, onOpenQuestion }) {
     )
   }, [glossary, query])
 
-  const grouped = useMemo(() => groupGlossaryByCategory(filtered), [filtered])
-
   const selectedEntry = useMemo(
     () => glossary.find(e => e.term === selectedTerm) ?? null,
     [glossary, selectedTerm]
   )
 
-  const categoryNames = useMemo(
-    () => Object.keys(grouped).sort((a, b) => a.localeCompare(b, 'ko')),
-    [grouped]
-  )
+  const termRefs = useRef({})
+
+  const chosungFirstTerm = useMemo(() => {
+    const map = {}
+    for (const entry of filtered) {
+      const key = getTermChosungKey(entry.term)
+      if (key && map[key] === undefined) map[key] = entry.term
+    }
+    return map
+  }, [filtered])
+
+  const scrollToChosung = (chosung) => {
+    const term = chosungFirstTerm[chosung]
+    if (!term) return
+    setSelectedTerm(term)
+    requestAnimationFrame(() => {
+      termRefs.current[term]?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+    })
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col pb-16">
       <div className="bg-white border-b border-slate-200 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <h1 className="text-lg font-bold text-slate-800">민법 용어집</h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            윌비스 목차 기준 · 용어를 누르면 관련 기출 문항이 옆에 표시됩니다
-          </p>
           <input
             type="search"
             value={query}
@@ -53,94 +67,152 @@ export default function IndexScreen({ exams, onOpenQuestion }) {
         </div>
       </div>
 
-      <div className="flex-1 max-w-4xl mx-auto w-full flex flex-col md:flex-row md:overflow-hidden">
-        <aside className="md:w-1/2 md:border-r md:border-slate-200 md:overflow-y-auto md:max-h-[calc(100vh-10rem)]">
-          <div className="px-4 py-4 space-y-5">
-            {categoryNames.length === 0 ? (
-              <p className="text-sm text-slate-400 text-center py-8">검색 결과가 없습니다.</p>
+      <div className="flex-1 max-w-4xl mx-auto w-full flex flex-row min-h-0 overflow-hidden max-h-[calc(100vh-10rem)]">
+        <aside className="w-[38%] min-w-[7.5rem] max-w-[11rem] sm:max-w-none sm:w-2/5 shrink-0 border-r border-slate-200 overflow-y-auto">
+          <div className="px-2 sm:px-4 py-4 space-y-4">
+            {filtered.length === 0 ? (
+              <p className="text-xs sm:text-sm text-slate-400 text-center py-8">검색 결과가 없습니다.</p>
             ) : (
-              categoryNames.map(cat => (
-                <div key={cat}>
-                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">
-                    {cat}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {grouped[cat].map(entry => {
-                      const active = selectedTerm === entry.term
+              <>
+                <div
+                  className="sticky top-0 z-10 -mx-0.5 px-0.5 py-1.5 mb-1 bg-slate-50/95 backdrop-blur-sm border-b border-slate-100"
+                  role="navigation"
+                  aria-label="초성 바로가기"
+                >
+                  <div className="grid grid-cols-7 gap-0.5 sm:grid-cols-14 sm:gap-1">
+                    {CHOSUNG_NAV.map(ch => {
+                      const hasTerms = Boolean(chosungFirstTerm[ch])
                       return (
                         <button
-                          key={entry.term}
+                          key={ch}
                           type="button"
-                          onClick={() => setSelectedTerm(entry.term)}
-                          className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${
-                            active
-                              ? 'bg-slate-800 text-white border-slate-800'
-                              : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'
+                          disabled={!hasTerms}
+                          onClick={() => scrollToChosung(ch)}
+                          className={`py-1 rounded text-[11px] sm:text-xs font-bold transition-colors ${
+                            hasTerms
+                              ? 'text-slate-700 bg-white border border-slate-200 hover:bg-slate-800 hover:text-white hover:border-slate-800'
+                              : 'text-slate-300 bg-slate-100/80 border border-transparent cursor-not-allowed'
                           }`}
                         >
-                          {entry.term}
-                          <span
-                            className={`ml-1.5 text-xs ${
-                              active ? 'text-slate-300' : 'text-slate-400'
-                            }`}
-                          >
-                            {entry.exams.length}
-                          </span>
+                          {ch}
                         </button>
                       )
                     })}
                   </div>
                 </div>
-              ))
+                <div className="flex flex-col gap-1">
+                  {filtered.map((entry, idx) => {
+                    const active = selectedTerm === entry.term
+                    const chosung = getTermChosungKey(entry.term)
+                    const prevChosung = idx > 0 ? getTermChosungKey(filtered[idx - 1].term) : null
+                    const showHeading = chosung && chosung !== prevChosung
+                    return (
+                      <div key={entry.term}>
+                        {showHeading && (
+                          <p
+                            id={`chosung-${chosung}`}
+                            className="text-[10px] font-bold text-slate-400 px-1 pt-2 pb-0.5 first:pt-0"
+                          >
+                            {chosung}
+                          </p>
+                        )}
+                        <button
+                          ref={el => {
+                            if (el) termRefs.current[entry.term] = el
+                          }}
+                          type="button"
+                          onClick={() => setSelectedTerm(entry.term)}
+                          className={`w-full text-left text-xs sm:text-sm px-2.5 sm:px-3 py-2 rounded-lg border transition-colors ${
+                            active
+                              ? 'bg-slate-800 text-white border-slate-800'
+                              : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'
+                          }`}
+                        >
+                          <span className="flex items-center justify-between gap-1.5 min-w-0">
+                            <span className="font-medium truncate">{entry.term}</span>
+                            <span
+                              className={`shrink-0 text-[10px] tabular-nums ${
+                                active ? 'text-slate-300' : 'text-slate-400'
+                              }`}
+                            >
+                              {entry.exams.length}
+                            </span>
+                          </span>
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
+              </>
             )}
           </div>
         </aside>
 
-        <main className="md:w-1/2 md:overflow-y-auto md:max-h-[calc(100vh-10rem)] border-t md:border-t-0 border-slate-200 bg-white md:bg-slate-50/50">
-          <div className="px-4 py-5 min-h-[12rem] md:min-h-0">
+        <main className="flex-1 min-w-0 overflow-y-auto bg-white md:bg-slate-50/50">
+          <div className="px-3 sm:px-5 py-4 min-h-0">
             {!selectedEntry ? (
-              <div className="text-center py-12 text-slate-400">
-                <p className="text-4xl mb-3">📖</p>
-                <p className="text-sm">왼쪽에서 용어를 선택하세요.</p>
-                <p className="text-xs mt-2 text-slate-400">
-                  모바일에서는 용어 선택 후 아래에 문항이 표시됩니다.
-                </p>
+              <div className="text-center py-10 sm:py-12 text-slate-400 px-2">
+                <p className="text-3xl sm:text-4xl mb-3">📖</p>
+                <p className="text-xs sm:text-sm">왼쪽에서 용어를 선택하면 오른쪽에 기출 문항이 표시됩니다.</p>
               </div>
             ) : (
               <div className="space-y-4">
                 <div>
-                  <h2 className="text-xl font-bold text-slate-800">{selectedEntry.term}</h2>
+                  <div className="flex items-start justify-between gap-3 flex-wrap">
+                    <h2 className="text-xl font-bold text-slate-800">{selectedEntry.term}</h2>
+                    <AiLinkButtons
+                      size="prominent"
+                      prompt={buildGlossaryTermAiPrompt({
+                        term: selectedEntry.term,
+                        category: selectedEntry.category,
+                        section: selectedEntry.section,
+                      })}
+                    />
+                  </div>
                   <p className="text-xs text-slate-500 mt-1">
                     {selectedEntry.category}
                     {selectedEntry.section ? ` · ${selectedEntry.section}` : ''}
                   </p>
                   <p className="text-xs text-slate-400 mt-2">
-                    관련 기출 {selectedEntry.exams.length}문항
+                    관련 기출 {selectedEntry.exams.length}문항 · 빨간색 = 용어 포함 위치
+                  </p>
+                  <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                    지문·보기에 없어도 소분류(단원명)에 있으면 목록에 포함됩니다.
                   </p>
                 </div>
 
                 <ul className="space-y-2">
-                  {selectedEntry.exams.map(exam => (
+                  {selectedEntry.exams.map(exam => {
+                    const match = getTermMatchInfo(exam, selectedEntry.term)
+                    return (
                     <li key={exam.id}>
                       <button
                         type="button"
-                        onClick={() => onOpenQuestion(exam)}
+                        onClick={() => onOpenQuestion(exam, selectedEntry.term)}
                         className="w-full text-left rounded-xl border border-slate-200 bg-white p-3 hover:border-slate-400 hover:shadow-sm transition-all active:scale-[0.99]"
                       >
                         <div className="flex items-center justify-between gap-2 mb-1">
                           <span className="text-sm font-bold text-indigo-700 shrink-0">
                             {formatExamRef(exam)}
                           </span>
-                          <span className="text-xs text-slate-400 truncate">
-                            {exam.subcategory}
-                          </span>
+                          {exam.subcategory && (
+                            <span className="text-xs text-slate-500 truncate min-w-0">
+                              <HighlightText text={exam.subcategory} term={selectedEntry.term} />
+                            </span>
+                          )}
                         </div>
                         <p className="text-xs text-slate-600 leading-relaxed line-clamp-2">
-                          {exam.stem}
+                          <HighlightText text={exam.stem} term={selectedEntry.term} />
                         </p>
+                        {!match.inBody && match.inSubcategory && (
+                          <p className="text-[10px] text-amber-700 mt-1.5">
+                            소분류에만 포함 (지문·보기에는 「{selectedEntry.term}」 없음)
+                          </p>
+                        )}
                       </button>
                     </li>
-                  ))}
+                    )
+                  })}
                 </ul>
               </div>
             )}

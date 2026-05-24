@@ -28,6 +28,17 @@ export const AI_SERVICES = [
   },
 ]
 
+export function buildGlossaryTermAiPrompt({ term, category, section }) {
+  const unit = [category, section].filter(Boolean).join(' · ')
+  const lines = [
+    `공인중개사 민법 시험 범위의 용어로 「${term}」을(를) 설명해 주세요.`,
+    '',
+    '정의, 관련 민법 조문, 기출에서 자주 헷갈리는 점, 비슷한 용어와의 차이를 알려 주세요.',
+    unit ? `【관련 단원】 ${unit}` : '',
+  ].filter(Boolean)
+  return lines.join('\n\n').slice(0, 6000)
+}
+
 export function buildItemAiPrompt({ exam, item, userAnswer }) {
   const meta = [
     exam.year && `${exam.year}년`,

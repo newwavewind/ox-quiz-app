@@ -1,28 +1,63 @@
 import taxonomy from '../../data/taxonomy.json'
 
-/** 띄어쓰기 무시 매칭 */
+import { normalizeForMatch, buildTermPattern } from '../utils/highlightText'
+
+/** @deprecated use normalizeForMatch */
 export function normalizeText(text) {
-  return (text || '').replace(/\s+/g, '')
+  return normalizeForMatch(text)
 }
 
-function examSearchBlob(exam) {
+/** 용어집 매칭: 지문·보기·소분류만 (해설 제외 — 다른 단원 용어 언급으로 오매칭 방지) */
+function examIndexBlob(exam) {
   const parts = [
     exam.stem,
     exam.subcategory,
     exam.category,
     ...(exam.items || []).map(i => i.text),
-    ...(exam.items || []).map(i => i.explanation),
   ]
-  return normalizeText(parts.filter(Boolean).join('\n'))
+  return normalizeForMatch(parts.filter(Boolean).join('\n'))
 }
 
-/** 용어가 포함된 기출 문항 (지문·보기·해설·소분류) */
+export function textContainsTerm(text, term) {
+  const pattern = buildTermPattern(term)
+  if (!pattern || !text) return false
+  return new RegExp(pattern, 'i').test(text)
+}
+
+export function examMatchesTerm(exam, term) {
+  if (!term?.trim() || normalizeForMatch(term).length < 2) return false
+  return textContainsTerm(examIndexBlob(exam), term)
+}
+
+/** 용어가 지문·보기·소분류 중 어디에 있는지 */
+export function getTermMatchInfo(exam, term) {
+  if (!term?.trim() || normalizeForMatch(term).length < 2) {
+    return { inSubcategory: false, inStem: false, itemLabels: [], inBody: false }
+  }
+  const inSubcategory = Boolean(exam.subcategory && textContainsTerm(exam.subcategory, term))
+  const inStem = textContainsTerm(exam.stem, term)
+  const itemLabels = (exam.items || [])
+    .filter(i => textContainsTerm(i.text, term))
+    .map(i => i.label)
+  return {
+    inSubcategory,
+    inStem,
+    itemLabels,
+    inBody: inStem || itemLabels.length > 0,
+  }
+}
+
+/** 용어가 포함된 기출 문항 (지문·보기·소분류) */
 export function findExamsForTerm(term, exams) {
-  const needle = normalizeText(term)
-  if (!needle || needle.length < 2) return []
+  if (!term?.trim() || normalizeForMatch(term).length < 2) return []
   return exams
-    .filter(exam => examSearchBlob(exam).includes(needle))
+    .filter(exam => examMatchesTerm(exam, term))
     .sort((a, b) => a.question_no - b.question_no)
+}
+
+/** 조문 번호만 있는 키워드(제103조 등)는 용어집 항목에서 제외 */
+function isArticleKeyword(term) {
+  return /^제\d+조/.test(term.trim())
 }
 
 function collectTaxonomyTerms() {
@@ -32,7 +67,7 @@ function collectTaxonomyTerms() {
     const candidates = [unit.subcategory, ...(unit.keywords || [])]
     for (const raw of candidates) {
       const term = (raw || '').trim()
-      if (!term || term.length < 2 || seen.has(term)) continue
+      if (!term || term.length < 2 || seen.has(term) || isArticleKeyword(term)) continue
       seen.add(term)
       list.push({
         term,
@@ -86,10 +121,7 @@ export function buildGlossaryIndex(exams) {
     }
   }
 
-  return [...byTerm.values()].sort((a, b) => {
-    if (a.category !== b.category) return a.category.localeCompare(b.category, 'ko')
-    return a.term.localeCompare(b.term, 'ko')
-  })
+  return [...byTerm.values()].sort((a, b) => a.term.localeCompare(b.term, 'ko'))
 }
 
 export function groupGlossaryByCategory(entries) {

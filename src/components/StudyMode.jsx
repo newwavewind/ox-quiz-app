@@ -1,21 +1,42 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import AiLinkButtons from './AiLinkButtons'
+import HighlightText from './HighlightText'
+import { getTermMatchInfo } from '../data/glossaryIndex'
+import { formatStudyTime, getItemAttempts } from '../data/studyHistory'
+import { makeNoteId } from '../data/studyNotes'
 
 const CHOICE_MARKERS = ['①', '②', '③', '④', '⑤']
 
+function cleanExplanation(text) {
+  if (!text) return ''
+  return text
+    .replace(/━+/g, '')
+    .replace(/^[ \t]*[-─━=]{3,}[ \t]*$/gm, '')
+    .replace(/[ \t]{2,}/g, ' ')
+    .trim()
+}
+
 export default function StudyMode({
   exams,
+  startExamId = null,
   progress,
   filter,
   allExams,
   onUpdateProgress,
+  onLogItemAttempt,
+  onClearItemAttempts,
+  onRemoveItemAttempt,
+  savedNotes = {},
+  onToggleNote,
   onBack,
   onFilterChange,
 }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [userAnswers, setUserAnswers] = useState({})
   const [revealedItems, setRevealedItems] = useState(() => new Set())
-  const [graded, setGraded] = useState(false)
+  const [questionRevealed, setQuestionRevealed] = useState(false)
+  const [historyOpenKey, setHistoryOpenKey] = useState(null)
+  const [collapsedItemKeys, setCollapsedItemKeys] = useState(() => new Set())
   const [showFilter, setShowFilter] = useState(false)
   const [sessionStats, setSessionStats] = useState({ correct: 0, wrong: 0 })
 
@@ -29,10 +50,18 @@ export default function StudyMode({
     [allExams]
   )
 
+  const examListKey = useMemo(() => exams.map(e => e.id).join('|'), [exams])
+
   useEffect(() => {
-    setCurrentIndex(0)
+    let startIdx = 0
+    if (startExamId) {
+      const idx = exams.findIndex(e => e.id === startExamId)
+      if (idx >= 0) startIdx = idx
+    }
+    setCurrentIndex(startIdx)
     resetQuestionState()
-  }, [filter, exams])
+    // exams 참조는 progress 갱신마다 바뀌므로 의존성에서 제외 (OX 확인 직후 상태가 초기화되는 버그 방지)
+  }, [filter, examListKey, startExamId])
 
   const indexByQuestionNo = useMemo(() => {
     const map = new Map()
@@ -47,47 +76,52 @@ export default function StudyMode({
   function resetQuestionState() {
     setUserAnswers({})
     setRevealedItems(new Set())
-    setGraded(false)
+    setQuestionRevealed(false)
+    setHistoryOpenKey(null)
+    setCollapsedItemKeys(new Set())
   }
 
-  const allAnswered = exam
-    ? exam.items.every(item => userAnswers[item.key] != null)
-    : false
+  const toggleItemDetail = (key) => {
+    setCollapsedItemKeys(prev => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }
 
   const handlePick = (key, choice) => {
-    if (graded || revealedItems.has(key)) return
+    if (questionRevealed || revealedItems.has(key)) return
     setUserAnswers(prev => ({ ...prev, [key]: choice }))
   }
 
   const handleRevealItem = (key) => {
-    if (graded || !userAnswers[key] || revealedItems.has(key)) return
+    if (questionRevealed || !userAnswers[key] || revealedItems.has(key)) return
+    const item = exam?.items.find(i => i.key === key)
+    if (item && onLogItemAttempt) {
+      onLogItemAttempt(exam.id, key, {
+        pick: userAnswers[key],
+        correct: userAnswers[key] === item.answer,
+      })
+    }
     setRevealedItems(prev => new Set([...prev, key]))
+    setCollapsedItemKeys(prev => {
+      if (!prev.has(key)) return prev
+      const next = new Set(prev)
+      next.delete(key)
+      return next
+    })
   }
 
-  const revealAllItems = () => {
-    if (!exam) return
-    setRevealedItems(new Set(exam.items.map(i => i.key)))
+  const handleRevealQuestion = () => {
+    if (!exam || questionRevealed) return
+    setQuestionRevealed(true)
   }
 
-  const handleGrade = () => {
-    if (!exam || !allAnswered) return
-    let correctCount = 0
-    exam.items.forEach(item => {
-      if (userAnswers[item.key] === item.answer) correctCount += 1
-    })
-    const allCorrect = correctCount === exam.items.length
-    setGraded(true)
-    revealAllItems()
-    onUpdateProgress(exam.id, {
-      answered: true,
-      correct: allCorrect,
-      score: correctCount,
-      total: exam.items.length,
-    })
-    setSessionStats(prev => ({
-      correct: prev.correct + (allCorrect ? 1 : 0),
-      wrong: prev.wrong + (allCorrect ? 0 : 1),
-    }))
+  const handleHideQuestionAnswer = () => {
+    setQuestionRevealed(false)
+    setRevealedItems(new Set())
+    setCollapsedItemKeys(new Set())
   }
 
   const handleNext = () => {
@@ -110,8 +144,6 @@ export default function StudyMode({
     setCurrentIndex(idx)
     resetQuestionState()
   }
-
-  const isItemRevealed = (key) => graded || revealedItems.has(key)
 
   if (exams.length === 0) {
     return (
@@ -138,22 +170,25 @@ export default function StudyMode({
   }
 
   const progressPct = ((currentIndex + 1) / exams.length) * 100
-  const prevRecord = progress[exam.id]
   const correctMark = exam.correct_choice
     ? CHOICE_MARKERS[exam.correct_choice - 1]
     : null
+  const highlightTerm = filter.highlightTerm
+  const termMatch = highlightTerm ? getTermMatchInfo(exam, highlightTerm) : null
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <TopBar
         title={
-          filter.examId && exams.length === 1
-            ? `${exams[0].year}년 제${exams[0].round}회 · ${exams[0].question_no}번`
-            : filter.subcategory
-              ? `${filter.category} · ${filter.subcategory}`
-              : filter.category
-                || (filter.year ? `${filter.year}년 학습` : null)
-                || '전체 학습'
+          filter.subcategory
+            ? `${filter.category} · ${filter.subcategory}`
+            : filter.category
+              || (filter.year && exams[0]?.round != null
+                ? `${filter.year}년 제${exams[0].round}회`
+                : filter.year
+                  ? `${filter.year}년 학습`
+                  : null)
+              || '전체 학습'
         }
         onBack={onBack}
         onFilter={() => setShowFilter(true)}
@@ -194,25 +229,40 @@ export default function StudyMode({
             </span>
             {exam.subcategory && (
               <span className="text-xs bg-slate-100 text-slate-500 rounded-full px-3 py-1">
-                {exam.subcategory}
+                {highlightTerm ? (
+                  <HighlightText text={exam.subcategory} term={highlightTerm} />
+                ) : (
+                  exam.subcategory
+                )}
               </span>
             )}
             <span className="text-xs text-slate-400 ml-auto">
-              {exam.year}년 제{exam.round}회 · {exam.question_no}번
+              {exam.year}년 제{exam.round}회
             </span>
-            {prevRecord?.answered && !graded && (
-              <span className={`text-xs rounded-full px-2 py-0.5 font-medium ${
-                prevRecord.correct ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
-              }`}>
-                {prevRecord.correct ? '이전 정답 ✓' : '이전 오답 ✗'}
-              </span>
-            )}
           </div>
+
+          {highlightTerm && termMatch && (
+            <p className="text-xs text-red-600 font-medium leading-relaxed">
+              {termMatch.inBody && termMatch.inSubcategory && (
+                <>용어집 「{highlightTerm}」: 소분류·지문·보기 중 빨간색 표시</>
+              )}
+              {termMatch.inBody && !termMatch.inSubcategory && (
+                <>용어집 「{highlightTerm}」 포함 부분을 빨간색으로 표시합니다</>
+              )}
+              {!termMatch.inBody && termMatch.inSubcategory && (
+                <>
+                  「{highlightTerm}」은 지문·보기에는 없고, 위 <strong>소분류</strong>에 포함되어 연결된
+                  문항입니다.
+                </>
+              )}
+            </p>
+          )}
 
           <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3">
             <p className="text-xs font-semibold text-slate-400 mb-2">지문</p>
             <p className="text-slate-800 leading-relaxed text-base font-medium whitespace-pre-wrap">
-              {exam.stem}
+              <span className="font-bold text-slate-800 mr-1">{exam.question_no}.</span>
+              <HighlightText text={exam.stem} term={highlightTerm} />
             </p>
             {exam.question_type === 'composite' && exam.combo_choices?.length > 0 && (
               <p className="text-xs text-slate-500 border-t border-slate-100 pt-3">
@@ -222,24 +272,40 @@ export default function StudyMode({
           </div>
 
           <div className="space-y-3">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-              보기별 O/X 선택 후 「정답 확인」으로 바로 채점·해설
-            </p>
             {exam.items.map(item => {
               const picked = userAnswers[item.key]
-              const revealed = isItemRevealed(item.key)
-              const isRight = revealed && picked === item.answer
-              const isWrong = revealed && picked != null && picked !== item.answer
-              const canReveal = picked != null && !revealed && !graded
+              const oxChecked = revealedItems.has(item.key)
+              const showOxFeedback = oxChecked && !questionRevealed
+              const showAnswerKey = questionRevealed || oxChecked
+              const isRight = showOxFeedback && picked === item.answer
+              const isWrong = showOxFeedback && picked != null && picked !== item.answer
+              const canReveal = picked != null && !oxChecked && !questionRevealed
+              const controlsLocked = oxChecked || questionRevealed
+              const pickPending = picked != null && !oxChecked && !questionRevealed
+              const showOHighlight =
+                (pickPending && picked === 'O')
+                || (showOxFeedback && picked === 'O')
+                || (questionRevealed && item.answer === 'O')
+              const showXHighlight =
+                (pickPending && picked === 'X')
+                || (showOxFeedback && picked === 'X')
+                || (questionRevealed && item.answer === 'X')
+              const itemExplanation = cleanExplanation(item.explanation)
+              const itemAttempts = getItemAttempts(progress, exam.id, item.key)
+              const historyOpen = historyOpenKey === item.key
+              const noteSaved = Boolean(savedNotes[makeNoteId(exam.id, item.key)])
+              const hasHistory = itemAttempts.length > 0
               return (
                 <div
                   key={item.key}
                   className={`rounded-2xl border-2 p-4 transition-colors ${
                     isRight
-                      ? 'bg-green-50 border-green-300'
+                      ? 'bg-white border-green-300'
                       : isWrong
-                        ? 'bg-red-50 border-red-300'
-                        : 'bg-white border-slate-200'
+                        ? 'bg-white border-red-300'
+                        : questionRevealed
+                          ? 'bg-slate-50 border-slate-200'
+                          : 'bg-white border-slate-200'
                   }`}
                 >
                   <div className="flex gap-3 items-start">
@@ -247,22 +313,22 @@ export default function StudyMode({
                       {item.label}
                     </span>
                     <p className="flex-1 text-slate-800 text-sm leading-relaxed min-w-0">
-                      {item.text}
+                      <HighlightText text={item.text} term={highlightTerm} />
                     </p>
-                    <div className="flex-none flex items-center gap-1.5 shrink-0">
+                    <div className="flex-none flex items-center gap-1 shrink-0">
                       <button
                         type="button"
-                        disabled={revealed || graded}
+                        disabled={controlsLocked}
                         onClick={() => handlePick(item.key, 'O')}
-                        className={`ox-btn ox-btn-o ${picked === 'O' ? 'ox-btn-o-active' : ''}`}
+                        className={`ox-btn ox-btn-o ${showOHighlight ? 'ox-btn-o-active' : ''}`}
                       >
                         O
                       </button>
                       <button
                         type="button"
-                        disabled={revealed || graded}
+                        disabled={controlsLocked}
                         onClick={() => handlePick(item.key, 'X')}
-                        className={`ox-btn ox-btn-x ${picked === 'X' ? 'ox-btn-x-active' : ''}`}
+                        className={`ox-btn ox-btn-x ${showXHighlight ? 'ox-btn-x-active' : ''}`}
                       >
                         X
                       </button>
@@ -272,36 +338,138 @@ export default function StudyMode({
                         onClick={() => handleRevealItem(item.key)}
                         className="ox-btn-check"
                       >
-                        정답 확인
+                        OX 확인
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setHistoryOpenKey(historyOpen ? null : item.key)}
+                        className={`h-8 min-w-[2.25rem] px-1.5 rounded-md text-[10px] font-bold border transition-colors ${
+                          historyOpen
+                            ? 'border-slate-700 bg-slate-700 text-white'
+                            : hasHistory
+                              ? 'border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
+                              : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
+                        }`}
+                        title="학습 기록"
+                      >
+                        {hasHistory ? `${itemAttempts.length}회` : '기록'}
                       </button>
                     </div>
                   </div>
-                  {revealed && (
-                    <div className="mt-3 ml-9 border-t border-slate-200/80 pt-2 space-y-1">
-                      <p className="text-xs font-semibold">
-                        {isRight ? (
-                          <span className="text-green-600">✓ 맞았습니다</span>
-                        ) : (
-                          <span className="text-red-600">✗ 틀렸습니다</span>
+                  {historyOpen && (
+                    <div className="mt-2 ml-9 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <p className="text-xs font-semibold text-slate-700">학습 기록</p>
+                        {itemAttempts.length > 0 && onClearItemAttempts && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (window.confirm('이 보기의 학습 기록을 모두 삭제할까요?')) {
+                                onClearItemAttempts(exam.id, item.key)
+                              }
+                            }}
+                            className="text-[11px] font-semibold text-red-500 hover:text-red-700 shrink-0"
+                          >
+                            초기화
+                          </button>
                         )}
-                        <span className={`ml-2 ${item.answer === 'O' ? 'text-blue-600' : 'text-red-600'}`}>
-                          정답 {item.answer}
-                        </span>
-                        {picked && (
-                          <span className="text-slate-400 font-normal ml-1">· 내 답 {picked}</span>
-                        )}
-                      </p>
-                      {item.explanation ? (
-                        <div className="flex items-start gap-2">
-                          <p className="flex-1 text-xs text-slate-600 leading-relaxed min-w-0">
-                            {item.explanation}
-                          </p>
-                          <AiLinkButtons exam={exam} item={item} userAnswer={picked} />
-                        </div>
+                      </div>
+                      {itemAttempts.length === 0 ? (
+                        <p className="text-xs text-slate-400">OX 확인을 하면 기록됩니다.</p>
                       ) : (
-                        <div className="flex items-start gap-2">
-                          <p className="flex-1 text-xs text-slate-400 italic min-w-0">해설 준비 중</p>
-                          <AiLinkButtons exam={exam} item={item} userAnswer={picked} />
+                        <ul className="space-y-2 max-h-48 overflow-y-auto">
+                          {[...itemAttempts].reverse().map(attempt => (
+                            <li
+                              key={attempt.at}
+                              className="flex items-center gap-2 text-xs border-b border-slate-200/80 pb-2 last:border-0 last:pb-0"
+                            >
+                              <span className="flex-1 min-w-0 text-slate-600 truncate">
+                                {formatStudyTime(attempt.at)}
+                              </span>
+                              <span
+                                className={`shrink-0 font-medium ${
+                                  attempt.correct ? 'text-green-600' : 'text-red-600'
+                                }`}
+                              >
+                                {attempt.pick} · {attempt.correct ? '정답' : '오답'}
+                              </span>
+                              {onRemoveItemAttempt && (
+                                <button
+                                  type="button"
+                                  onClick={() => onRemoveItemAttempt(exam.id, item.key, attempt.at)}
+                                  className="shrink-0 text-[11px] font-semibold text-slate-400 hover:text-red-600 px-1"
+                                  aria-label={`${formatStudyTime(attempt.at)} 기록 삭제`}
+                                >
+                                  삭제
+                                </button>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
+                  {showAnswerKey && (
+                    <div className="mt-3 ml-9 border-t border-slate-200/80 pt-2">
+                      <button
+                        type="button"
+                        onClick={() => toggleItemDetail(item.key)}
+                        className="w-full flex items-start gap-2 text-left hover:opacity-80"
+                        aria-expanded={!collapsedItemKeys.has(item.key)}
+                      >
+                        <p className="flex-1 text-xs font-semibold min-w-0">
+                          {showOxFeedback ? (
+                            <>
+                              {isRight ? (
+                                <span className="text-green-600">✓ 맞았습니다</span>
+                              ) : (
+                                <span className="text-red-600">✗ 틀렸습니다</span>
+                              )}
+                              <span className={`ml-2 ${item.answer === 'O' ? 'text-blue-600' : 'text-red-600'}`}>
+                                정답 {item.answer}
+                              </span>
+                              {picked && (
+                                <span className="text-slate-400 font-normal ml-1">· 내 답 {picked}</span>
+                              )}
+                            </>
+                          ) : (
+                            <span className={item.answer === 'O' ? 'text-blue-600' : 'text-red-600'}>
+                              정답 {item.answer}
+                            </span>
+                          )}
+                        </p>
+                        <span className="shrink-0 text-[10px] text-slate-400 pt-0.5">
+                          {collapsedItemKeys.has(item.key) ? '펼치기 ▼' : '접기 ▲'}
+                        </span>
+                      </button>
+                      {!collapsedItemKeys.has(item.key) && (
+                        <div className="space-y-1 mt-1">
+                          {itemExplanation ? (
+                            <div className="flex items-start gap-2">
+                              <p className="flex-1 text-xs text-slate-600 leading-relaxed min-w-0">
+                                <HighlightText text={itemExplanation} term={highlightTerm} />
+                              </p>
+                              <AiLinkButtons exam={exam} item={item} userAnswer={picked} />
+                            </div>
+                          ) : (
+                            <div className="flex items-start gap-2">
+                              <p className="flex-1 text-xs text-slate-400 italic min-w-0">해설 준비 중</p>
+                              <AiLinkButtons exam={exam} item={item} userAnswer={picked} />
+                            </div>
+                          )}
+                          {onToggleNote && (
+                            <label className="flex items-center gap-2 mt-2 pt-2 border-t border-slate-200/80 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={noteSaved}
+                                onChange={() => onToggleNote(exam, item)}
+                                className="rounded border-slate-300 text-amber-600 focus:ring-amber-400 w-4 h-4"
+                              />
+                              <span className={`text-xs font-semibold ${noteSaved ? 'text-amber-700' : 'text-slate-600'}`}>
+                                노트저장
+                              </span>
+                            </label>
+                          )}
                         </div>
                       )}
                     </div>
@@ -319,7 +487,7 @@ export default function StudyMode({
                   <span
                     key={c.no}
                     className={`text-sm px-3 py-1.5 rounded-lg border ${
-                      c.is_correct
+                      questionRevealed && c.is_correct
                         ? 'bg-slate-800 text-white border-slate-800 font-semibold'
                         : 'bg-white text-slate-600 border-slate-200'
                     }`}
@@ -331,82 +499,46 @@ export default function StudyMode({
             </div>
           )}
 
-          {!graded ? (
+          {!questionRevealed ? (
             <button
-              onClick={handleGrade}
-              disabled={!allAnswered}
-              className="w-full bg-slate-800 text-white rounded-xl py-4 font-bold text-base disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-700"
+              onClick={handleRevealQuestion}
+              className="w-full bg-slate-800 text-white rounded-xl py-4 font-bold text-base hover:bg-slate-700"
             >
-              {allAnswered ? '채점하기' : `보기 ${exam.items.length}개 모두 선택해 주세요`}
+              정답 확인
             </button>
           ) : (
-            <div className={`rounded-2xl p-4 ${exam.items.every(i => userAnswers[i.key] === i.answer) ? 'bg-green-500' : 'bg-amber-500'}`}>
-              <p className="text-white font-bold text-lg">
-                {exam.items.every(i => userAnswers[i.key] === i.answer)
-                  ? '모든 보기를 맞혔습니다!'
-                  : `${exam.items.filter(i => userAnswers[i.key] === i.answer).length} / ${exam.items.length} 보기 정답`}
+            <button
+              type="button"
+              onClick={handleHideQuestionAnswer}
+              className="w-full flex items-center gap-2 p-4 text-left rounded-2xl border border-slate-200 bg-white hover:bg-slate-50/80 transition-colors"
+              aria-expanded
+            >
+              <p className="flex-1 font-semibold text-slate-800 min-w-0">
+                {correctMark ? `기출 정답 ${correctMark}` : '기출 정답'}
               </p>
-              {correctMark && (
-                <p className="text-white/90 text-sm mt-1">기출 정답: {correctMark}</p>
-              )}
-            </div>
+              <span className="shrink-0 text-xs text-slate-400">접기 ▲</span>
+            </button>
           )}
 
-          {graded && exam.explanation_summary && (
-            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
-              <p className="text-xs font-semibold text-amber-600 uppercase tracking-wide mb-2">📖 해설 요약</p>
-              <p className="text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">
-                {exam.explanation_summary}
-              </p>
-            </div>
-          )}
-
-          {graded && (
-            <div className="flex gap-3">
-              {currentIndex > 0 && (
-                <button
-                  onClick={handlePrev}
-                  className="flex-none bg-white border border-slate-200 text-slate-600 rounded-xl px-5 py-3.5 font-semibold text-sm"
-                >
-                  ← 이전
-                </button>
-              )}
-              {currentIndex < exams.length - 1 ? (
-                <button
-                  onClick={handleNext}
-                  className="flex-1 bg-slate-800 text-white rounded-xl py-3.5 font-semibold text-sm"
-                >
-                  다음 문제 →
-                </button>
-              ) : (
-                <button
-                  onClick={onBack}
-                  className="flex-1 bg-green-600 text-white rounded-xl py-3.5 font-semibold text-sm"
-                >
-                  홈으로
-                </button>
-              )}
-            </div>
-          )}
-
-          {!graded && (
-            <div className="flex gap-3">
-              <button
-                onClick={handlePrev}
-                disabled={currentIndex === 0}
-                className="flex-none text-slate-400 disabled:opacity-30 bg-white border border-slate-200 rounded-xl px-5 py-3 text-sm"
-              >
-                ← 이전
-              </button>
-              <button
-                onClick={handleNext}
-                disabled={currentIndex >= exams.length - 1}
-                className="flex-1 text-slate-500 disabled:opacity-30 bg-white border border-slate-200 rounded-xl py-3 text-sm"
-              >
-                건너뛰기 →
-              </button>
-            </div>
-          )}
+          <div className="flex gap-3">
+            <button
+              onClick={handlePrev}
+              disabled={currentIndex === 0}
+              className="flex-1 bg-white border border-slate-200 text-slate-600 rounded-xl py-3.5 font-semibold text-base disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              이전
+            </button>
+            <button
+              onClick={currentIndex >= exams.length - 1 ? onBack : handleNext}
+              className={`flex-1 rounded-xl py-3.5 font-semibold text-base ${
+                currentIndex >= exams.length - 1
+                  ? 'bg-green-600 text-white'
+                  : 'bg-white border border-slate-200 text-slate-600'
+              }`}
+            >
+              {currentIndex >= exams.length - 1 ? '홈으로' : '다음'}
+            </button>
+          </div>
         </div>
       </div>
 

@@ -161,42 +161,51 @@ export default function StatsScreen({ exams, onStartStudy }) {
           </ul>
         </section>
 
-        <section className="card overflow-x-auto">
+        <section className="card">
           <h2 className="text-sm font-bold text-slate-800 mb-1">연도별 출제 히트맵</h2>
-          <p className="text-xs text-slate-400 mb-4">진할수록 해당 연도에 많이 출제</p>
-          <table className="w-full text-[10px] border-collapse min-w-[320px]">
+          <p className="text-xs text-slate-400 mb-3">진할수록 해당 연도에 많이 출제 · 위에서 아래로 단원 순</p>
+          <div className="flex flex-wrap gap-x-3 gap-y-1.5 mb-4 text-[11px] text-slate-600">
+            {stats.categoryRows.map(cat => (
+              <span key={cat.name} className="inline-flex items-center gap-1">
+                <span
+                  className="w-2 h-2 rounded-full shrink-0"
+                  style={{ backgroundColor: cat.hex }}
+                />
+                {cat.name}
+              </span>
+            ))}
+          </div>
+          <table className="w-full text-xs border-collapse table-fixed">
             <thead>
-              <tr>
-                <th className="text-left py-1 pr-2 text-slate-400 font-medium sticky left-0 bg-white">
-                  연도
-                </th>
-                {stats.categoryRows.map(cat => (
+              <tr className="border-b border-slate-100">
+                <th className="w-8 py-2" aria-label="단원" />
+                {stats.yearMatrix.map(row => (
                   <th
-                    key={cat.name}
-                    className="px-0.5 py-1 text-slate-500 font-medium truncate max-w-[2.5rem]"
-                    title={cat.name}
+                    key={row.year}
+                    className="py-2 text-center text-slate-500 font-semibold tabular-nums"
                   >
-                    {cat.icon}
+                    {row.year}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {stats.yearMatrix.map(row => (
-                <tr key={row.year} className="border-t border-slate-100">
-                  <td className="py-1.5 pr-2 font-semibold text-slate-700 whitespace-nowrap sticky left-0 bg-white">
-                    {row.year}
-                    {row.round != null && (
-                      <span className="text-slate-400 font-normal ml-0.5">({row.round})</span>
-                    )}
+              {stats.categoryRows.map(cat => (
+                <tr key={cat.name} className="border-t border-slate-100">
+                  <td className="py-1.5 pr-1 align-middle">
+                    <span
+                      className="block w-2.5 h-2.5 rounded-full mx-auto shrink-0"
+                      style={{ backgroundColor: cat.hex }}
+                      title={cat.name}
+                    />
                   </td>
-                  {stats.categoryRows.map(cat => {
+                  {stats.yearMatrix.map(row => {
                     const n = row.byCat[cat.name] ?? 0
                     const intensity = n / stats.maxYearCell
                     return (
-                      <td key={cat.name} className="p-0.5">
+                      <td key={row.year} className="p-0.5 align-middle">
                         <div
-                          className="rounded w-7 h-7 flex items-center justify-center tabular-nums font-medium mx-auto"
+                          className="rounded w-full max-w-[2.25rem] h-8 flex items-center justify-center tabular-nums font-medium mx-auto text-[11px]"
                           style={{
                             backgroundColor:
                               n === 0
@@ -204,7 +213,7 @@ export default function StatsScreen({ exams, onStartStudy }) {
                                 : `color-mix(in srgb, ${cat.hex} ${Math.round(20 + intensity * 80)}%, white)`,
                             color: intensity > 0.5 ? '#fff' : '#475569',
                           }}
-                          title={`${row.year}년 ${cat.name}: ${n}문항`}
+                          title={`${cat.name} · ${row.year}년: ${n}문항`}
                         >
                           {n || '·'}
                         </div>
