@@ -138,7 +138,7 @@ function NoteCard({ note, onToggleNote, onToggleImportant, onOpenQuestion }) {
 
         {note.explanation ? (
 
-          <div className="flex items-start gap-2 mt-2 pt-2 border-t border-slate-100">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-2 mt-2 pt-2 border-t border-slate-100">
 
             <p className="flex-1 text-xs text-slate-600 leading-relaxed min-w-0 whitespace-pre-wrap">
 
@@ -146,17 +146,25 @@ function NoteCard({ note, onToggleNote, onToggleImportant, onOpenQuestion }) {
 
             </p>
 
-            <AiLinkButtons {...noteToAiContext(note)} />
+            <AiLinkButtons
+              {...noteToAiContext(note)}
+              className="w-full items-start sm:w-auto sm:items-end"
+              buttonRowClassName="justify-start sm:justify-end"
+            />
 
           </div>
 
         ) : (
 
-          <div className="flex items-start gap-2 mt-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-2 mt-2">
 
             <p className="flex-1 text-xs text-slate-400 italic min-w-0">해설 없음</p>
 
-            <AiLinkButtons {...noteToAiContext(note)} />
+            <AiLinkButtons
+              {...noteToAiContext(note)}
+              className="w-full items-start sm:w-auto sm:items-end"
+              buttonRowClassName="justify-start sm:justify-end"
+            />
 
           </div>
 

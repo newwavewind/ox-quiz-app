@@ -9,6 +9,11 @@ import WrongNotes from './components/WrongNotes'
 import BottomNav from './components/BottomNav'
 import { allExams, sortExams, isExamComplete, isExamCorrect } from './data/loadExam'
 import { buildStudyNote, makeNoteId } from './data/studyNotes'
+import {
+  applyAppearanceSettings,
+  loadAppearanceSettings,
+  saveAppearanceSettings,
+} from './data/appearanceSettings'
 
 const STORAGE_KEY = 'ox_quiz_progress_v2'
 const NOTES_STORAGE_KEY = 'ox_quiz_notes_v1'
@@ -48,6 +53,13 @@ function App() {
   })
 
   const [communityPosts, setCommunityPosts] = useState(() => loadCommunityPosts())
+
+  const [appearance, setAppearance] = useState(() => loadAppearanceSettings())
+
+  useEffect(() => {
+    applyAppearanceSettings(appearance)
+    saveAppearanceSettings(appearance)
+  }, [appearance])
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(progress))
@@ -203,32 +215,10 @@ function App() {
 
   const goTab = (next) => {
     setTab(next)
-    if (screen !== 'study') {
-      setScreen(next)
+    if (screen === 'study') {
+      setStudyStartExamId(null)
     }
-  }
-
-  if (screen === 'study') {
-    return (
-      <StudyMode
-        exams={getStudyExams}
-        startExamId={studyStartExamId}
-        progress={progress}
-        filter={studyFilter}
-        allExams={allExams}
-        onUpdateProgress={updateProgress}
-        onLogItemAttempt={logItemAttempt}
-        onClearItemAttempts={clearItemAttempts}
-        onRemoveItemAttempt={removeItemAttempt}
-        savedNotes={notes}
-        onToggleNote={toggleStudyNote}
-        onBack={() => {
-          setStudyStartExamId(null)
-          setScreen(studyReturnScreen)
-        }}
-        onFilterChange={setStudyFilter}
-      />
-    )
+    setScreen(next)
   }
 
   if (screen === 'wrongnotes') {
@@ -247,7 +237,26 @@ function App() {
 
   return (
     <>
-      {screen === 'index' ? (
+      {screen === 'study' ? (
+        <StudyMode
+          exams={getStudyExams}
+          startExamId={studyStartExamId}
+          progress={progress}
+          filter={studyFilter}
+          allExams={allExams}
+          onUpdateProgress={updateProgress}
+          onLogItemAttempt={logItemAttempt}
+          onClearItemAttempts={clearItemAttempts}
+          onRemoveItemAttempt={removeItemAttempt}
+          savedNotes={notes}
+          onToggleNote={toggleStudyNote}
+          onBack={() => {
+            setStudyStartExamId(null)
+            setScreen(studyReturnScreen)
+          }}
+          onFilterChange={setStudyFilter}
+        />
+      ) : screen === 'index' ? (
         <IndexScreen
           exams={allExams}
           onOpenQuestion={(exam, term) => {
@@ -273,6 +282,8 @@ function App() {
         <HomeScreen
           exams={allExams}
           progress={progress}
+          appearance={appearance}
+          onAppearanceChange={setAppearance}
           onStartStudy={({ category, subcategory }) => {
             openStudy({ category, subcategory, year: null, examId: null }, 'home')
           }}
@@ -282,7 +293,7 @@ function App() {
         />
       )}
       <BottomNav
-        active={tab}
+        active={screen === 'study' ? 'home' : tab}
         onHome={() => goTab('home')}
         onIndex={() => goTab('index')}
         onNotes={() => goTab('notes')}

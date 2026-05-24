@@ -147,7 +147,7 @@ export default function StudyMode({
 
   if (exams.length === 0) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col">
+      <div className="min-h-screen bg-slate-50 flex flex-col pb-16">
         <TopBar title="학습 모드" onBack={onBack} onFilter={() => setShowFilter(true)} />
         <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
           <div className="text-5xl mb-4">🎉</div>
@@ -177,7 +177,7 @@ export default function StudyMode({
   const termMatch = highlightTerm ? getTermMatchInfo(exam, highlightTerm) : null
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-slate-50 flex flex-col pb-16">
       <TopBar
         title={
           filter.subcategory
@@ -308,14 +308,16 @@ export default function StudyMode({
                           : 'bg-white border-slate-200'
                   }`}
                 >
-                  <div className="flex gap-3 items-start">
-                    <span className="flex-none text-sm font-bold text-slate-500 w-6 pt-0.5">
-                      {item.label}
-                    </span>
-                    <p className="flex-1 text-slate-800 text-sm leading-relaxed min-w-0">
-                      <HighlightText text={item.text} term={highlightTerm} />
-                    </p>
-                    <div className="flex-none flex items-center gap-1 shrink-0">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:gap-3 sm:items-start">
+                    <div className="flex gap-2 min-w-0 flex-1">
+                      <span className="flex-none text-sm font-bold text-slate-500 w-6 pt-0.5">
+                        {item.label}
+                      </span>
+                      <p className="flex-1 text-slate-800 text-sm leading-relaxed min-w-0">
+                        <HighlightText text={item.text} term={highlightTerm} />
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-1 pl-8 sm:pl-0 sm:flex-none sm:shrink-0 sm:justify-end">
                       <button
                         type="button"
                         disabled={controlsLocked}
@@ -357,7 +359,7 @@ export default function StudyMode({
                     </div>
                   </div>
                   {historyOpen && (
-                    <div className="mt-2 ml-9 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                    <div className="mt-2 pl-8 sm:pl-0 sm:ml-9 rounded-xl border border-slate-200 bg-slate-50 p-3">
                       <div className="flex items-center justify-between gap-2 mb-2">
                         <p className="text-xs font-semibold text-slate-700">학습 기록</p>
                         {itemAttempts.length > 0 && onClearItemAttempts && (
@@ -410,7 +412,7 @@ export default function StudyMode({
                     </div>
                   )}
                   {showAnswerKey && (
-                    <div className="mt-3 ml-9 border-t border-slate-200/80 pt-2">
+                    <div className="mt-3 pl-8 sm:pl-0 sm:ml-9 border-t border-slate-200/80 pt-2">
                       <button
                         type="button"
                         onClick={() => toggleItemDetail(item.key)}
@@ -445,16 +447,28 @@ export default function StudyMode({
                       {!collapsedItemKeys.has(item.key) && (
                         <div className="space-y-1 mt-1">
                           {itemExplanation ? (
-                            <div className="flex items-start gap-2">
+                            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-2">
                               <p className="flex-1 text-xs text-slate-600 leading-relaxed min-w-0">
                                 <HighlightText text={itemExplanation} term={highlightTerm} />
                               </p>
-                              <AiLinkButtons exam={exam} item={item} userAnswer={picked} />
+                              <AiLinkButtons
+                                exam={exam}
+                                item={item}
+                                userAnswer={picked}
+                                className="w-full items-start sm:w-auto sm:items-end"
+                                buttonRowClassName="justify-start sm:justify-end"
+                              />
                             </div>
                           ) : (
-                            <div className="flex items-start gap-2">
+                            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-2">
                               <p className="flex-1 text-xs text-slate-400 italic min-w-0">해설 준비 중</p>
-                              <AiLinkButtons exam={exam} item={item} userAnswer={picked} />
+                              <AiLinkButtons
+                                exam={exam}
+                                item={item}
+                                userAnswer={picked}
+                                className="w-full items-start sm:w-auto sm:items-end"
+                                buttonRowClassName="justify-start sm:justify-end"
+                              />
                             </div>
                           )}
                           {onToggleNote && (

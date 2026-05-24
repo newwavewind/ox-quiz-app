@@ -14,6 +14,8 @@ export default function AiLinkButtons({
   userAnswer,
   prompt: promptOverride,
   size = 'compact',
+  className = '',
+  buttonRowClassName = '',
 }) {
   const prominent = size === 'prominent'
   const [toast, setToast] = useState(null)
@@ -31,12 +33,12 @@ export default function AiLinkButtons({
   }
 
   return (
-    <div className={`flex flex-col items-end gap-0.5 shrink-0 ${prominent ? 'min-w-0' : ''}`}>
+    <div className={`flex flex-col items-end gap-0.5 shrink-0 ${prominent ? 'min-w-0' : ''} ${className}`}>
       {prominent && (
         <span className="text-[9px] text-slate-400 font-medium">AI 용어 설명</span>
       )}
       <div
-        className={`flex items-center ${prominent ? 'gap-1 flex-wrap justify-end' : 'gap-1'}`}
+        className={`flex items-center flex-wrap ${prominent ? 'gap-1 justify-end' : 'gap-1'} ${buttonRowClassName}`}
         role="group"
         aria-label="AI에서 자세히 보기"
       >
