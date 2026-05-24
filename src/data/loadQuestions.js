@@ -8,6 +8,7 @@ import y2021 from './questions/2021.json'
 import y2022 from './questions/2022.json'
 import y2023 from './questions/2023.json'
 import y2024 from './questions/2024.json'
+import y2025 from './questions/2025.json'
 
 const byYear = {
   2016: y2016,
@@ -19,6 +20,7 @@ const byYear = {
   2022: y2022,
   2023: y2023,
   2024: y2024,
+  2025: y2025,
 }
 
 /** @type {import('./questions/2022.json')[number][]} */
