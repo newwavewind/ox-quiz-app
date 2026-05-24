@@ -149,9 +149,11 @@ export default function StudyMode({
         title={
           filter.examId && exams.length === 1
             ? `${exams[0].year}년 제${exams[0].round}회 · ${exams[0].question_no}번`
-            : filter.category
-              || (filter.year ? `${filter.year}년 학습` : null)
-              || '전체 학습'
+            : filter.subcategory
+              ? `${filter.category} · ${filter.subcategory}`
+              : filter.category
+                || (filter.year ? `${filter.year}년 학습` : null)
+                || '전체 학습'
         }
         onBack={onBack}
         onFilter={() => setShowFilter(true)}

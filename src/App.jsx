@@ -145,8 +145,8 @@ function App() {
         <HomeScreen
           exams={allExams}
           progress={progress}
-          onStartStudy={(category) => {
-            openStudy({ category, year: null, examId: null }, 'home')
+          onStartStudy={({ category, subcategory }) => {
+            openStudy({ category, subcategory, year: null, examId: null }, 'home')
           }}
           onStartStudyByYear={(year) => {
             openStudy({ category: null, year, examId: null }, 'home')

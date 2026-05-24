@@ -1,5 +1,17 @@
+import { useMemo, useState } from 'react'
+import taxonomy from '../../data/taxonomy.json'
 import { CATEGORIES } from '../data/categoryStyles'
 import { isExamComplete, isExamCorrect } from '../data/loadExam'
+
+const subcategoryOrder = taxonomy.units.reduce((acc, unit) => {
+  if (!acc[unit.category]) acc[unit.category] = []
+  if (!acc[unit.category].includes(unit.subcategory)) acc[unit.category].push(unit.subcategory)
+  return acc
+}, {})
+
+function examSubcategory(exam) {
+  return exam.subcategory || '미분류'
+}
 
 export default function HomeScreen({
   exams,
@@ -10,23 +22,46 @@ export default function HomeScreen({
   onViewWrongNotes,
   onResetProgress,
 }) {
+  const [expandedCategory, setExpandedCategory] = useState(null)
+
   const totalAnswered = exams.filter(q => isExamComplete(progress, q.id)).length
   const totalCorrect = exams.filter(q => isExamCorrect(progress, q.id)).length
   const totalWrong = totalAnswered - totalCorrect
   const overallRate = totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : 0
 
-  const getCategoryStats = (catName) => {
-    const catExams = exams.filter(q => q.category === catName)
-    const answered = catExams.filter(q => isExamComplete(progress, q.id))
-    const correct = catExams.filter(q => isExamCorrect(progress, q.id))
+  const getExamStats = (list) => {
+    const answered = list.filter(q => isExamComplete(progress, q.id))
+    const correct = list.filter(q => isExamCorrect(progress, q.id))
     const rate = answered.length > 0 ? Math.round((correct.length / answered.length) * 100) : 0
     return {
-      total: catExams.length,
+      total: list.length,
       answered: answered.length,
       correct: correct.length,
       rate,
     }
   }
+
+  const getCategoryStats = (catName) => getExamStats(exams.filter(q => q.category === catName))
+
+  const subcategoriesByCategory = useMemo(() => {
+    const found = new Map()
+    for (const exam of exams) {
+      const cat = exam.category
+      const sub = examSubcategory(exam)
+      if (!found.has(cat)) found.set(cat, new Set())
+      found.get(cat).add(sub)
+    }
+
+    const result = {}
+    for (const [cat, subs] of found) {
+      const ordered = (subcategoryOrder[cat] ?? []).filter(name => subs.has(name))
+      for (const name of subs) {
+        if (!ordered.includes(name)) ordered.push(name)
+      }
+      result[cat] = ordered
+    }
+    return result
+  }, [exams])
 
   const activeCategories = CATEGORIES.filter(c => getCategoryStats(c.name).total > 0)
 
@@ -112,41 +147,97 @@ export default function HomeScreen({
             <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
               카테고리별 학습
             </h2>
+            <p className="text-xs text-slate-400 mb-3">단원 탭 → 전체 학습 · ▶ 소분류 선택</p>
             <div className="grid grid-cols-2 gap-3">
-            {activeCategories.map((cat) => {
-              const stats = getCategoryStats(cat.name)
-              const progressPct = stats.total > 0 ? (stats.answered / stats.total) * 100 : 0
+              {activeCategories.map((cat) => {
+                const stats = getCategoryStats(cat.name)
+                const progressPct = stats.total > 0 ? (stats.answered / stats.total) * 100 : 0
+                const subs = subcategoriesByCategory[cat.name] ?? []
+                const expanded = expandedCategory === cat.name
 
-              return (
-                <button
-                  key={cat.name}
-                  onClick={() => onStartStudy(cat.name)}
-                  className={`${cat.light} ${cat.border} border rounded-2xl p-4 text-left hover:shadow-md transition-all duration-150 active:scale-95`}
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <span className="text-xl">{cat.icon}</span>
-                    {stats.answered > 0 && (
-                      <span className={`text-xs font-bold ${cat.text} bg-white rounded-full px-2 py-0.5`}>
-                        {stats.rate}%
-                      </span>
+                return (
+                  <div
+                    key={cat.name}
+                    className={`${cat.light} ${cat.border} border rounded-2xl p-4 hover:shadow-md transition-all duration-150`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => onStartStudy({ category: cat.name, subcategory: null })}
+                      className="w-full text-left active:scale-[0.98] transition-transform"
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <span className="text-xl">{cat.icon}</span>
+                        {stats.answered > 0 && (
+                          <span className={`text-xs font-bold ${cat.text} bg-white rounded-full px-2 py-0.5`}>
+                            {stats.rate}%
+                          </span>
+                        )}
+                      </div>
+                      <p className={`text-sm font-bold ${cat.text} leading-tight mb-2`}>{cat.name}</p>
+                      <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
+                        <span>{stats.answered}/{stats.total}</span>
+                        {stats.answered === stats.total && stats.total > 0 && (
+                          <span className="text-green-500 font-semibold">완료 ✓</span>
+                        )}
+                      </div>
+                      <div className="w-full bg-white rounded-full h-1.5 overflow-hidden">
+                        <div
+                          className={`${cat.color} h-1.5 rounded-full transition-all duration-500`}
+                          style={{ width: `${progressPct}%` }}
+                        />
+                      </div>
+                    </button>
+                    {subs.length > 0 && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => setExpandedCategory(expanded ? null : cat.name)}
+                          className="mt-2 text-[11px] text-slate-400 hover:text-slate-600"
+                        >
+                          {expanded ? '▼ 소분류 접기' : `▶ 소분류 ${subs.length}개`}
+                        </button>
+                        {expanded && (
+                          <ul className="mt-2 space-y-1 border-t border-white/60 pt-2">
+                            {subs.map(sub => {
+                              const subStats = getExamStats(
+                                exams.filter(q => q.category === cat.name && examSubcategory(q) === sub)
+                              )
+                              const subPct = subStats.total > 0 ? (subStats.answered / subStats.total) * 100 : 0
+                              return (
+                                <li key={sub}>
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      onStartStudy({
+                                        category: cat.name,
+                                        subcategory: sub === '미분류' ? null : sub,
+                                      })
+                                    }
+                                    className="w-full flex items-center gap-2 rounded-lg px-1 py-1 text-left hover:bg-white/60 active:scale-[0.98] transition-all"
+                                  >
+                                    <span className={`flex-1 text-[11px] font-medium ${cat.text} leading-tight truncate`}>
+                                      {sub}
+                                    </span>
+                                    <span className="text-[10px] text-slate-400 tabular-nums shrink-0">
+                                      {subStats.answered}/{subStats.total}
+                                    </span>
+                                    <div className="w-8 h-1 rounded-full bg-white overflow-hidden shrink-0">
+                                      <div
+                                        className={`${cat.color} h-full rounded-full`}
+                                        style={{ width: `${subPct}%` }}
+                                      />
+                                    </div>
+                                  </button>
+                                </li>
+                              )
+                            })}
+                          </ul>
+                        )}
+                      </>
                     )}
                   </div>
-                  <p className={`text-sm font-bold ${cat.text} leading-tight mb-2`}>{cat.name}</p>
-                  <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
-                    <span>{stats.answered}/{stats.total}</span>
-                    {stats.answered === stats.total && stats.total > 0 && (
-                      <span className="text-green-500 font-semibold">완료 ✓</span>
-                    )}
-                  </div>
-                  <div className="w-full bg-white rounded-full h-1.5 overflow-hidden">
-                    <div
-                      className={`${cat.color} h-1.5 rounded-full transition-all duration-500`}
-                      style={{ width: `${progressPct}%` }}
-                    />
-                  </div>
-                </button>
-              )
-            })}
+                )
+              })}
             </div>
           </div>
 
