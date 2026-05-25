@@ -7,6 +7,7 @@ export function mapRowToPost(row) {
     title: row.title,
     content: row.body ?? row.content,
     nickname: row.nickname,
+    authorId: row.author_id ?? row.authorId,
     createdAt: row.created_at
       ? new Date(row.created_at).getTime()
       : row.createdAt ?? Date.now(),

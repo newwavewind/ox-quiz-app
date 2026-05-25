@@ -5,7 +5,8 @@ import NotesScreen from './components/NotesScreen'
 import CommunityScreen from './components/CommunityScreen'
 import AuthBar from './components/AuthBar'
 import { useAuth } from './contexts/AuthContext'
-import { loadCommunityPosts, saveCommunityPosts } from './data/communityPosts'
+import { loadCommunityPosts, pickMetaFields, saveCommunityPosts } from './data/communityPosts'
+import { enrichPost, removePostMeta, savePostMeta } from './data/communityPostMeta'
 import {
   deleteCommunityPost as deleteCloudPost,
   fetchCommunityPosts,
@@ -107,14 +108,19 @@ function App() {
 
   const addCommunityPost = useCallback(
     async post => {
+      const meta = pickMetaFields(post)
       if (user) {
         const saved = await insertCommunityPost(user.id, post)
         if (saved) {
-          setCommunityPosts(prev => [saved, ...prev])
-          return
+          savePostMeta(saved.id, meta)
+          setCommunityPosts(prev => [enrichPost({ ...saved, authorId: user.id }), ...prev])
+          return enrichPost({ ...saved, authorId: user.id })
         }
       }
-      setCommunityPosts(prev => [post, ...prev])
+      savePostMeta(post.id, meta)
+      const full = enrichPost(post)
+      setCommunityPosts(prev => [full, ...prev])
+      return full
     },
     [user],
   )
@@ -125,6 +131,7 @@ function App() {
         const ok = await deleteCloudPost(postId)
         if (!ok) return
       }
+      removePostMeta(postId)
       setCommunityPosts(prev => prev.filter(p => p.id !== postId))
     },
     [user],
