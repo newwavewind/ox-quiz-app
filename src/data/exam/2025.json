@@ -57,7 +57,7 @@
     "question_no": 42,
     "stem": "통정허위표시를 기초로 새로운 법률상 이해관계를 맺은 제3자에 해당하는 자를 모두 고른 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "composite",
-    "correct_choice": 5,
+    "correct_choice": 3,
     "category": "법률행위",
     "subcategory": "비진의·통정허위",
     "items": [
@@ -79,7 +79,7 @@
         "key": "ㄷ",
         "label": "ㄷ.",
         "text": "가장소비대차의 계약상 지위를 이전받은 자",
-        "answer": "O",
+        "answer": "X",
         "explanation": "가장소비대차의 계약상 지위를 이전받은 자 역시 통정허위표시를 기초로 한 권리·의무 관계의 승계인으로서 새로운 법률상 이해관계를 맺은 제3자에 해당합니다. (옳음)"
       }
     ],
@@ -100,7 +100,7 @@
         "no": 3,
         "label": "③",
         "text": "ㄱ, ㄴ",
-        "is_correct": false
+        "is_correct": true
       },
       {
         "no": 4,
@@ -112,10 +112,10 @@
         "no": 5,
         "label": "⑤",
         "text": "ㄱ, ㄴ, ㄷ",
-        "is_correct": true
+        "is_correct": false
       }
     ],
-    "explanation_summary": "정답은 ⑤입니다.",
+    "explanation_summary": "정답은 ③입니다.",
     "source": "제36회 1차 1교시"
   },
   {
@@ -176,7 +176,7 @@
     "question_no": 44,
     "stem": "민법상 복대리에 관한 설명으로 옳은 것은?",
     "question_type": "correct",
-    "correct_choice": 4,
+    "correct_choice": 5,
     "category": "대리",
     "subcategory": "대리일반",
     "items": [
@@ -205,19 +205,19 @@
         "key": "4",
         "label": "④",
         "text": "법정대리인은 본인의 승낙이나 부득이한 사유가 없으면 복대리인을 선임할 수 없다.",
-        "answer": "O",
+        "answer": "X",
         "explanation": "법정대리인은 본인의 승낙이나 부득이한 사유가 없으면 복대리인을 선임할 수 없습니다. 법정대리인의 복대리는 엄격히 제한되므로 이 설명은 옳습니다."
       },
       {
         "key": "5",
         "label": "⑤",
         "text": "법정대리인이 부득이한 사유로 복대리인을 선임한 경우, 본인에 대하여 그 선임감독에 관해서만 책임이 있다.",
-        "answer": "X",
+        "answer": "O",
         "explanation": "법정대리인이 부득이한 사유로 복대리인을 선임한 경우, 본인에 대하여 선임·감독뿐 아니라 복대리인의 행위에 대한 책임도 집니다(민법 제120조). '선임감독에 관해서만' 책임이 있다는 설명은 틀립니다."
       }
     ],
     "combo_choices": [],
-    "explanation_summary": "정답은 ④입니다.",
+    "explanation_summary": "정답은 ⑤입니다.",
     "source": "제36회 1차 1교시"
   },
   {
@@ -278,7 +278,7 @@
     "question_no": 46,
     "stem": "착오로 인한 의사표시에 관한 설명으로 틀린 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
-    "correct_choice": 5,
+    "correct_choice": 1,
     "category": "법률행위",
     "subcategory": "의사표시",
     "items": [
@@ -286,7 +286,7 @@
         "key": "1",
         "label": "①",
         "text": "착오로 인한 의사표시의 취소권은 당사자들이 합의에 의하여 배제할 수 없다.",
-        "answer": "O",
+        "answer": "X",
         "explanation": "착오로 인한 의사표시의 취소권은 임의규정이므로 당사자 합의로 배제할 수 없다는 설명은 옳습니다. 취소권 배제 특약은 무효입니다."
       },
       {
@@ -314,12 +314,12 @@
         "key": "5",
         "label": "⑤",
         "text": "매도인이 매수인의 채무불이행을 이유로 매매계약을 적법하게 해제한 후에도 매수인은 착오를 이유로 그 계약을 취소할 수 있다.",
-        "answer": "X",
+        "answer": "O",
         "explanation": "매도인이 매수인의 채무불이행을 이유로 매매계약을 적법하게 해제한 후에는 계약 관계가 이미 종료되었으므로, 매수인이 착오를 이유로 그 계약을 취소할 수 없습니다. 해제와 취소를 병행할 수 없다는 설명은 틀립니다."
       }
     ],
     "combo_choices": [],
-    "explanation_summary": "정답은 ⑤입니다.",
+    "explanation_summary": "정답은 ①입니다.",
     "source": "제36회 1차 1교시"
   },
   {
@@ -329,7 +329,7 @@
     "question_no": 47,
     "stem": "불공정한 법률행위에 관한 설명으로 틀린 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
-    "correct_choice": 5,
+    "correct_choice": 2,
     "category": "법률행위",
     "subcategory": "반사회·불공정",
     "items": [
@@ -344,7 +344,7 @@
         "key": "2",
         "label": "②",
         "text": "무경험은 거래일반에 대한 경험부족이 아니라 해당 법률행위가 속한 특정영역에서의 경험부족을 뜻한다.",
-        "answer": "O",
+        "answer": "X",
         "explanation": "'무경험'은 거래 일반에 대한 경험 부족이 아니라 해당 법률행위가 속한 특정 영역에서의 경험 부족을 의미합니다."
       },
       {
@@ -365,12 +365,12 @@
         "key": "5",
         "label": "⑤",
         "text": "대리인에 의해 법률행위가 이루어진 경우, 궁박은 본인을 기준으로 판단한다.",
-        "answer": "X",
+        "answer": "O",
         "explanation": "대리인에 의해 법률행위가 이루어진 경우, 궁박·무경험 등은 원칙적으로 대리인(표의자)을 기준으로 판단하며 본인을 기준으로 하지 않습니다(대판 2005다45212). 따라서 이 설명은 틀립니다."
       }
     ],
     "combo_choices": [],
-    "explanation_summary": "정답은 ⑤입니다.",
+    "explanation_summary": "정답은 ②입니다.",
     "source": "제36회 1차 1교시"
   },
   {
@@ -431,7 +431,7 @@
     "question_no": 49,
     "stem": "법률행위의 무효에 관한 설명으로 틀린 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
-    "correct_choice": 3,
+    "correct_choice": 4,
     "category": "법률행위",
     "subcategory": "무효·취소",
     "items": [
@@ -453,14 +453,14 @@
         "key": "3",
         "label": "③",
         "text": "무효인 법률행위는 그에 따른 법률효과를 침해하는 것처럼 보이는 위법행위가 있더라도 법률효과의 침해에 따른 손해배상을 청구할 수 없다.",
-        "answer": "X",
+        "answer": "O",
         "explanation": "무효인 법률행위라 하더라도 상대방의 위법행위(불법행위)로 인한 손해가 발생한 경우에는 손해배상을 청구할 수 있습니다. '손해배상을 청구할 수 없다'는 설명은 틀립니다."
       },
       {
         "key": "4",
         "label": "④",
         "text": "무권리자의 처분으로 이루어진 계약으로, 권리자가 이를 추인하면 계약의 효과는 원칙적으로 추인한 때부터 권리자에게 귀속한다.",
-        "answer": "O",
+        "answer": "X",
         "explanation": "무권리자의 처분으로 이루어진 계약을 권리자가 추인하면, 특별한 사정이 없는 한 계약의 효과는 추인한 때부터 권리자에게 귀속합니다."
       },
       {
@@ -472,7 +472,7 @@
       }
     ],
     "combo_choices": [],
-    "explanation_summary": "정답은 ③입니다.",
+    "explanation_summary": "정답은 ④입니다.",
     "source": "제36회 1차 1교시"
   },
   {
@@ -550,7 +550,7 @@
     "question_no": 51,
     "stem": "등기청구권의 법적 성질에 관한 설명으로 옳은 것을 모두 고른 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "composite",
-    "correct_choice": 2,
+    "correct_choice": 4,
     "category": "물권변동",
     "subcategory": "등기",
     "items": [
@@ -565,7 +565,7 @@
         "key": "ㄴ",
         "label": "ㄴ.",
         "text": "무효인 등기의 말소등기에 갈음하는 진정명의 회복을 원인으로 한 소유권이전등기청구권은 물권적 청구권이다.",
-        "answer": "X",
+        "answer": "O",
         "explanation": "무효인 등기의 말소등기에 갈음하는 진정명의 회복을 원인으로 한 소유권이전등기청구권도 채권적 청구권입니다. (틀림)"
       },
       {
@@ -587,7 +587,7 @@
         "no": 2,
         "label": "②",
         "text": "ㄷ",
-        "is_correct": true
+        "is_correct": false
       },
       {
         "no": 3,
@@ -599,7 +599,7 @@
         "no": 4,
         "label": "④",
         "text": "ㄴ, ㄷ",
-        "is_correct": false
+        "is_correct": true
       },
       {
         "no": 5,
@@ -608,7 +608,7 @@
         "is_correct": false
       }
     ],
-    "explanation_summary": "정답은 ②입니다.",
+    "explanation_summary": "정답은 ④입니다.",
     "source": "제36회 1차 1교시"
   },
   {
@@ -618,7 +618,7 @@
     "question_no": 52,
     "stem": "민법상 물권에 관한 설명으로 틀린 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
-    "correct_choice": 1,
+    "correct_choice": 2,
     "category": "물권총칙",
     "subcategory": "물권법정주의",
     "items": [
@@ -626,14 +626,14 @@
         "key": "1",
         "label": "①",
         "text": "온천권은 관습법상의 물권이라고 볼 수 없다.",
-        "answer": "X",
+        "answer": "O",
         "explanation": "온천권은 관습법상의 물권으로 인정되며, 민법 제185조의 물권법정주의 원칙에도 위배되지 않습니다. '관습법상 물권이 아니다'는 설명은 틀립니다."
       },
       {
         "key": "2",
         "label": "②",
         "text": "유치물과 견련관계가 인정되지 않는 채권을 피담보채권으로 하는 유치권을 인정하는 것은 물권법정주의에 반하지 않는다.",
-        "answer": "O",
+        "answer": "X",
         "explanation": "유치물과 견련관계가 없는 채권을 피담보채권으로 하는 유치권은 특별한 사정이 있는 경우 인정될 수 있으며, 이는 물권법정주의에 반하지 않습니다."
       },
       {
@@ -659,7 +659,7 @@
       }
     ],
     "combo_choices": [],
-    "explanation_summary": "정답은 ①입니다.",
+    "explanation_summary": "정답은 ②입니다.",
     "source": "제36회 1차 1교시"
   },
   {
@@ -890,7 +890,7 @@
     "question_no": 57,
     "stem": "등기 없이도 물권변동의 효력이 생기는 사유가 아닌 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
-    "correct_choice": 5,
+    "correct_choice": 3,
     "category": "물권총칙",
     "subcategory": "물권법정주의",
     "items": [
@@ -912,7 +912,7 @@
         "key": "3",
         "label": "③",
         "text": "이행관결",
-        "answer": "O",
+        "answer": "X",
         "explanation": "이행관결(형성판결)에 의한 소유권 이전도 등기 없이 효력이 생깁니다."
       },
       {
@@ -926,12 +926,12 @@
         "key": "5",
         "label": "⑤",
         "text": "국세징수법상 공매",
-        "answer": "X",
+        "answer": "O",
         "explanation": "국세징수법상 공매에 의한 소유권 취득은 등기를 하여야 효력이 생깁니다. 따라서 등기 없이 물권변동 효력이 생기는 사유가 아닙니다."
       }
     ],
     "combo_choices": [],
-    "explanation_summary": "정답은 ⑤입니다.",
+    "explanation_summary": "정답은 ③입니다.",
     "source": "제36회 1차 1교시"
   },
   {
@@ -941,7 +941,7 @@
     "question_no": 58,
     "stem": "甲이 乙로부터 乙 소유의 X건물에 대하여 전세권을 설정받은 경우에 관한 설명으로 틀린 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
-    "correct_choice": 4,
+    "correct_choice": 1,
     "category": "물권변동",
     "subcategory": "등기",
     "items": [
@@ -949,7 +949,7 @@
         "key": "1",
         "label": "①",
         "text": "甲이 X건물을 전세권설정계약으로 정한 용법에 따라 사용하지 않더라도 이를 이유로 乙은 전세권소멸을 청구할 수 없다.",
-        "answer": "O",
+        "answer": "X",
         "explanation": "전세권자가 용법에 따르지 않아도 전세권소멸청구를 할 수 없으며, 손해배상 등 별도 구제를 받을 수 있습니다."
       },
       {
@@ -970,7 +970,7 @@
         "key": "4",
         "label": "④",
         "text": "乙이 전세권 존속 중에 丙에게 X건물을 양도한 경우, 丙은 전세권의 존속기간 만료 시 甲에게 전세금반환의무를 진다.",
-        "answer": "X",
+        "answer": "O",
         "explanation": "乙이 丙에게 건물을 양도한 경우, 丙은 전세권설정자의 지위를 승계하여 전세권 존속기간 만료 시 전세권자 甲에게 전세금반환의무를 부담합니다. 그러나 '甲에게'가 아니라 '乙에게' 반환한다고 한 것이거나, 만료 시에만 부담한다는 취지가 문제라면, 양수인 丙은 양도 즉시 임대인 지위를 승계하므로 '만료 시 甲에게'라는 표현 자체가 부정확합니다. 본 문제의 틀린 설명은 ④입니다."
       },
       {
@@ -982,7 +982,7 @@
       }
     ],
     "combo_choices": [],
-    "explanation_summary": "정답은 ④입니다.",
+    "explanation_summary": "정답은 ①입니다.",
     "source": "제36회 1차 1교시"
   },
   {
@@ -992,7 +992,7 @@
     "question_no": 59,
     "stem": "지상권에 관한 설명으로 옳은 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "correct",
-    "correct_choice": 3,
+    "correct_choice": 2,
     "category": "용익물권",
     "subcategory": "지상권",
     "items": [
@@ -1007,14 +1007,14 @@
         "key": "2",
         "label": "②",
         "text": "담보목적의 지상권이 설정된 경우, 피담보채권이 변제로 소멸하면 그 지상권도 소멸한다.",
-        "answer": "X",
+        "answer": "O",
         "explanation": "담보목적 지상권은 피담보채권이 변제로 소멸하면 지상권도 소멸합니다(민법 제281조)."
       },
       {
         "key": "3",
         "label": "③",
         "text": "타인 소유의 기존 연와조 건물을 사용하기 위하여 설정하는 지상권의 최단존속기간은 30년이다.",
-        "answer": "O",
+        "answer": "X",
         "explanation": "타인 소유의 기존 연와조 건물을 사용하기 위한 지상권의 최단 존속기간은 30년입니다(민법 제301조 제2항). 이 설명은 옳습니다."
       },
       {
@@ -1033,7 +1033,7 @@
       }
     ],
     "combo_choices": [],
-    "explanation_summary": "정답은 ③입니다.",
+    "explanation_summary": "정답은 ②입니다.",
     "source": "제36회 1차 1교시"
   },
   {
@@ -1094,7 +1094,7 @@
     "question_no": 61,
     "stem": "관습법상 법정지상권에 관한 설명으로 옳은 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "correct",
-    "correct_choice": 2,
+    "correct_choice": 4,
     "category": "용익물권",
     "subcategory": "지상권",
     "items": [
@@ -1109,7 +1109,7 @@
         "key": "2",
         "label": "②",
         "text": "가설건축물에 대해서는 원칙적으로 법정지상권이 인정될 수 있다.",
-        "answer": "O",
+        "answer": "X",
         "explanation": "가설건축물에 대해서도 원칙적으로 법정지상권이 인정될 수 있습니다. 다만 일시사용 목적의 가설건축물은 예외입니다(대판 2003다26051). 이 설명은 옳습니다."
       },
       {
@@ -1123,7 +1123,7 @@
         "key": "4",
         "label": "④",
         "text": "법정지상권자는 그 지상권등기 없이도 지상권을 취득할 당시의 토지소유자로부터 그 토지를 양수한 제3자에게 대항할 수 있다.",
-        "answer": "X",
+        "answer": "O",
         "explanation": "법정지상권자는 지상권등기 없이도 토지를 양수한 제3자에게 대항할 수 있습니다(민법 제369조)."
       },
       {
@@ -1135,7 +1135,7 @@
       }
     ],
     "combo_choices": [],
-    "explanation_summary": "정답은 ②입니다.",
+    "explanation_summary": "정답은 ④입니다.",
     "source": "제36회 1차 1교시"
   },
   {
@@ -1247,7 +1247,7 @@
     "question_no": 64,
     "stem": "민법상 유치권에 관한 설명으로 틀린 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
-    "correct_choice": 4,
+    "correct_choice": 5,
     "category": "용익물권",
     "subcategory": "전세권",
     "items": [
@@ -1276,19 +1276,19 @@
         "key": "4",
         "label": "④",
         "text": "복수의 유치물은 그 각 부분으로써 피담보채권의 전부를 담보한다.",
-        "answer": "X",
+        "answer": "O",
         "explanation": "복수의 유치물이 있는 경우 그 각 부분으로써 피담보채권의 전부를 담보하는 것이 아니라, 유치물 전체가 피담보채권 전액을 담보합니다(민법 제324조). '각 부분으로써 전부를 담보'한다는 설명은 틀립니다."
       },
       {
         "key": "5",
         "label": "⑤",
         "text": "유치권자가 동일채권을 담보하기 위한 복수의 유치물 중 일부를 채무자의 승낙없이 타인에게 대여한 경우, 특별한 사정이 없는 한 채무자는 유치물 전부에 대한 유치권의 소멸을 청구할 수 있다.",
-        "answer": "O",
+        "answer": "X",
         "explanation": "유치물 일부를 무단 대여한 경우 채무자는 유치권 전부의 소멸을 청구할 수 있습니다."
       }
     ],
     "combo_choices": [],
-    "explanation_summary": "정답은 ④입니다.",
+    "explanation_summary": "정답은 ⑤입니다.",
     "source": "제36회 1차 1교시"
   },
   {
@@ -1298,7 +1298,7 @@
     "question_no": 65,
     "stem": "甲은 자신의 토지를 乙에게 매도하고 중도금까지 수령하였으나 그 토지가 재결수용되어 乙에게 소유권을 이전할 수 없게 되었다. 이에 관한 설명으로 옳은 것을 모두 고른 것은? (다툼이 있으면 판례에 따름)",
     "question_type": "composite",
-    "correct_choice": 3,
+    "correct_choice": 1,
     "category": "소유권",
     "subcategory": "소유권·공유",
     "items": [
@@ -1313,7 +1313,7 @@
         "key": "ㄴ",
         "label": "ㄴ.",
         "text": "乙은 이행불능을 이유로 매매계약을 해제할 수 있다.",
-        "answer": "O",
+        "answer": "X",
         "explanation": "재결수용으로 매도인이 소유권을 이전할 수 없게 된 경우 이행불능이 되므로, 매수인은 매매계약을 해제할 수 있습니다. (옳음)"
       },
       {
@@ -1329,7 +1329,7 @@
         "no": 1,
         "label": "①",
         "text": "ㄱ",
-        "is_correct": false
+        "is_correct": true
       },
       {
         "no": 2,
@@ -1341,7 +1341,7 @@
         "no": 3,
         "label": "③",
         "text": "ㄱ, ㄴ",
-        "is_correct": true
+        "is_correct": false
       },
       {
         "no": 4,
@@ -1356,7 +1356,7 @@
         "is_correct": false
       }
     ],
-    "explanation_summary": "정답은 ③입니다.",
+    "explanation_summary": "정답은 ①입니다.",
     "source": "제36회 1차 1교시"
   },
   {
@@ -1366,7 +1366,7 @@
     "question_no": 66,
     "stem": "계약의 성립에 관한 설명으로 옳은 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "correct",
-    "correct_choice": 5,
+    "correct_choice": 3,
     "category": "법률행위",
     "subcategory": "의사표시",
     "items": [
@@ -1388,7 +1388,7 @@
         "key": "3",
         "label": "③",
         "text": "합의해제를 청약한 경우, 그 청약에 대해 조건을 붙여 승낙한 때에는 그 청약은 실효된다.",
-        "answer": "X",
+        "answer": "O",
         "explanation": "합의해제 청약에 조건을 붙여 승낙하면 새로운 청약으로서 원 청약은 실효됩니다(민법 제534조)."
       },
       {
@@ -1402,12 +1402,12 @@
         "key": "5",
         "label": "⑤",
         "text": "매매의 일방예약이 성립하기 위하여 본계약의 요소가 되는 내용들이 확정되어 있거나 확정할 수 있어야 하는 것은 아니다.",
-        "answer": "O",
+        "answer": "X",
         "explanation": "매매의 일방예약은 본계약의 요소가 확정되어 있거나 확정할 수 있어야 하지만, 모든 요소가 확정될 필요는 없습니다. '확정할 수 있어야 하는 것은 아니다'는 설명은 옳습니다."
       }
     ],
     "combo_choices": [],
-    "explanation_summary": "정답은 ⑤입니다.",
+    "explanation_summary": "정답은 ③입니다.",
     "source": "제36회 1차 1교시"
   },
   {
@@ -1417,7 +1417,7 @@
     "question_no": 67,
     "stem": "동시이행관계가 인정되지 않는 것을 모두 고른 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "composite",
-    "correct_choice": 2,
+    "correct_choice": 5,
     "category": "임대차",
     "subcategory": "임대차",
     "items": [
@@ -1425,14 +1425,14 @@
         "key": "ㄱ",
         "label": "ㄱ.",
         "text": "담보 목적으로 마쳐진 채권자 명의의 소유권이전등기 말소의무와 피담보채무의 변제의무",
-        "answer": "X",
+        "answer": "O",
         "explanation": "담보 목적 소유권이전등기 말소의무와 피담보채무의 변제의무는 동시이행관계에 있으며, 변제와 말소를 함께 이행할 수 있습니다. (틀림)"
       },
       {
         "key": "ㄴ",
         "label": "ㄴ.",
         "text": "임차인의 임차목적물 반환의무와 임대인의 권리금 회수 방해로 인한 상가건물 임대차보호법에 따른 손해배상의무",
-        "answer": "X",
+        "answer": "O",
         "explanation": "임차목적물 반환의무와 권리금 회수 방해로 인한 손해배상의무는 서로 다른 법률관계에서 발생하나, 상가임대차보호법상 손해배상과 반환은 동시이행으로 처리될 수 있습니다. (틀림)"
       },
       {
@@ -1454,7 +1454,7 @@
         "no": 2,
         "label": "②",
         "text": "ㄷ",
-        "is_correct": true
+        "is_correct": false
       },
       {
         "no": 3,
@@ -1472,10 +1472,10 @@
         "no": 5,
         "label": "⑤",
         "text": "ㄱ, ㄴ, ㄷ",
-        "is_correct": false
+        "is_correct": true
       }
     ],
-    "explanation_summary": "정답은 ②입니다.",
+    "explanation_summary": "정답은 ⑤입니다.",
     "source": "제36회 1차 1교시"
   },
   {
@@ -1485,7 +1485,7 @@
     "question_no": 68,
     "stem": "부동산 매매계약이 합의해제된 경우에 관한 설명으로 틀린 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
-    "correct_choice": 1,
+    "correct_choice": 4,
     "category": "법률행위",
     "subcategory": "의사표시",
     "items": [
@@ -1493,7 +1493,7 @@
         "key": "1",
         "label": "①",
         "text": "매매계약에 기해 이전된 소유권은 등기 없이도 당연히 복귀한다.",
-        "answer": "X",
+        "answer": "O",
         "explanation": "부동산 매매가 합의해제되어도 소유권은 등기 없이 당연히 복귀하지 않습니다. 합의해제는 채권·채무 관계의 소멸이며, 물권 복귀를 위해서는 원상회복(소유권이전등기 등)이 필요합니다. 이 설명은 틀립니다."
       },
       {
@@ -1514,7 +1514,7 @@
         "key": "4",
         "label": "④",
         "text": "합의해제를 무효화시키고 해제된 매매계약을 부활시키는 약정은 원칙적으로 당사자 사이에서도 그 효력이 없다.",
-        "answer": "O",
+        "answer": "X",
         "explanation": "합의해제를 무효화하고 계약을 부활시키는 약정은 원칙적으로 효력이 없습니다."
       },
       {
@@ -1526,7 +1526,7 @@
       }
     ],
     "combo_choices": [],
-    "explanation_summary": "정답은 ①입니다.",
+    "explanation_summary": "정답은 ④입니다.",
     "source": "제36회 1차 1교시"
   },
   {
@@ -1604,7 +1604,7 @@
     "question_no": 70,
     "stem": "민법상 매도인의 담보책임에 관한 설명으로 옳은 것은?",
     "question_type": "correct",
-    "correct_choice": 5,
+    "correct_choice": 4,
     "category": "매매",
     "subcategory": "매매",
     "items": [
@@ -1633,19 +1633,19 @@
         "key": "4",
         "label": "④",
         "text": "매매의 목적물의 일부가 멸실된 경우, 선의의 매수인은 대금의 감액을 청구할 수 있다.",
-        "answer": "X",
+        "answer": "O",
         "explanation": "목적물 일부 멸실 시 선의의 매수인은 대금 감액을 청구할 수 있습니다."
       },
       {
         "key": "5",
         "label": "⑤",
         "text": "변제기에 도달하지 않은 채권의 매도인이 채무자의 자력을 담보한 때에는 매매계약 당시의 자력을 담보한 것으로 추정한다.",
-        "answer": "O",
+        "answer": "X",
         "explanation": "변제기 도달 전 채권 매도인이 채무자의 자력을 담보한 때에는 매매 당시의 자력을 담보한 것으로 추정합니다(민법 제576조). 이 설명은 옳습니다."
       }
     ],
     "combo_choices": [],
-    "explanation_summary": "정답은 ⑤입니다.",
+    "explanation_summary": "정답은 ④입니다.",
     "source": "제36회 1차 1교시"
   },
   {
@@ -1791,7 +1791,7 @@
     "question_no": 73,
     "stem": "甲이 건물소유를 목적으로 乙로부터 乙 소유의 X토지를 기간의 정함이 없이 임차하는 계약을 체결하고 그 지상에 Y건물을 신축한 후, 그 임대차계약이 乙의 해지통고로 종료되었다. 이에 관한 설명으로 옳은 것을 모두 고른 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "composite",
-    "correct_choice": 3,
+    "correct_choice": 2,
     "category": "임대차",
     "subcategory": "임대차",
     "items": [
@@ -1799,21 +1799,21 @@
         "key": "ㄱ",
         "label": "ㄱ.",
         "text": "Y건물이 무허가건물이라면 원칙적으로 지상물매수청구의 대상이 될 수 없다.",
-        "answer": "O",
+        "answer": "X",
         "explanation": "무허가건물은 원칙적으로 지상물매수청구권의 대상이 될 수 없습니다(대판 2003다26051). (옳음)"
       },
       {
         "key": "ㄴ",
         "label": "ㄴ.",
         "text": "甲은 계약갱신청구를 하지 않으면 지상물매수청구권을 행사할 수 없다.",
-        "answer": "O",
+        "answer": "X",
         "explanation": "기간의 정함이 없는 임대차가 해지통고로 종료된 경우, 임차인은 계약갱신청구를 하지 않아도 지상물매수청구권을 행사할 수 있다는 설명과 달리, 본 문제에서는 갱신청구를 하지 않으면 매수청구권을 행사할 수 없다고 보는 것이 옳습니다. (옳음)"
       },
       {
         "key": "ㄷ",
         "label": "ㄷ.",
         "text": "甲과 乙이 임대차 종료 전에 지상물매수청구권의 대상인 Y건물을 친기하기로 한 약정은 특별한 사정이 없는 한 무효이다.",
-        "answer": "X",
+        "answer": "O",
         "explanation": "지상물매수청구권 대상 건물을 임대차 종료 전에 철거하기로 한 약정은 무효입니다(민법 제627조). (틀림)"
       }
     ],
@@ -1828,13 +1828,13 @@
         "no": 2,
         "label": "②",
         "text": "ㄷ",
-        "is_correct": false
+        "is_correct": true
       },
       {
         "no": 3,
         "label": "③",
         "text": "ㄱ, ㄴ",
-        "is_correct": true
+        "is_correct": false
       },
       {
         "no": 4,
@@ -1849,7 +1849,7 @@
         "is_correct": false
       }
     ],
-    "explanation_summary": "정답은 ③입니다.",
+    "explanation_summary": "정답은 ②입니다.",
     "source": "제36회 1차 1교시"
   },
   {
@@ -1910,7 +1910,7 @@
     "question_no": 75,
     "stem": "甲이 2023. 6. 1. 乙로부터 乙 소유의 X주택을 보증금 2억 원, 기간은 1년으로 정하여 임차하는 계약을 체결한 경우, 주택임대차보호법에 관한 설명으로 옳은 것을 모두 고른 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "composite",
-    "correct_choice": 4,
+    "correct_choice": 5,
     "category": "민사특별법",
     "subcategory": "주택임대차보호법",
     "items": [
@@ -1918,7 +1918,7 @@
         "key": "ㄱ",
         "label": "ㄱ.",
         "text": "1년의 임대차기간이 만료된 경우, 甲은 乙에게 보증금 2억 원의 반환을 청구할 수 있다.",
-        "answer": "X",
+        "answer": "O",
         "explanation": "1년 임대차기간이 만료되면 甲은 보증금 반환을 청구할 수 있으나, 임대인이 갱신거절 등을 하지 않으면 묵시적 갱신될 수 있어 단순 만료만으로 반환청구권이 즉시 확정되지는 않을 수 있습니다. (틀림)"
       },
       {
@@ -1959,16 +1959,16 @@
         "no": 4,
         "label": "④",
         "text": "ㄴ, ㄷ",
-        "is_correct": true
+        "is_correct": false
       },
       {
         "no": 5,
         "label": "⑤",
         "text": "ㄱ, ㄴ, ㄷ",
-        "is_correct": false
+        "is_correct": true
       }
     ],
-    "explanation_summary": "정답은 ④입니다.",
+    "explanation_summary": "정답은 ⑤입니다.",
     "source": "제36회 1차 1교시"
   },
   {
@@ -2029,7 +2029,7 @@
     "question_no": 77,
     "stem": "甲은 2024. 5. 1. 乙에게 1억 원을 변제기는 1년 후, 이자는 연 5%로 정하여 대여하면서 그 대여금채권과 乙에 대한 한 물품대금채권 1억 원을 담보하기 위해 담보가등기약정을 체결하고, 이를 위해 乙 소유의 X토지(계약 당시 시가 2억 원)에 甲 명의로 가등기를 마쳤다. 그 후 乙은 변제기가 지난 2025. 5. 7. 양 채권 중 물품대금채무만 전액 변제하였다. 이에 관한 설명으로 옳은 것을 모두 고른 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "composite",
-    "correct_choice": 5,
+    "correct_choice": 3,
     "category": "민사특별법",
     "subcategory": "가등기담보",
     "items": [
@@ -2051,7 +2051,7 @@
         "key": "ㄷ",
         "label": "ㄷ.",
         "text": "甲이 청산절차를 거치지 않고 X토지에 관하여 2025. 6. 15. 본등기를 마친 다음, 선의의 丙에게 2025. 8. 1. 소유권이전등기를 마친 경우, 2025. 8. 1.부터 甲 명의의 본등기도 확정적으로 유효해진다.",
-        "answer": "O",
+        "answer": "X",
         "explanation": "甲이 청산절차 없이 본등기를 마친 후 선의의 丙에게 소유권을 이전한 경우, 丙은 선의로 소유권을 취득하므로 甲 명의의 본등기는 丙에 대하여 무효가 됩니다. 甲·乙 사이의 가등기담보관계에서 丙 취득 이후 甲 명의 본등기의 효력 문제는 다투어질 수 있으나, 본 문제에서는 ㄷ도 옳은 설명으로 봅니다. (옳음)"
       }
     ],
@@ -2072,7 +2072,7 @@
         "no": 3,
         "label": "③",
         "text": "ㄱ, ㄴ",
-        "is_correct": false
+        "is_correct": true
       },
       {
         "no": 4,
@@ -2084,10 +2084,10 @@
         "no": 5,
         "label": "⑤",
         "text": "ㄱ, ㄴ, ㄷ",
-        "is_correct": true
+        "is_correct": false
       }
     ],
-    "explanation_summary": "정답은 ⑤입니다.",
+    "explanation_summary": "정답은 ③입니다.",
     "source": "제36회 1차 1교시"
   },
   {
@@ -2148,7 +2148,7 @@
     "question_no": 79,
     "stem": "甲이 그 소유의 X토지에 관하여 2025. 5. 3. 친구 乙과의 명의신탁약정에 따라 乙 명의로 소유권이전등기를 마쳤다. 이에 관한 설명으로 옳은 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "correct",
-    "correct_choice": 5,
+    "correct_choice": 1,
     "category": "물권변동",
     "subcategory": "등기",
     "items": [
@@ -2156,7 +2156,7 @@
         "key": "1",
         "label": "①",
         "text": "甲은 乙에게 X토지에 관하여 부당이득을 원인으로 한 소유권이전등기를 청구할 수 없다.",
-        "answer": "X",
+        "answer": "O",
         "explanation": "명의신탁약정은 무효이므로 부당이득 원인으로 이전등기를 청구할 수 없습니다."
       },
       {
@@ -2184,12 +2184,12 @@
         "key": "5",
         "label": "⑤",
         "text": "만약 甲이 乙과 사이에 乙 명의의 X토지를 매수하면서 대외관계에서 甲을 위해 그 등기명의를 乙이 보유하기로 약정한 경우, 甲과 乙 사이에 명의신탁관계가 성립할 수 없다.",
-        "answer": "O",
+        "answer": "X",
         "explanation": "매매 형태로 명의만 乙이 보유하기로 한 경우에도 실질적으로 명의신탁관계가 성립할 수 없다는 설명은 옳습니다(부동산실명법)."
       }
     ],
     "combo_choices": [],
-    "explanation_summary": "정답은 ⑤입니다.",
+    "explanation_summary": "정답은 ①입니다.",
     "source": "제36회 1차 1교시"
   },
   {
@@ -2199,7 +2199,7 @@
     "question_no": 80,
     "stem": "甲은 상품판매를 위해 2025. 5. 1. 乙로부터 부산광역시 소재 乙 소유의 X상가를 보증금 6억 원, 월 차임 100만원으로 임차하는 계약을 체결하였다. 계약 당일 甲은 乙에게 보증금을 지급하고 X상가를 인도받아 사업자등록과 확정일자까지 마쳤다. 위 계약에 적용되는 상가건물 임대차보호법상의 규정에 해당하는 것을 모두 고른 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "composite",
-    "correct_choice": 5,
+    "correct_choice": 2,
     "category": "임대차",
     "subcategory": "임대차",
     "items": [
@@ -2207,14 +2207,14 @@
         "key": "ㄱ",
         "label": "ㄱ.",
         "text": "임차인의 보증금에 대한 우선변제권에 관한 규정",
-        "answer": "O",
+        "answer": "X",
         "explanation": "상가건물 임대차보호법상 임차인 보증금 우선변제권 규정이 적용됩니다. (옳음)"
       },
       {
         "key": "ㄴ",
         "label": "ㄴ.",
         "text": "임차인의 임차권등기명령에 관한 규정",
-        "answer": "O",
+        "answer": "X",
         "explanation": "임차권등기명령에 관한 규정도 상가건물 임대차보호법에 있습니다. (옳음)"
       },
       {
@@ -2236,7 +2236,7 @@
         "no": 2,
         "label": "②",
         "text": "ㄷ",
-        "is_correct": false
+        "is_correct": true
       },
       {
         "no": 3,
@@ -2254,10 +2254,10 @@
         "no": 5,
         "label": "⑤",
         "text": "ㄱ, ㄴ, ㄷ",
-        "is_correct": true
+        "is_correct": false
       }
     ],
-    "explanation_summary": "정답은 ⑤입니다.",
+    "explanation_summary": "정답은 ②입니다.",
     "source": "제36회 1차 1교시"
   }
 ]
