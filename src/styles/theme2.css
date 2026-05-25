@@ -38,8 +38,8 @@ html[data-design-theme='theme2'] #root .bg-slate-900\/90 {
   background-color: var(--color-fog) !important;
 }
 
-html[data-design-theme='theme2'] #root .bg-white,
-html[data-design-theme='theme2'] #root .bg-white\/80 {
+html[data-design-theme='theme2'] #root .bg-white:not(.ox-btn-o):not(.ox-btn-x):not(.ox-btn-o-active):not(.ox-btn-x-active),
+html[data-design-theme='theme2'] #root .bg-white\/80:not(.ox-btn-o):not(.ox-btn-x) {
   background-color: var(--color-canvas) !important;
 }
 

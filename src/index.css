@@ -84,17 +84,53 @@
   .ox-btn {
     @apply w-8 h-8 rounded-md text-xs font-bold border-2 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
   }
+  /* bg-white @apply 시 html.dark 변형이 생겨 테마 CSS와 충돌 → 배경은 직접 지정 */
   .ox-btn-o {
-    @apply border-blue-200 text-blue-600 bg-white hover:bg-blue-50 enabled:active:scale-95;
+    @apply border-blue-200 text-blue-600 hover:bg-blue-50 enabled:active:scale-95;
+    background-color: #ffffff;
   }
   .ox-btn-o-active {
-    @apply border-blue-600 bg-blue-500 text-white shadow-sm;
+    @apply border-blue-600 text-white shadow-sm;
+    background-color: rgb(59 130 246);
   }
   .ox-btn-x {
-    @apply border-red-200 text-red-600 bg-white hover:bg-red-50 enabled:active:scale-95;
+    @apply border-red-200 text-red-600 hover:bg-red-50 enabled:active:scale-95;
+    background-color: #ffffff;
   }
   .ox-btn-x-active {
-    @apply border-red-600 bg-red-500 text-white shadow-sm;
+    @apply border-red-600 text-white shadow-sm;
+    background-color: rgb(239 68 68);
+  }
+
+  html.dark #root .ox-btn-o-active {
+    background-color: rgb(59 130 246) !important;
+    color: #ffffff !important;
+  }
+  html.dark #root .ox-btn-x-active {
+    background-color: rgb(239 68 68) !important;
+    color: #ffffff !important;
+  }
+
+  html[data-design-theme='theme2'] #root .ox-btn-o-active {
+    background-color: var(--color-ink) !important;
+    border-color: var(--color-terracotta) !important;
+    color: var(--color-canvas) !important;
+  }
+  html[data-design-theme='theme2'] #root .ox-btn-x-active {
+    background-color: #8b2e1f !important;
+    border-color: var(--color-terracotta) !important;
+    color: var(--color-canvas) !important;
+  }
+
+  html[data-design-theme='theme3'] #root .ox-btn-o-active {
+    background-color: var(--color-cofounder-blue) !important;
+    border-color: var(--color-action-azure) !important;
+    color: var(--color-canvas-white) !important;
+  }
+  html[data-design-theme='theme3'] #root .ox-btn-x-active {
+    background-color: #c62828 !important;
+    border-color: #b91c1c !important;
+    color: var(--color-canvas-white) !important;
   }
   .ox-btn-check {
     @apply h-8 px-2 rounded-md text-[10px] font-bold border-2 border-slate-300 text-slate-700 bg-slate-50
