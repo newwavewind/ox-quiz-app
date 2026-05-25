@@ -51,9 +51,7 @@ function IconNotes({ className }) {
 function IconGlossary({ className }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 9.75a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 12.75 17.25 16.5" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18.75h12" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 7.5h13.5M5.25 10.75h13.5M5.25 14h13.5M5.25 17.25h9" />
     </svg>
   )
 }
