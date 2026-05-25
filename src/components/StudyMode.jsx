@@ -381,9 +381,9 @@ export default function StudyMode({
                     </div>
                   </div>
                   {historyOpen && (
-                    <div className="mt-2 pl-8 sm:pl-0 sm:ml-9 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                      <div className="flex items-center justify-between gap-2 mb-2">
-                        <p className="text-xs font-semibold text-slate-700">학습 기록</p>
+                    <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                      <div className="flex items-center justify-between gap-3 mb-2">
+                        <p className="text-xs font-semibold text-slate-700 shrink-0">학습 기록</p>
                         {itemAttempts.length > 0 && onClearItemAttempts && (
                           <button
                             type="button"
@@ -405,13 +405,13 @@ export default function StudyMode({
                           {[...itemAttempts].reverse().map(attempt => (
                             <li
                               key={attempt.at}
-                              className="flex items-center gap-2 text-xs border-b border-slate-200/80 pb-2 last:border-0 last:pb-0"
+                              className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-3 gap-y-0.5 text-xs border-b border-slate-200/80 pb-2 last:border-0 last:pb-0"
                             >
-                              <span className="flex-1 min-w-0 text-slate-600 truncate">
+                              <span className="min-w-0 text-slate-600 truncate text-left">
                                 {formatStudyTime(attempt.at)}
                               </span>
                               <span
-                                className={`shrink-0 font-medium ${
+                                className={`shrink-0 font-medium whitespace-nowrap ${
                                   attempt.correct ? 'text-green-600' : 'text-red-600'
                                 }`}
                               >
@@ -421,7 +421,7 @@ export default function StudyMode({
                                 <button
                                   type="button"
                                   onClick={() => onRemoveItemAttempt(exam.id, item.key, attempt.at)}
-                                  className="shrink-0 text-[11px] font-semibold text-slate-400 hover:text-red-600 px-1"
+                                  className="shrink-0 text-[11px] font-semibold text-slate-400 hover:text-red-600 px-1 whitespace-nowrap"
                                   aria-label={`${formatStudyTime(attempt.at)} 기록 삭제`}
                                 >
                                   삭제

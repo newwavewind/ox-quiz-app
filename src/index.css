@@ -1,5 +1,6 @@
 @import './styles/theme2.css';
 @import './styles/theme3.css';
+@import './styles/theme4.css';
 
 @tailwind base;
 @tailwind components;
@@ -111,15 +112,18 @@
     color: #ffffff !important;
   }
 
+  /* 테마2: 잉크/진빨강 대신 Warm Mist·테라코타 톤 */
   html[data-design-theme='theme2'] #root .ox-btn-o-active {
-    background-color: var(--color-ink) !important;
+    background-color: var(--color-warm-mist) !important;
     border-color: var(--color-terracotta) !important;
-    color: var(--color-canvas) !important;
+    color: var(--color-terracotta) !important;
+    box-shadow: none !important;
   }
   html[data-design-theme='theme2'] #root .ox-btn-x-active {
-    background-color: #8b2e1f !important;
-    border-color: var(--color-terracotta) !important;
-    color: var(--color-canvas) !important;
+    background-color: #f5e4dc !important;
+    border-color: #c49a8a !important;
+    color: #8f5a4a !important;
+    box-shadow: none !important;
   }
 
   html[data-design-theme='theme3'] #root .ox-btn-o-active {
@@ -131,6 +135,19 @@
     background-color: #c62828 !important;
     border-color: #b91c1c !important;
     color: var(--color-canvas-white) !important;
+  }
+
+  html[data-design-theme='theme4'] #root .ox-btn-o-active {
+    background-color: var(--color-sage-mark) !important;
+    border-color: var(--color-sage-mark) !important;
+    color: var(--color-white-canvas) !important;
+    box-shadow: var(--shadow-sm) !important;
+  }
+  html[data-design-theme='theme4'] #root .ox-btn-x-active {
+    background-color: var(--color-coal) !important;
+    border-color: var(--color-coal) !important;
+    color: var(--color-white-canvas) !important;
+    box-shadow: var(--shadow-sm) !important;
   }
   .ox-btn-check {
     @apply h-8 px-2 rounded-md text-[10px] font-bold border-2 border-slate-300 text-slate-700 bg-slate-50

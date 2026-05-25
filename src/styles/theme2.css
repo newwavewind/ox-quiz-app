@@ -193,3 +193,21 @@ html[data-design-theme='theme2'] #root .bg-slate-200 {
 html[data-design-theme='theme2'] #root nav .bg-slate-100\/90 {
   background-color: var(--color-warm-mist) !important;
 }
+
+/* Study O/X — 기본(비선택)도 웜 톤 */
+html[data-design-theme='theme2'] #root .ox-btn-o:not(.ox-btn-o-active) {
+  background-color: var(--color-canvas) !important;
+  border-color: rgba(93, 42, 26, 0.28) !important;
+  color: var(--color-muted-stone) !important;
+}
+
+html[data-design-theme='theme2'] #root .ox-btn-x:not(.ox-btn-x-active) {
+  background-color: var(--color-canvas) !important;
+  border-color: rgba(93, 42, 26, 0.22) !important;
+  color: var(--color-muted-stone) !important;
+}
+
+html[data-design-theme='theme2'] #root .ox-btn-o:not(.ox-btn-o-active):hover,
+html[data-design-theme='theme2'] #root .ox-btn-x:not(.ox-btn-x-active):hover {
+  background-color: var(--color-warm-mist) !important;
+}

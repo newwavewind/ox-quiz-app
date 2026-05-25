@@ -39,7 +39,7 @@ export default function ThemePickerMenu({ designTheme, onChange }) {
         <div
           role="listbox"
           aria-label="디자인 테마"
-          className="absolute right-0 top-full mt-1 z-50 min-w-[12.5rem] rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-lg py-1 overflow-hidden"
+          className="absolute right-0 top-full mt-1 z-50 min-w-[13rem] rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-lg py-1 overflow-hidden"
         >
           {DESIGN_THEME_OPTIONS.map(opt => (
             <button

@@ -1,0 +1,270 @@
+/* Mintlify — design3.md (테마4) */
+
+html[data-design-theme='theme4'] {
+  --color-ink: #000000;
+  --color-white-canvas: #ffffff;
+  --color-coal: #08090a;
+  --color-platinum: #f2f2f2;
+  --color-steel: #dddddd;
+  --color-sage-mark: #0c8c5e;
+  --color-emerald-glow: #00dc8d;
+  --color-deep-cobalt: #0052ff;
+  --shadow-sm: rgba(0, 0, 0, 0.03) 0px 2px 4px 0px;
+  --shadow-elevated: rgba(255, 255, 255, 0.05) 0px 2px 4px 0px;
+  --radius-card: 16px;
+  --radius-tag: 4px;
+  --radius-pill: 9999px;
+}
+
+html[data-design-theme='theme4'] body {
+  background-color: var(--color-platinum) !important;
+  color: var(--color-ink) !important;
+  font-family: 'Noto Sans KR', system-ui, -apple-system, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+html[data-design-theme='theme4'] #root h1,
+html[data-design-theme='theme4'] #root h2 {
+  color: var(--color-coal);
+  letter-spacing: -0.02em;
+}
+
+/* Surfaces */
+html[data-design-theme='theme4'] #root .bg-slate-50,
+html[data-design-theme='theme4'] #root .bg-slate-50\/90,
+html[data-design-theme='theme4'] #root .bg-slate-900,
+html[data-design-theme='theme4'] #root .bg-slate-900\/90 {
+  background-color: var(--color-platinum) !important;
+}
+
+html[data-design-theme='theme4'] #root .bg-white:not(.ox-btn-o):not(.ox-btn-x):not(.ox-btn-o-active):not(.ox-btn-x-active),
+html[data-design-theme='theme4'] #root .bg-white\/80:not(.ox-btn-o):not(.ox-btn-x) {
+  background-color: var(--color-white-canvas) !important;
+}
+
+html[data-design-theme='theme4'] #root .bg-slate-100,
+html[data-design-theme='theme4'] #root .bg-slate-100\/90,
+html[data-design-theme='theme4'] #root .bg-slate-50 {
+  background-color: var(--color-platinum) !important;
+}
+
+html[data-design-theme='theme4'] #root .bg-slate-800,
+html[data-design-theme='theme4'] #root .bg-slate-700,
+html[data-design-theme='theme4'] #root .bg-slate-900 {
+  background-color: var(--color-sage-mark) !important;
+  color: var(--color-white-canvas) !important;
+}
+
+/* Text */
+html[data-design-theme='theme4'] #root .text-slate-800,
+html[data-design-theme='theme4'] #root .text-slate-900,
+html[data-design-theme='theme4'] #root .text-slate-700 {
+  color: var(--color-coal) !important;
+}
+
+html[data-design-theme='theme4'] #root .text-slate-600,
+html[data-design-theme='theme4'] #root .text-slate-500 {
+  color: var(--color-ink) !important;
+  opacity: 0.72;
+}
+
+html[data-design-theme='theme4'] #root .text-slate-400 {
+  color: var(--color-ink) !important;
+  opacity: 0.5;
+}
+
+html[data-design-theme='theme4'] #root .text-slate-100,
+html[data-design-theme='theme4'] #root .text-white {
+  color: var(--color-white-canvas) !important;
+}
+
+/* Borders */
+html[data-design-theme='theme4'] #root .border-slate-100,
+html[data-design-theme='theme4'] #root .border-slate-200,
+html[data-design-theme='theme4'] #root .border-slate-300 {
+  border-color: var(--color-steel) !important;
+}
+
+html[data-design-theme='theme4'] #root .border-slate-700,
+html[data-design-theme='theme4'] #root .border-slate-800 {
+  border-color: var(--color-sage-mark) !important;
+}
+
+/* Cards */
+html[data-design-theme='theme4'] #root .rounded-2xl.border.bg-white,
+html[data-design-theme='theme4'] #root .rounded-xl.border.bg-white,
+html[data-design-theme='theme4'] #root .card {
+  border-radius: var(--radius-card) !important;
+  box-shadow: var(--shadow-sm) !important;
+  border-color: var(--color-steel) !important;
+}
+
+html[data-design-theme='theme4'] #root .rounded-xl:not(.ox-btn):not(.ox-btn-o):not(.ox-btn-x),
+html[data-design-theme='theme4'] #root .rounded-2xl:not(.ox-btn) {
+  border-radius: var(--radius-card);
+}
+
+/* Primary CTA — Sage Mark, pill */
+html[data-design-theme='theme4'] #root button.bg-slate-800,
+html[data-design-theme='theme4'] #root .bg-slate-800.text-white {
+  background-color: var(--color-sage-mark) !important;
+  color: var(--color-white-canvas) !important;
+  border-radius: var(--radius-pill) !important;
+  border: 1px solid var(--color-sage-mark) !important;
+  box-shadow: var(--shadow-sm);
+}
+
+html[data-design-theme='theme4'] #root button.hover\:bg-slate-700:hover,
+html[data-design-theme='theme4'] #root .hover\:bg-slate-700:hover {
+  background-color: #0a7550 !important;
+}
+
+/* Outline / ghost buttons */
+html[data-design-theme='theme4'] #root button.border.border-slate-200,
+html[data-design-theme='theme4'] #root button.border.border-slate-300 {
+  border-color: var(--color-ink) !important;
+  border-radius: var(--radius-tag) !important;
+  color: var(--color-ink) !important;
+  background-color: transparent !important;
+}
+
+/* Community lime → sage */
+html[data-design-theme='theme4'] #root .bg-lime-400,
+html[data-design-theme='theme4'] #root .bg-lime-300 {
+  background-color: var(--color-sage-mark) !important;
+  color: var(--color-white-canvas) !important;
+  border-radius: var(--radius-pill) !important;
+}
+
+html[data-design-theme='theme4'] #root .border-lime-300,
+html[data-design-theme='theme4'] #root .border-lime-400,
+html[data-design-theme='theme4'] #root .border-lime-500 {
+  border-color: var(--color-sage-mark) !important;
+}
+
+html[data-design-theme='theme4'] #root .text-lime-700,
+html[data-design-theme='theme4'] #root .text-lime-800,
+html[data-design-theme='theme4'] #root .text-emerald-700,
+html[data-design-theme='theme4'] #root .text-emerald-900 {
+  color: var(--color-sage-mark) !important;
+}
+
+html[data-design-theme='theme4'] #root .bg-emerald-50 {
+  background-color: rgba(12, 140, 94, 0.08) !important;
+}
+
+html[data-design-theme='theme4'] #root .bg-amber-50 {
+  background-color: var(--color-platinum) !important;
+}
+
+html[data-design-theme='theme4'] #root .border-emerald-200,
+html[data-design-theme='theme4'] #root .border-emerald-300 {
+  border-color: rgba(12, 140, 94, 0.35) !important;
+}
+
+/* Inputs — minimal, 0 radius per design3 */
+html[data-design-theme='theme4'] #root input,
+html[data-design-theme='theme4'] #root textarea,
+html[data-design-theme='theme4'] #root select {
+  background-color: transparent !important;
+  border-radius: 0 !important;
+  border-color: var(--color-steel) !important;
+}
+
+html[data-design-theme='theme4'] #root input:focus,
+html[data-design-theme='theme4'] #root textarea:focus,
+html[data-design-theme='theme4'] #root select:focus {
+  outline: 2px solid var(--color-sage-mark);
+  outline-offset: 1px;
+}
+
+html[data-design-theme='theme4'] #root input::placeholder,
+html[data-design-theme='theme4'] #root textarea::placeholder {
+  color: var(--color-ink) !important;
+  opacity: 0.45;
+}
+
+/* Bottom nav */
+html[data-design-theme='theme4'] #root .bottom-nav-fixed .rounded-2xl {
+  border-radius: var(--radius-card) !important;
+  box-shadow: var(--shadow-sm) !important;
+  border: 1px solid var(--color-steel);
+}
+
+html[data-design-theme='theme4'] #root .bottom-nav-fixed .bg-lime-400,
+html[data-design-theme='theme4'] #root nav .bg-slate-100\/90 {
+  background-color: rgba(12, 140, 94, 0.1) !important;
+  color: var(--color-sage-mark) !important;
+}
+
+html[data-design-theme='theme4'] #root nav .bg-lime-400 {
+  background-color: var(--color-sage-mark) !important;
+  color: var(--color-white-canvas) !important;
+}
+
+/* Study / category */
+html[data-design-theme='theme4'] #root .bg-indigo-50 {
+  background-color: var(--color-white-canvas) !important;
+  box-shadow: var(--shadow-sm);
+  border-color: var(--color-steel) !important;
+}
+
+html[data-design-theme='theme4'] #root .border-indigo-200 {
+  border-color: var(--color-steel) !important;
+}
+
+html[data-design-theme='theme4'] #root .text-indigo-900,
+html[data-design-theme='theme4'] #root .text-indigo-600 {
+  color: var(--color-sage-mark) !important;
+}
+
+html[data-design-theme='theme4'] #root .bg-slate-200 {
+  background-color: rgba(12, 140, 94, 0.1) !important;
+  color: var(--color-sage-mark) !important;
+}
+
+html[data-design-theme='theme4'] #root .bg-slate-700.h-1\.5,
+html[data-design-theme='theme4'] #root .bg-slate-700:not(.ox-btn-check) {
+  background-color: var(--color-sage-mark) !important;
+}
+
+/* Study O/X */
+html[data-design-theme='theme4'] #root .ox-btn-o:not(.ox-btn-o-active) {
+  background-color: var(--color-white-canvas) !important;
+  border-color: var(--color-steel) !important;
+  color: var(--color-sage-mark) !important;
+}
+
+html[data-design-theme='theme4'] #root .ox-btn-x:not(.ox-btn-x-active) {
+  background-color: var(--color-white-canvas) !important;
+  border-color: var(--color-steel) !important;
+  color: var(--color-coal) !important;
+}
+
+html[data-design-theme='theme4'] #root .ox-btn-o:not(.ox-btn-o-active):hover,
+html[data-design-theme='theme4'] #root .ox-btn-x:not(.ox-btn-x-active):hover {
+  background-color: var(--color-platinum) !important;
+}
+
+html[data-design-theme='theme4'] #root .ox-btn-check {
+  border-radius: var(--radius-tag) !important;
+}
+
+html[data-design-theme='theme4'] #root .ox-btn-check:hover:not(:disabled) {
+  background-color: var(--color-sage-mark) !important;
+  border-color: var(--color-sage-mark) !important;
+  color: var(--color-white-canvas) !important;
+}
+
+/* Success green → sage family */
+html[data-design-theme='theme4'] #root .bg-green-600 {
+  background-color: var(--color-sage-mark) !important;
+}
+
+html[data-design-theme='theme4'] #root .text-green-600 {
+  color: var(--color-sage-mark) !important;
+}
+
+html[data-design-theme='theme4'] #root .border-green-300 {
+  border-color: rgba(12, 140, 94, 0.4) !important;
+}

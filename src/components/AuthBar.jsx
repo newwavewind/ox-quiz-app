@@ -10,6 +10,7 @@ import {
   loadProfileNickname,
   saveCommunityNickname,
 } from '../data/supabaseUserState'
+import { isCustomDesignTheme } from '../data/appearanceSettings'
 import SettingsGearButton from './SettingsGearButton'
 import SettingsSheet from './SettingsSheet'
 import ThemePickerMenu from './ThemePickerMenu'
@@ -74,7 +75,7 @@ export default function AuthBar({ appearance, onAppearanceChange }) {
     onAppearanceChange({
       ...appearance,
       designTheme: next,
-      theme: next === 'theme2' || next === 'theme3' ? 'light' : appearance.theme,
+      theme: isCustomDesignTheme(next) ? 'light' : appearance.theme,
     })
   }
 

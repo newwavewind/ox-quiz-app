@@ -9,7 +9,10 @@ export const DESIGN_THEME_OPTIONS = [
   { value: 'theme1', label: '테마1', description: '기본 (슬레이트)' },
   { value: 'theme2', label: '테마2', description: 'Steep · 웜 캔버스' },
   { value: 'theme3', label: '테마3', description: 'GIC · 나이트 스카이' },
+  { value: 'theme4', label: '테마4', description: 'Mintlify · 세이지' },
 ]
+
+const CUSTOM_DESIGN_THEMES = new Set(['theme2', 'theme3', 'theme4'])
 
 export const FONT_OPTIONS = [
   { value: 'system', label: '시스템 기본' },
@@ -32,13 +35,11 @@ export const DEFAULT_APPEARANCE = {
 }
 
 function normalizeDesignTheme(value) {
-  if (value === 'theme2') return 'theme2'
-  if (value === 'theme3') return 'theme3'
-  return 'theme1'
+  return CUSTOM_DESIGN_THEMES.has(value) ? value : 'theme1'
 }
 
 export function isCustomDesignTheme(designTheme) {
-  return designTheme === 'theme2' || designTheme === 'theme3'
+  return CUSTOM_DESIGN_THEMES.has(designTheme)
 }
 
 function normalizeTheme(value) {
