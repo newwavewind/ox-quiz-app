@@ -24,8 +24,17 @@ const TABS = [
 function IconStudy({ className }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.148 0-2.311.22-3.375.656a.75.75 0 0 0-.375.65v11.25c0 .414.336.75.75.75h.093a.75.75 0 0 1 .664.368l.48.96a.75.75 0 0 0 1.344 0l.48-.96a.75.75 0 0 1 .664-.368h.093a.75.75 0 0 0 .75-.75V4.81a.75.75 0 0 0-.375-.65A8.967 8.967 0 0 0 12 6.042Z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042V20.25M17.25 4.5v15.75" />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M7.5 5.25h9a1.5 1.5 0 0 1 1.5 1.5v11.25a1.5 1.5 0 0 1-1.5 1.5h-9a1.5 1.5 0 0 1-1.5-1.5V6.75a1.5 1.5 0 0 1 1.5-1.5Z"
+      />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 5.25V18.75" />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M17.25 8.25l1.125 1.125-5.625 5.625-.5625 1.6875 1.6875-.5625 5.625-5.625Z"
+      />
     </svg>
   )
 }
@@ -42,8 +51,9 @@ function IconNotes({ className }) {
 function IconGlossary({ className }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.148 0-2.311.22-3.375.656a.75.75 0 0 0-.375.65v11.25c0 .414.336.75.75.75h.093a.75.75 0 0 1 .664.368l.48.96a.75.75 0 0 0 1.344 0l.48-.96a.75.75 0 0 1 .664-.368h.093a.75.75 0 0 0 .75-.75V4.81a.75.75 0 0 0-.375-.65A8.967 8.967 0 0 0 12 6.042Z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 4.5v15.75M9 9h3.75M9 12.75h3.75M9 16.5h3.75" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 9.75a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 12.75 17.25 16.5" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18.75h12" />
     </svg>
   )
 }

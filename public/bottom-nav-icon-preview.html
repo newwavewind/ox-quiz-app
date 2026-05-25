@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>하단 탭 아이콘 시안</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Noto Sans KR', system-ui, sans-serif;
+      background: #f1f5f9;
+      color: #0f172a;
+      margin: 0;
+      padding: 1.25rem;
+      line-height: 1.5;
+    }
+    h1 { font-size: 1.125rem; margin: 0 0 0.25rem; }
+    p.hint { font-size: 0.8125rem; color: #64748b; margin: 0 0 1.5rem; }
+    h2 { font-size: 0.9375rem; margin: 1.5rem 0 0.75rem; color: #334155; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
+      gap: 0.75rem;
+    }
+    .card {
+      background: #fff;
+      border: 2px solid #e2e8f0;
+      border-radius: 1rem;
+      padding: 0.75rem 0.5rem;
+      text-align: center;
+      cursor: default;
+    }
+    .card.current { border-color: #94a3b8; background: #f8fafc; }
+    .card svg { display: block; margin: 0 auto 0.5rem; color: #1e293b; }
+    .card.active-demo svg { color: #0f172a; }
+    .card.active-demo { background: #f1f5f9; border-color: #cbd5e1; }
+    .id { font-size: 0.6875rem; font-weight: 700; color: #0c8c5e; }
+    .name { font-size: 0.625rem; color: #64748b; margin-top: 0.125rem; }
+    code.pick {
+      display: block;
+      margin-top: 1.5rem;
+      padding: 0.75rem 1rem;
+      background: #1e293b;
+      color: #e2e8f0;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>하단 탭 아이콘 시안 (학습 · 용어집)</h1>
+  <p class="hint">마음에 드는 번호를 채팅에 알려주세요. 예: <strong>학습 2, 용어집 4</strong> · 회색 테두리 = 지금 앱에 쓰는 디자인</p>
+
+  <h2>학습 (home)</h2>
+  <div class="grid" id="study-grid"></div>
+
+  <h2>용어집 (index)</h2>
+  <div class="grid" id="glossary-grid"></div>
+
+  <code class="pick">선택 예시: 학습 3, 용어집 2</code>
+
+  <script>
+    const stroke = { fill: 'none', stroke: 'currentColor', 'stroke-width': '1.75', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' };
+
+    const studyIcons = [
+      { id: 0, name: '현재 (책+책갈피)', current: true, paths: [
+        'M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.148 0-2.311.22-3.375.656a.75.75 0 0 0-.375.65v11.25c0 .414.336.75.75.75h.093a.75.75 0 0 1 .664.368l.48.96a.75.75 0 0 0 1.344 0l.48-.96a.75.75 0 0 1 .664-.368h.093a.75.75 0 0 0 .75-.75V4.81a.75.75 0 0 0-.375-.65A8.967 8.967 0 0 0 12 6.042Z',
+        'M12 6.042V20.25M17.25 4.5v15.75',
+      ]},
+      { id: 1, name: '집 (홈)', paths: [
+        'M3 10.5 12 4l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5Z',
+      ]},
+      { id: 2, name: 'O / X', paths: [
+        'M8.5 12a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z',
+        'M15.5 9.5 18 12l-2.5 2.5',
+        'M15.5 14.5 18 12l-2.5-2.5',
+      ]},
+      { id: 3, name: '클립보드+체크', paths: [
+        'M9 5.25H7.5A2.25 2.25 0 0 0 5.25 7.5v11.25A2.25 2.25 0 0 0 7.5 21h9a2.25 2.25 0 0 0 2.25-2.25V7.5A2.25 2.25 0 0 0 16.5 5.25H15M9 5.25V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5v.75M9 5.25h6',
+        'M9.75 14.25 11.25 15.75 14.25 12.75',
+      ]},
+      { id: 4, name: '학사모', paths: [
+        'M4.5 9.75 12 5.25l7.5 4.5M6 11.25v4.5l6 3.75 6-3.75v-4.5',
+        'M12 5.25v14.25',
+      ]},
+      { id: 5, name: '4칸 대시보드', paths: [
+        'M4.5 6.75h6v6h-6v-6ZM13.5 6.75h6v6h-6v-6ZM4.5 15.75h6v6h-6v-6ZM13.5 15.75h6v6h-6v-6Z',
+      ]},
+      { id: 6, name: '닫힌 책', paths: [
+        'M6 4.5h12v15H6v-15ZM9 4.5V19.5M15 4.5V19.5',
+      ]},
+      { id: 7, name: '연필+책', paths: [
+        'M6 5.25h9v13.5H6V5.25ZM8.25 5.25V18.75',
+        'M16.5 7.5l1.5 1.5-6 6-2.25.75.75-2.25 6-6Z',
+      ]},
+    ];
+
+    const glossaryIcons = [
+      { id: 0, name: '현재 (책+줄3)', current: true, paths: [
+        'M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.148 0-2.311.22-3.375.656a.75.75 0 0 0-.375.65v11.25c0 .414.336.75.75.75h.093a.75.75 0 0 1 .664.368l.48.96a.75.75 0 0 0 1.344 0l.48-.96a.75.75 0 0 1 .664-.368h.093a.75.75 0 0 0 .75-.75V4.81a.75.75 0 0 0-.375-.65A8.967 8.967 0 0 0 12 6.042Z',
+        'M17.25 4.5v15.75M9 9h3.75M9 12.75h3.75M9 16.5h3.75',
+      ]},
+      { id: 1, name: 'Aa', paths: [
+        'M8 18V6l3.5 6h1L16 6v12M6.5 14h5',
+      ]},
+      { id: 2, name: '색인 목록', paths: [
+        'M5.25 7.5h13.5M5.25 12h13.5M5.25 16.5h9',
+        'M8.25 5.25h7.5v13.5h-7.5V5.25Z',
+      ]},
+      { id: 3, name: '돋보기', paths: [
+        'M10.5 10.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z',
+        'M14.25 14.25 19.5 19.5',
+      ]},
+      { id: 4, name: '백과사전(두꺼운 책)', paths: [
+        'M5.25 5.25h5.25v13.5H5.25V5.25ZM13.5 5.25H18.75v13.5H13.5V5.25Z',
+        'M10.5 5.25v13.5',
+      ]},
+      { id: 5, name: '태그+단어', paths: [
+        'M7.5 8.25h9M7.5 12h6M7.5 15.75h7.5',
+        'M6 6.75 9.75 4.5 18 4.5v6.75l-3 3-3-3V6.75Z',
+      ]},
+      { id: 6, name: '말풍선+Aa', paths: [
+        'M7.5 8.25h6M7.5 11.25h4.5',
+        'M6.75 5.25h10.5a2.25 2.25 0 0 1 2.25 2.25v5.25l-2.25 2.25H9l-2.25 2.25V7.5a2.25 2.25 0 0 1 2.25-2.25Z',
+      ]},
+      { id: 7, name: 'ABC 세로', paths: [
+        'M7.5 7.5v9M7.5 7.5h3l-1.5 3 1.5 3h-3',
+        'M13.5 16.5V7.5h2.25l-1.125 2.25L15.75 12 13.5 16.5Z',
+      ]},
+    ];
+
+    function renderGrid(containerId, icons) {
+      const el = document.getElementById(containerId);
+      icons.forEach(icon => {
+        const card = document.createElement('div');
+        card.className = 'card' + (icon.current ? ' current' : '') + ' active-demo';
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '0 0 24 24');
+        svg.setAttribute('width', '32');
+        svg.setAttribute('height', '32');
+        svg.setAttribute('aria-hidden', 'true');
+        Object.entries(stroke).forEach(([k, v]) => svg.setAttribute(k, v));
+        icon.paths.forEach(d => {
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setAttribute('d', d);
+          svg.appendChild(path);
+        });
+        card.appendChild(svg);
+        const idEl = document.createElement('div');
+        idEl.className = 'id';
+        idEl.textContent = icon.current ? `${icon.id} (현재)` : String(icon.id);
+        const nameEl = document.createElement('div');
+        nameEl.className = 'name';
+        nameEl.textContent = icon.name;
+        card.appendChild(idEl);
+        card.appendChild(nameEl);
+        el.appendChild(card);
+      });
+    }
+
+    renderGrid('study-grid', studyIcons);
+    renderGrid('glossary-grid', glossaryIcons);
+  </script>
+</body>
+</html>

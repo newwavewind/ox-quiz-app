@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>연필+책 · 돋보기 시안</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Noto Sans KR', system-ui, sans-serif;
+      background: #f1f5f9;
+      color: #0f172a;
+      margin: 0;
+      padding: 1.25rem;
+    }
+    h1 { font-size: 1.125rem; margin: 0 0 0.25rem; }
+    .hint { font-size: 0.8125rem; color: #64748b; margin: 0 0 1.25rem; }
+    h2 { font-size: 0.9375rem; margin: 1.25rem 0 0.65rem; color: #334155; }
+    .sub { font-size: 0.75rem; color: #64748b; margin: -0.35rem 0 0.65rem; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(5.75rem, 1fr));
+      gap: 0.65rem;
+    }
+    .card {
+      background: #fff;
+      border: 2px solid #e2e8f0;
+      border-radius: 1rem;
+      padding: 0.85rem 0.5rem 0.65rem;
+      text-align: center;
+    }
+    .card.ref { border-color: #0c8c5e; background: #ecfdf5; }
+    .card svg { display: block; margin: 0 auto 0.45rem; color: #1e293b; }
+    .row-active {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-top: 0.35rem;
+    }
+    .pill {
+      font-size: 0.5625rem;
+      padding: 0.1rem 0.35rem;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: #64748b;
+    }
+    .pill.on { background: #1e293b; color: #fff; }
+    .id { font-size: 0.75rem; font-weight: 800; color: #0c8c5e; }
+    .name { font-size: 0.625rem; color: #475569; margin-top: 0.2rem; line-height: 1.35; }
+    .pick {
+      margin-top: 1.5rem;
+      padding: 0.75rem 1rem;
+      background: #1e293b;
+      color: #e2e8f0;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+    }
+    a { color: #38bdf8; }
+  </style>
+</head>
+<body>
+  <h1>연필+책 · 돋보기 — 세부 시안</h1>
+  <p class="hint">
+    1차에서 고른 <strong>7번(연필+책)</strong>, <strong>3번(돋보기)</strong> 느낌으로 변형했습니다.<br />
+    채팅에 예: <strong>연필책 2, 돋보기 4</strong> ·
+    <a href="/bottom-nav-icon-preview.html">1차 전체 시안</a>
+  </p>
+
+  <h2>학습 — 연필 + 책</h2>
+  <p class="sub">초록 테두리 = 1차 7번과 가장 비슷한 기준안</p>
+  <div class="grid" id="study-grid"></div>
+
+  <h2>용어집 — 돋보기</h2>
+  <p class="sub">초록 테두리 = 1차 3번과 가장 비슷한 기준안</p>
+  <div class="grid" id="glossary-grid"></div>
+
+  <div class="pick">선택 예시: <strong>연필책 3, 돋보기 5</strong></div>
+
+  <script>
+    const S = { fill: 'none', stroke: 'currentColor', 'stroke-width': '1.75', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' };
+
+    const studyIcons = [
+      { id: 0, name: '기준 (1차 7번)', ref: true, paths: [
+        'M6 5.25h9v13.5H6V5.25ZM8.25 5.25V18.75',
+        'M16.5 7.5l1.5 1.5-6 6-2.25.75.75-2.25 6-6Z',
+      ]},
+      { id: 1, name: '열린 책 + 연필', paths: [
+        'M4.5 16.5 12 20.25 19.5 16.5V8.25L12 4.5 4.5 8.25v8.25Z',
+        'M12 4.5V20.25',
+        'M17.25 6.75 19.5 9l-7.5 7.5-1.875.625.625-1.875 7.5-7.5Z',
+      ]},
+      { id: 2, name: '닫힌 책 + 대각 연필', paths: [
+        'M5.25 6h9v12h-9V6ZM7.5 6V18',
+        'M14.25 8.25l4.5 4.5M17.25 5.25l2.25 2.25-9 9-2.25.75.75-2.25 9-9Z',
+      ]},
+      { id: 3, name: '책 위에 연필', paths: [
+        'M6 8.25h12v10.5H6V8.25ZM9 8.25V18.75',
+        'M10.5 5.25h6.75l-1.125 2.25h-4.5L10.5 5.25Z',
+        'M13.875 7.5v3',
+      ]},
+      { id: 4, name: '미니 노트 + 연필', paths: [
+        'M7.5 5.25h9a1.5 1.5 0 0 1 1.5 1.5v11.25a1.5 1.5 0 0 1-1.5 1.5h-9a1.5 1.5 0 0 1-1.5-1.5V6.75a1.5 1.5 0 0 1 1.5-1.5Z',
+        'M9.75 5.25V18.75',
+        'M17.25 8.25l1.125 1.125-5.625 5.625-.5625 1.6875 1.6875-.5625 5.625-5.625Z',
+      ]},
+      { id: 5, name: '책갈피 + 연필', paths: [
+        'M6 4.5h10.5v15H6V4.5ZM8.25 4.5V19.5',
+        'M13.5 4.5V9l1.5 1.5-1.5 1.5',
+        'M16.875 11.25l2.25 2.25-5.25 5.25-1.5.5.5-1.5 5.25-5.25Z',
+      ]},
+      { id: 6, name: '한 줄 메모 + 연필', paths: [
+        'M5.25 7.5h13.5v9.75H5.25V7.5ZM7.5 7.5v9.75',
+        'M9 12h6',
+        'M16.5 8.25l1.5 1.5-4.5 4.5-1.125.375.375-1.125 4.5-4.5Z',
+      ]},
+      { id: 7, name: '두꺼운 책 + 굵은 연필', paths: [
+        'M5.25 5.25h8.25v13.5H5.25V5.25ZM7.5 5.25v13.5',
+        'M15.75 6l3 3-7.5 7.5-2.25.75.75-2.25 7.5-7.5Z',
+        'M17.25 4.5 18.75 6',
+      ]},
+    ];
+
+    const glossaryIcons = [
+      { id: 0, name: '기준 (1차 3번)', ref: true, paths: [
+        'M10.5 10.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z',
+        'M14.25 14.25 19.5 19.5',
+      ]},
+      { id: 1, name: '렌즈 크게 · 손잡이 짧게', paths: [
+        'M10 10a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z',
+        'M14 14l5.5 5.5',
+      ]},
+      { id: 2, name: '손잡이 세로', paths: [
+        'M9.75 9.75a4.25 4.25 0 1 0 0-8.5 4.25 4.25 0 0 0 0 8.5Z',
+        'M11.25 13.5V19.5',
+      ]},
+      { id: 3, name: '이중 링 렌즈', paths: [
+        'M10.5 10.5a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z',
+        'M10.5 10.5a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Z',
+        'M14 14l5 5',
+      ]},
+      { id: 4, name: '아래 검색 줄', paths: [
+        'M10.5 9.75a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Z',
+        'M13.5 12.75 17.25 16.5',
+        'M6 18.75h12',
+      ]},
+      { id: 5, name: '렌즈 안 점', paths: [
+        'M10.5 10.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z',
+        'M10.5 10.5h.01',
+        'M14.25 14.25 19.5 19.5',
+      ]},
+      { id: 6, name: '왼쪽 위 렌즈', paths: [
+        'M8.25 8.25a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Z',
+        'M11 11l7.5 7.5',
+      ]},
+      { id: 7, name: '플러스 (확대)', paths: [
+        'M10.5 10.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z',
+        'M10.5 8.25v4.5M8.25 10.5h4.5',
+        'M14.25 14.25 19.5 19.5',
+      ]},
+    ];
+
+    function svg(paths, active) {
+      const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      el.setAttribute('viewBox', '0 0 24 24');
+      el.setAttribute('width', '36');
+      el.setAttribute('height', '36');
+      el.setAttribute('aria-hidden', 'true');
+      Object.entries(S).forEach(([k, v]) => el.setAttribute(k, v));
+      if (active) el.style.strokeWidth = '2';
+      paths.forEach(d => {
+        const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        p.setAttribute('d', d);
+        el.appendChild(p);
+      });
+      return el;
+    }
+
+    function render(containerId, icons) {
+      const root = document.getElementById(containerId);
+      icons.forEach(icon => {
+        const card = document.createElement('div');
+        card.className = 'card' + (icon.ref ? ' ref' : '');
+        const row = document.createElement('div');
+        row.className = 'row-active';
+        const off = svg(icon.paths, false);
+        off.setAttribute('width', '28');
+        off.setAttribute('height', '28');
+        off.style.opacity = '0.45';
+        const on = svg(icon.paths, true);
+        on.setAttribute('width', '28');
+        on.setAttribute('height', '28');
+        row.appendChild(off);
+        row.appendChild(on);
+        card.appendChild(row);
+        const idEl = document.createElement('div');
+        idEl.className = 'id';
+        idEl.textContent = icon.id;
+        const nameEl = document.createElement('div');
+        nameEl.className = 'name';
+        nameEl.textContent = icon.name;
+        card.appendChild(idEl);
+        card.appendChild(nameEl);
+        root.appendChild(card);
+      });
+    }
+
+    render('study-grid', studyIcons);
+    render('glossary-grid', glossaryIcons);
+  </script>
+</body>
+</html>
