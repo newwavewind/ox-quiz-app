@@ -1,57 +1,28 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { getSupabase } from '../lib/supabase'
+import {
+  loadLocalUserId,
+  resolveUserId,
+  saveLocalUserId,
+} from '../data/userId'
+import {
+  loadProfileNickname,
+  saveCommunityNickname,
+} from '../data/supabaseUserState'
+import SettingsGearButton from './SettingsGearButton'
+import SettingsSheet from './SettingsSheet'
+import ThemePickerMenu from './ThemePickerMenu'
 
-function displayName(user, profile) {
-  const meta = user?.user_metadata
-  return (
-    profile?.display_name ||
-    meta?.full_name ||
-    meta?.name ||
-    profile?.community_nickname ||
-    user?.email?.split('@')[0] ||
-    '사용자'
-  )
-}
-
-function avatarUrl(user, profile) {
-  return (
-    profile?.avatar_url ||
-    user?.user_metadata?.avatar_url ||
-    user?.user_metadata?.picture ||
-    null
-  )
-}
-
-function UserAvatar({ src, name }) {
-  const initial = (name || '?').charAt(0).toUpperCase()
-  if (src) {
-    return (
-      <img
-        src={src}
-        alt=""
-        className="w-8 h-8 rounded-full object-cover border border-emerald-200 shrink-0"
-        referrerPolicy="no-referrer"
-      />
-    )
-  }
-  return (
-    <span
-      className="w-8 h-8 rounded-full bg-emerald-200 text-emerald-900 text-sm font-bold flex items-center justify-center shrink-0"
-      aria-hidden
-    >
-      {initial}
-    </span>
-  )
-}
-
-export default function AuthBar() {
+export default function AuthBar({ appearance, onAppearanceChange }) {
   const { user, loading, isConfigured, signInWithGoogle, signOut } = useAuth()
-  const [profile, setProfile] = useState(null)
+  const [profileNick, setProfileNick] = useState(null)
+  const [showSettings, setShowSettings] = useState(false)
+  const [profileTick, setProfileTick] = useState(0)
 
-  useEffect(() => {
+  const refreshProfile = useCallback(() => {
     if (!user) {
-      setProfile(null)
+      setProfileNick(null)
       return undefined
     }
 
@@ -59,18 +30,34 @@ export default function AuthBar() {
     if (!sb) return undefined
 
     let cancelled = false
-    sb.from('ox_profiles')
-      .select('display_name, community_nickname, avatar_url, email')
-      .eq('id', user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (!cancelled) setProfile(data)
-      })
+    loadProfileNickname(user.id).then(nick => {
+      if (!cancelled) {
+        setProfileNick(nick)
+        if (nick && nick !== '익명') saveLocalUserId(nick)
+      }
+    })
 
     return () => {
       cancelled = true
     }
   }, [user?.id])
+
+  useEffect(() => refreshProfile(), [refreshProfile, profileTick])
+
+  const displayId = resolveUserId({
+    profileNickname: profileNick,
+    localId: loadLocalUserId(),
+    email: user?.email,
+  })
+
+  const handleSaveUserId = async id => {
+    const saved = saveLocalUserId(id)
+    if (user) {
+      const ok = await saveCommunityNickname(user.id, saved)
+      if (ok) setProfileNick(saved)
+    }
+    setProfileTick(t => t + 1)
+  }
 
   if (!isConfigured) {
     return (
@@ -81,54 +68,74 @@ export default function AuthBar() {
     )
   }
 
-  if (loading) {
-    return (
-      <div className="bg-slate-50 border-b border-slate-200 px-4 py-2 text-xs text-slate-500 text-center">
-        로그인 상태 확인 중…
-      </div>
-    )
+  const settingsAvailable = appearance && onAppearanceChange
+
+  const handleDesignThemeChange = next => {
+    onAppearanceChange({
+      ...appearance,
+      designTheme: next,
+      theme: next === 'theme2' || next === 'theme3' ? 'light' : appearance.theme,
+    })
   }
 
-  if (!user) {
-    return (
-      <div className="bg-slate-50 border-b border-slate-200 px-4 py-2 flex items-center justify-between gap-3">
-        <p className="text-xs text-slate-600">게스트 모드 · 진도는 이 기기에만 저장됩니다</p>
+  const toolbar = (
+    <div className="flex items-center gap-1">
+      {settingsAvailable && (
+        <>
+          <ThemePickerMenu
+            designTheme={appearance.designTheme || 'theme1'}
+            onChange={handleDesignThemeChange}
+          />
+          <SettingsGearButton
+            onClick={() => setShowSettings(true)}
+            className="p-1.5"
+          />
+        </>
+      )}
+      {loading ? null : user ? (
+        <>
+          <span
+            className="text-[11px] text-slate-500 dark:text-slate-400 font-medium max-w-[6rem] truncate px-0.5"
+            title={displayId}
+          >
+            {displayId}
+          </span>
+          <button
+            type="button"
+            onClick={() => signOut()}
+            className="shrink-0 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+          >
+            로그아웃
+          </button>
+        </>
+      ) : (
         <button
           type="button"
           onClick={() => signInWithGoogle()}
-          className="shrink-0 rounded-lg bg-white border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-800 hover:bg-slate-100 active:bg-slate-200 transition-colors"
+          className="rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
         >
           Google 로그인
         </button>
-      </div>
-    )
-  }
-
-  const name = displayName(user, profile)
-  const email = profile?.email || user.email
-  const photo = avatarUrl(user, profile)
+      )}
+    </div>
+  )
 
   return (
-    <div className="bg-emerald-50 border-b border-emerald-200 px-4 py-2 flex items-center justify-between gap-3">
-      <div className="flex items-center gap-2.5 min-w-0 flex-1">
-        <UserAvatar src={photo} name={name} />
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-emerald-950 truncate leading-tight">
-            <span className="text-emerald-700 font-medium">로그인 · </span>
-            {name}
-          </p>
-          {email && (
-            <p className="text-[11px] text-emerald-700 truncate leading-tight mt-0.5">{email}</p>
-          )}
-        </div>
+    <>
+      <div className="flex justify-end items-center px-3 py-1.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/90 dark:bg-slate-900/90">
+        {toolbar}
       </div>
-      <button
-        type="button"
-        onClick={() => signOut()}
-        className="shrink-0 rounded-lg bg-white border border-emerald-300 px-3 py-1.5 text-xs font-medium text-emerald-900 hover:bg-emerald-100 transition-colors"
-      >
-        로그아웃
-      </button>
-    </div>
+
+      {showSettings && settingsAvailable && (
+        <SettingsSheet
+          settings={appearance}
+          onChange={onAppearanceChange}
+          onClose={() => setShowSettings(false)}
+          userId={displayId === '익명' ? loadLocalUserId() : displayId}
+          onUserIdChange={handleSaveUserId}
+          canEditUserId
+        />
+      )}
+    </>
   )
 }

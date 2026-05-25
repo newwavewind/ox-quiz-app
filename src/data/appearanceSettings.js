@@ -5,6 +5,12 @@ export const THEME_OPTIONS = [
   { value: 'dark', label: '다크' },
 ]
 
+export const DESIGN_THEME_OPTIONS = [
+  { value: 'theme1', label: '테마1', description: '기본 (슬레이트)' },
+  { value: 'theme2', label: '테마2', description: 'Steep · 웜 캔버스' },
+  { value: 'theme3', label: '테마3', description: 'GIC · 나이트 스카이' },
+]
+
 export const FONT_OPTIONS = [
   { value: 'system', label: '시스템 기본' },
   { value: 'sans', label: '고딕 (Noto Sans)' },
@@ -19,9 +25,20 @@ export const FONT_SIZE_OPTIONS = [
 ]
 
 export const DEFAULT_APPEARANCE = {
+  designTheme: 'theme1',
   theme: 'light',
   font: 'system',
   fontSize: 'md',
+}
+
+function normalizeDesignTheme(value) {
+  if (value === 'theme2') return 'theme2'
+  if (value === 'theme3') return 'theme3'
+  return 'theme1'
+}
+
+export function isCustomDesignTheme(designTheme) {
+  return designTheme === 'theme2' || designTheme === 'theme3'
 }
 
 function normalizeTheme(value) {
@@ -42,6 +59,7 @@ export function loadAppearanceSettings() {
     if (!raw) return { ...DEFAULT_APPEARANCE }
     const parsed = JSON.parse(raw)
     return {
+      designTheme: normalizeDesignTheme(parsed.designTheme),
       theme: normalizeTheme(parsed.theme),
       font: normalizeFont(parsed.font),
       fontSize: normalizeFontSize(parsed.fontSize),
@@ -61,11 +79,18 @@ export function saveAppearanceSettings(settings) {
 
 export function applyAppearanceSettings(settings) {
   const root = document.documentElement
+  const designTheme = normalizeDesignTheme(settings.designTheme)
   const theme = normalizeTheme(settings.theme)
   const font = normalizeFont(settings.font)
   const fontSize = normalizeFontSize(settings.fontSize)
 
-  root.classList.toggle('dark', theme === 'dark')
+  root.dataset.designTheme = designTheme
   root.dataset.font = font
   root.dataset.fontSize = fontSize
+
+  if (isCustomDesignTheme(designTheme)) {
+    root.classList.remove('dark')
+  } else {
+    root.classList.toggle('dark', theme === 'dark')
+  }
 }

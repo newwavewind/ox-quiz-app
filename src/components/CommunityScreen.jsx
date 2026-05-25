@@ -412,7 +412,7 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
 
   if (view === 'write') {
     return (
-      <div className="min-h-screen bg-slate-50 pb-16 flex flex-col">
+      <div className="min-h-screen bg-slate-50 pb-bottom-nav flex flex-col">
         <WriteForm
           authorLabel={myNickname}
           onSubmit={handlePosted}
@@ -424,7 +424,7 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
 
   if (view === 'detail' && selectedPost) {
     return (
-      <div className="min-h-screen bg-slate-50 pb-16 flex flex-col">
+      <div className="min-h-screen bg-slate-50 pb-bottom-nav flex flex-col">
         <PostDetail
           post={selectedPost}
           user={user}
@@ -438,7 +438,7 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-16">
+    <div className="min-h-screen bg-slate-50 pb-bottom-nav">
       <div className="max-w-4xl mx-auto px-4 py-4">
         <div className="flex items-start justify-between gap-3 mb-4">
           <div>

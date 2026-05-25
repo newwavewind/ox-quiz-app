@@ -53,7 +53,7 @@ export default function IndexScreen({ exams, onOpenQuestion }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col pb-16">
+    <div className="min-h-screen bg-slate-50 flex flex-col pb-bottom-nav">
       <div className="bg-white border-b border-slate-200 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <h1 className="text-lg font-bold text-slate-800">민법 용어집</h1>

@@ -147,7 +147,7 @@ export default function StudyMode({
 
   if (exams.length === 0) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col pb-16">
+      <div className="min-h-screen bg-slate-50 flex flex-col pb-bottom-nav">
         <TopBar title="학습 모드" onBack={onBack} onFilter={() => setShowFilter(true)} />
         <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
           <div className="text-5xl mb-4">🎉</div>
@@ -177,7 +177,7 @@ export default function StudyMode({
   const termMatch = highlightTerm ? getTermMatchInfo(exam, highlightTerm) : null
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col pb-16">
+    <div className="min-h-screen bg-slate-50 flex flex-col pb-bottom-nav">
       <TopBar
         title={
           filter.subcategory
@@ -222,6 +222,28 @@ export default function StudyMode({
               onJump={jumpToQuestion}
             />
           )}
+
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={handlePrev}
+              disabled={currentIndex === 0}
+              className="flex-1 bg-white border border-slate-200 text-slate-600 rounded-xl py-2.5 font-semibold text-sm disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50"
+            >
+              이전
+            </button>
+            <button
+              type="button"
+              onClick={currentIndex >= exams.length - 1 ? onBack : handleNext}
+              className={`flex-1 rounded-xl py-2.5 font-semibold text-sm ${
+                currentIndex >= exams.length - 1
+                  ? 'bg-green-600 text-white hover:bg-green-700'
+                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              {currentIndex >= exams.length - 1 ? '홈으로' : '다음'}
+            </button>
+          </div>
 
           <div className="flex flex-wrap gap-2 items-center">
             <span className="text-xs bg-slate-200 text-slate-600 rounded-full px-3 py-1 font-medium">
@@ -534,25 +556,6 @@ export default function StudyMode({
             </button>
           )}
 
-          <div className="flex gap-3">
-            <button
-              onClick={handlePrev}
-              disabled={currentIndex === 0}
-              className="flex-1 bg-white border border-slate-200 text-slate-600 rounded-xl py-3.5 font-semibold text-base disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              이전
-            </button>
-            <button
-              onClick={currentIndex >= exams.length - 1 ? onBack : handleNext}
-              className={`flex-1 rounded-xl py-3.5 font-semibold text-base ${
-                currentIndex >= exams.length - 1
-                  ? 'bg-green-600 text-white'
-                  : 'bg-white border border-slate-200 text-slate-600'
-              }`}
-            >
-              {currentIndex >= exams.length - 1 ? '홈으로' : '다음'}
-            </button>
-          </div>
         </div>
       </div>
 

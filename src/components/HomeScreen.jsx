@@ -1,6 +1,4 @@
-import { useMemo, useState } from 'react'
-import SettingsGearButton from './SettingsGearButton'
-import SettingsSheet from './SettingsSheet'
+import { useMemo } from 'react'
 import taxonomy from '../../data/taxonomy.json'
 import { CATEGORIES } from '../data/categoryStyles'
 import { isExamComplete, isExamCorrect } from '../data/loadExam'
@@ -18,12 +16,9 @@ function examSubcategory(exam) {
 export default function HomeScreen({
   exams,
   progress,
-  appearance,
-  onAppearanceChange,
   onStartStudy,
   onStartStudyByYear,
 }) {
-  const [showSettings, setShowSettings] = useState(false)
   const getExamStats = (list) => {
     const answered = list.filter(q => isExamComplete(progress, q.id))
     const correct = list.filter(q => isExamCorrect(progress, q.id))
@@ -80,24 +75,13 @@ export default function HomeScreen({
     .map(year => ({ year, ...getYearStats(year) }))
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pb-bottom-nav">
       <div className="bg-white border-b border-slate-200 dark:bg-slate-800 dark:border-slate-700 sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 py-4 flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100">공인중개사 민법</h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">기출 OX · 연도별 · 목차별</p>
-          </div>
-          <SettingsGearButton onClick={() => setShowSettings(true)} />
+        <div className="max-w-2xl mx-auto px-4 py-4">
+          <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100">공인중개사 민법</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">기출 OX · 연도별 · 목차별</p>
         </div>
       </div>
-
-      {showSettings && appearance && onAppearanceChange && (
-        <SettingsSheet
-          settings={appearance}
-          onChange={onAppearanceChange}
-          onClose={() => setShowSettings(false)}
-        />
-      )}
 
       <div className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-5">
         <section className="grid grid-cols-2 gap-2 items-start">

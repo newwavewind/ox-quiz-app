@@ -265,7 +265,7 @@ export default function NotesScreen({ notes, onToggleNote, onToggleImportant, on
 
   return (
 
-    <div className="min-h-screen bg-slate-50 pb-16">
+    <div className="min-h-screen bg-slate-50 pb-bottom-nav">
 
       <div className="bg-white border-b border-slate-200 sticky top-0 z-10">
 

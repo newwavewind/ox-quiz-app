@@ -52,6 +52,43 @@ export async function loadProfileAppearance(userId) {
   return data?.appearance_settings ?? null
 }
 
+export async function saveCommunityNickname(userId, nickname) {
+  const sb = getSupabase()
+  if (!sb) return false
+
+  const value = (nickname || '').trim().slice(0, 20) || '익명'
+  const { error } = await sb
+    .from('ox_profiles')
+    .update({
+      community_nickname: value,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', userId)
+
+  if (error) {
+    console.error('[ox] saveCommunityNickname', error)
+    return false
+  }
+  return true
+}
+
+export async function loadProfileNickname(userId) {
+  const sb = getSupabase()
+  if (!sb) return null
+
+  const { data, error } = await sb
+    .from('ox_profiles')
+    .select('community_nickname')
+    .eq('id', userId)
+    .maybeSingle()
+
+  if (error) {
+    console.error('[ox] loadProfileNickname', error)
+    return null
+  }
+  return data?.community_nickname ?? null
+}
+
 export async function saveProfileAppearance(userId, appearance) {
   const sb = getSupabase()
   if (!sb) return false

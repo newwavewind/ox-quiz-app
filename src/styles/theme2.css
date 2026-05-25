@@ -1,0 +1,195 @@
+/* Steep — design1.md (테마2) */
+
+html[data-design-theme='theme2'] {
+  --color-canvas: #ffffff;
+  --color-ink: #17191c;
+  --color-fog: #f7f7f8;
+  --color-warm-mist: #fbe1d1;
+  --color-terracotta: #5d2a1a;
+  --color-muted-stone: #4c4c4c;
+  --color-light-steel: #777b86;
+  --color-hint-of-grey: #a3a6af;
+  --shadow-subtle: rgba(4, 23, 43, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 20px 25px -5px,
+    rgba(0, 0, 0, 0.1) 0px 8px 10px -6px;
+  --radius-card: 24px;
+  --radius-input: 16px;
+  --radius-pill: 9999px;
+}
+
+html[data-design-theme='theme2'] body {
+  background-color: var(--color-fog) !important;
+  color: var(--color-ink) !important;
+  font-family: 'Noto Sans KR', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+html[data-design-theme='theme2'] #root h1,
+html[data-design-theme='theme2'] #root h2 {
+  font-family: 'Noto Serif KR', Georgia, serif;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+/* Surfaces */
+html[data-design-theme='theme2'] #root .bg-slate-50,
+html[data-design-theme='theme2'] #root .bg-slate-50\/90,
+html[data-design-theme='theme2'] #root .bg-slate-900,
+html[data-design-theme='theme2'] #root .bg-slate-900\/90 {
+  background-color: var(--color-fog) !important;
+}
+
+html[data-design-theme='theme2'] #root .bg-white,
+html[data-design-theme='theme2'] #root .bg-white\/80 {
+  background-color: var(--color-canvas) !important;
+}
+
+html[data-design-theme='theme2'] #root .bg-slate-100,
+html[data-design-theme='theme2'] #root .bg-slate-100\/90 {
+  background-color: var(--color-fog) !important;
+}
+
+html[data-design-theme='theme2'] #root .bg-slate-800,
+html[data-design-theme='theme2'] #root .bg-slate-700,
+html[data-design-theme='theme2'] #root .bg-slate-900 {
+  background-color: var(--color-ink) !important;
+  color: var(--color-canvas) !important;
+}
+
+/* Text */
+html[data-design-theme='theme2'] #root .text-slate-800,
+html[data-design-theme='theme2'] #root .text-slate-900,
+html[data-design-theme='theme2'] #root .text-slate-700 {
+  color: var(--color-ink) !important;
+}
+
+html[data-design-theme='theme2'] #root .text-slate-600,
+html[data-design-theme='theme2'] #root .text-slate-500,
+html[data-design-theme='theme2'] #root .text-slate-400 {
+  color: var(--color-light-steel) !important;
+}
+
+html[data-design-theme='theme2'] #root .text-slate-100,
+html[data-design-theme='theme2'] #root .text-white {
+  color: var(--color-canvas) !important;
+}
+
+/* Borders */
+html[data-design-theme='theme2'] #root .border-slate-100,
+html[data-design-theme='theme2'] #root .border-slate-200,
+html[data-design-theme='theme2'] #root .border-slate-300,
+html[data-design-theme='theme2'] #root .border-slate-700,
+html[data-design-theme='theme2'] #root .border-slate-800 {
+  border-color: rgba(23, 25, 28, 0.12) !important;
+}
+
+/* Cards & panels */
+html[data-design-theme='theme2'] #root .rounded-2xl.border,
+html[data-design-theme='theme2'] #root .rounded-xl.border.bg-white,
+html[data-design-theme='theme2'] #root .card {
+  border-radius: var(--radius-card) !important;
+  box-shadow: var(--shadow-subtle) !important;
+  border-color: rgba(23, 25, 28, 0.08) !important;
+}
+
+html[data-design-theme='theme2'] #root .rounded-xl:not(.ox-btn):not(.ox-btn-o):not(.ox-btn-x),
+html[data-design-theme='theme2'] #root .rounded-2xl:not(.ox-btn) {
+  border-radius: var(--radius-card);
+}
+
+/* Primary buttons (slate-800 fills) */
+html[data-design-theme='theme2'] #root button.bg-slate-800,
+html[data-design-theme='theme2'] #root .bg-slate-800.text-white {
+  background-color: var(--color-ink) !important;
+  color: var(--color-canvas) !important;
+  border-radius: var(--radius-pill) !important;
+}
+
+html[data-design-theme='theme2'] #root button.hover\:bg-slate-700:hover,
+html[data-design-theme='theme2'] #root .hover\:bg-slate-700:hover {
+  background-color: #2a2d32 !important;
+}
+
+/* Community lime → ink accent */
+html[data-design-theme='theme2'] #root .bg-lime-400,
+html[data-design-theme='theme2'] #root .bg-lime-300 {
+  background-color: var(--color-ink) !important;
+  color: var(--color-canvas) !important;
+}
+
+html[data-design-theme='theme2'] #root .border-lime-300,
+html[data-design-theme='theme2'] #root .border-lime-400,
+html[data-design-theme='theme2'] #root .border-lime-500 {
+  border-color: var(--color-terracotta) !important;
+}
+
+html[data-design-theme='theme2'] #root .text-lime-700,
+html[data-design-theme='theme2'] #root .text-lime-800,
+html[data-design-theme='theme2'] #root .text-emerald-700,
+html[data-design-theme='theme2'] #root .text-emerald-900 {
+  color: var(--color-terracotta) !important;
+}
+
+html[data-design-theme='theme2'] #root .bg-emerald-50,
+html[data-design-theme='theme2'] #root .bg-amber-50 {
+  background-color: var(--color-warm-mist) !important;
+}
+
+html[data-design-theme='theme2'] #root .border-emerald-200,
+html[data-design-theme='theme2'] #root .border-emerald-300 {
+  border-color: rgba(93, 42, 26, 0.25) !important;
+}
+
+/* Inputs */
+html[data-design-theme='theme2'] #root input,
+html[data-design-theme='theme2'] #root textarea,
+html[data-design-theme='theme2'] #root select {
+  border-radius: var(--radius-input) !important;
+}
+
+html[data-design-theme='theme2'] #root input::placeholder,
+html[data-design-theme='theme2'] #root textarea::placeholder {
+  color: var(--color-hint-of-grey) !important;
+}
+
+/* Bottom nav */
+html[data-design-theme='theme2'] #root .bottom-nav-fixed .rounded-2xl {
+  border-radius: var(--radius-card) !important;
+  box-shadow: var(--shadow-subtle) !important;
+}
+
+html[data-design-theme='theme2'] #root .bottom-nav-fixed .bg-lime-400 {
+  background-color: var(--color-ink) !important;
+  color: var(--color-canvas) !important;
+}
+
+/* Study year buttons (indigo) → warm accent cards */
+html[data-design-theme='theme2'] #root .bg-indigo-50 {
+  background-color: var(--color-canvas) !important;
+  box-shadow: var(--shadow-subtle);
+}
+
+html[data-design-theme='theme2'] #root .border-indigo-200 {
+  border-color: rgba(93, 42, 26, 0.2) !important;
+}
+
+html[data-design-theme='theme2'] #root .text-indigo-900,
+html[data-design-theme='theme2'] #root .text-indigo-600 {
+  color: var(--color-ink) !important;
+}
+
+/* Progress bar */
+html[data-design-theme='theme2'] #root .bg-slate-700.h-1\.5,
+html[data-design-theme='theme2'] #root .bg-slate-700 {
+  background-color: var(--color-ink) !important;
+}
+
+/* Category chips */
+html[data-design-theme='theme2'] #root .bg-slate-200 {
+  background-color: var(--color-warm-mist) !important;
+  color: var(--color-terracotta) !important;
+}
+
+/* Active tab in bottom nav */
+html[data-design-theme='theme2'] #root nav .bg-slate-100\/90 {
+  background-color: var(--color-warm-mist) !important;
+}

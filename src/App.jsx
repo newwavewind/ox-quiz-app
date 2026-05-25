@@ -293,7 +293,7 @@ function App() {
 
   return (
     <>
-      <AuthBar />
+      <AuthBar appearance={appearance} onAppearanceChange={setAppearance} />
       {screen === 'study' ? (
         <StudyMode
           exams={getStudyExams}
@@ -339,8 +339,6 @@ function App() {
         <HomeScreen
           exams={allExams}
           progress={progress}
-          appearance={appearance}
-          onAppearanceChange={setAppearance}
           onStartStudy={({ category, subcategory }) => {
             openStudy({ category, subcategory, year: null, examId: null }, 'home')
           }}

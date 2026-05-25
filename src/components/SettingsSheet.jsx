@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import {
+  DESIGN_THEME_OPTIONS,
   FONT_OPTIONS,
   FONT_SIZE_OPTIONS,
   THEME_OPTIONS,
@@ -31,21 +32,38 @@ function OptionGroup({ label, options, value, onChange }) {
   )
 }
 
-export default function SettingsSheet({ settings, onChange, onClose }) {
+export default function SettingsSheet({
+  settings,
+  onChange,
+  onClose,
+  userId = '',
+  onUserIdChange,
+  canEditUserId = false,
+}) {
   const [local, setLocal] = useState(settings)
+  const [localUserId, setLocalUserId] = useState(userId)
+  const [userIdError, setUserIdError] = useState('')
 
   const handleApply = () => {
+    if (canEditUserId) {
+      const trimmed = localUserId.trim()
+      if (!trimmed) {
+        setUserIdError('아이디를 입력하세요.')
+        return
+      }
+      if (trimmed.length < 2) {
+        setUserIdError('아이디는 2자 이상이어야 합니다.')
+        return
+      }
+      onUserIdChange?.(trimmed)
+    }
     onChange(local)
     onClose()
   }
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col justify-end">
-      <div
-        className="absolute inset-0 bg-black/40"
-        onClick={onClose}
-        aria-hidden
-      />
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} aria-hidden />
       <div
         className="relative bg-white dark:bg-slate-800 rounded-t-3xl p-6 max-h-[85vh] overflow-y-auto"
         role="dialog"
@@ -65,12 +83,51 @@ export default function SettingsSheet({ settings, onChange, onClose }) {
           </button>
         </div>
 
+        {canEditUserId && (
+          <div className="mb-5">
+            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">
+              아이디
+            </p>
+            <input
+              type="text"
+              value={localUserId}
+              onChange={e => {
+                setLocalUserId(e.target.value)
+                setUserIdError('')
+              }}
+              maxLength={20}
+              placeholder="커뮤니티·표시용 아이디"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
+            />
+            <p className="text-[11px] text-slate-400 mt-1.5">상단 표시·커뮤니티 글쓰기에 사용됩니다.</p>
+            {userIdError && <p className="text-xs text-red-600 mt-1">{userIdError}</p>}
+          </div>
+        )}
+
+        <OptionGroup
+          label="디자인 테마"
+          options={DESIGN_THEME_OPTIONS.map(o => ({ value: o.value, label: o.label }))}
+          value={local.designTheme || 'theme1'}
+          onChange={designTheme =>
+            setLocal(s => ({
+              ...s,
+              designTheme,
+              theme: designTheme === 'theme2' || designTheme === 'theme3' ? 'light' : s.theme,
+            }))
+          }
+        />
+
         <OptionGroup
           label="화면 모드"
           options={THEME_OPTIONS}
           value={local.theme}
           onChange={theme => setLocal(s => ({ ...s, theme }))}
         />
+        {['theme2', 'theme3'].includes(local.designTheme || 'theme1') && (
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 -mt-3 mb-4">
+            테마2·테마3은 라이트 모드 기준입니다.
+          </p>
+        )}
         <OptionGroup
           label="글꼴"
           options={FONT_OPTIONS}

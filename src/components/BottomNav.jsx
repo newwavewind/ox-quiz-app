@@ -1,26 +1,117 @@
+const TABS = [
+  {
+    id: 'home',
+    label: '학습',
+    Icon: IconStudy,
+  },
+  {
+    id: 'notes',
+    label: '암기노트',
+    Icon: IconNotes,
+  },
+  {
+    id: 'index',
+    label: '용어집',
+    Icon: IconGlossary,
+  },
+  {
+    id: 'community',
+    label: '커뮤니티',
+    Icon: IconCommunity,
+  },
+]
+
+function IconStudy({ className }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.148 0-2.311.22-3.375.656a.75.75 0 0 0-.375.65v11.25c0 .414.336.75.75.75h.093a.75.75 0 0 1 .664.368l.48.96a.75.75 0 0 0 1.344 0l.48-.96a.75.75 0 0 1 .664-.368h.093a.75.75 0 0 0 .75-.75V4.81a.75.75 0 0 0-.375-.65A8.967 8.967 0 0 0 12 6.042Z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042V20.25M17.25 4.5v15.75" />
+    </svg>
+  )
+}
+
+function IconNotes({ className }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 7.125 16.862 4.487M6 18h.008v.008H6V18Z" />
+    </svg>
+  )
+}
+
+function IconGlossary({ className }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.148 0-2.311.22-3.375.656a.75.75 0 0 0-.375.65v11.25c0 .414.336.75.75.75h.093a.75.75 0 0 1 .664.368l.48.96a.75.75 0 0 0 1.344 0l.48-.96a.75.75 0 0 1 .664-.368h.093a.75.75 0 0 0 .75-.75V4.81a.75.75 0 0 0-.375-.65A8.967 8.967 0 0 0 12 6.042Z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 4.5v15.75M9 9h3.75M9 12.75h3.75M9 16.5h3.75" />
+    </svg>
+  )
+}
+
+function IconCommunity({ className }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm3.75 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm3.75 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M8.25 9.75h7.5M8.25 12h7.5m-7.5 3h4.5M4.5 19.5l2.25-2.25h9a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 15.75 4.5h-7.5A2.25 2.25 0 0 0 6 6.75v10.5A2.25 2.25 0 0 0 8.25 19.5Z"
+      />
+    </svg>
+  )
+}
+
+function NavTab({ id, label, Icon, active, onClick }) {
+  const isActive = active === id
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-current={isActive ? 'page' : undefined}
+      className={`flex-1 flex flex-col items-center justify-center gap-0.5 min-h-[3.25rem] py-1.5 px-1 rounded-xl transition-colors touch-manipulation ${
+        isActive
+          ? 'text-slate-800 dark:text-slate-100 bg-slate-100/90 dark:bg-slate-700/80'
+          : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
+      }`}
+    >
+      <Icon className={`w-6 h-6 shrink-0 ${isActive ? 'stroke-[2]' : ''}`} />
+      <span className={`text-[10px] sm:text-[11px] leading-tight ${isActive ? 'font-bold' : 'font-semibold'}`}>
+        {label}
+      </span>
+    </button>
+  )
+}
+
 export default function BottomNav({ active, onHome, onIndex, onNotes, onCommunity }) {
-  const tabClass = id =>
-    `flex-1 py-3 text-xs sm:text-sm font-semibold transition-colors ${
-      active === id
-        ? 'text-slate-800 dark:text-slate-100 border-t-2 border-slate-800 dark:border-slate-100 -mt-px'
-        : 'text-slate-400 dark:text-slate-500'
-    }`
+  const handlers = {
+    home: onHome,
+    notes: onNotes,
+    index: onIndex,
+    community: onCommunity,
+  }
 
   return (
-    <nav className="fixed bottom-0 inset-x-0 z-20 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 safe-area-pb">
-      <div className="max-w-2xl mx-auto flex">
-        <button type="button" onClick={onHome} className={tabClass('home')}>
-          학습
-        </button>
-        <button type="button" onClick={onNotes} className={tabClass('notes')}>
-          암기노트
-        </button>
-        <button type="button" onClick={onIndex} className={tabClass('index')}>
-          용어집
-        </button>
-        <button type="button" onClick={onCommunity} className={tabClass('community')}>
-          커뮤니티
-        </button>
+    <nav
+      className="bottom-nav-fixed z-20 pointer-events-none"
+      aria-label="주요 메뉴"
+    >
+      <div className="max-w-2xl mx-auto px-3 pb-3 pointer-events-auto">
+        <div className="flex items-stretch gap-1 px-2 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg shadow-slate-900/10">
+          {TABS.map(tab => (
+            <NavTab
+              key={tab.id}
+              id={tab.id}
+              label={tab.label}
+              Icon={tab.Icon}
+              active={active}
+              onClick={handlers[tab.id]}
+            />
+          ))}
+        </div>
       </div>
     </nav>
   )
