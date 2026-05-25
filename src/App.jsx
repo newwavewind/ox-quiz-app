@@ -1,9 +1,18 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import HomeScreen from './components/HomeScreen'
 import IndexScreen from './components/IndexScreen'
 import NotesScreen from './components/NotesScreen'
 import CommunityScreen from './components/CommunityScreen'
+import AuthBar from './components/AuthBar'
+import { useAuth } from './contexts/AuthContext'
 import { loadCommunityPosts, saveCommunityPosts } from './data/communityPosts'
+import {
+  deleteCommunityPost as deleteCloudPost,
+  fetchCommunityPosts,
+  insertCommunityPost,
+  isCloudPostId,
+} from './data/supabaseCommunity'
+import { useCloudSync } from './hooks/useCloudSync'
 import StudyMode from './components/StudyMode'
 import WrongNotes from './components/WrongNotes'
 import BottomNav from './components/BottomNav'
@@ -29,6 +38,7 @@ const DEFAULT_FILTER = {
 }
 
 function App() {
+  const { user, isConfigured } = useAuth()
   const [tab, setTab] = useState('home')
   const [screen, setScreen] = useState('home')
   const [studyReturnScreen, setStudyReturnScreen] = useState('home')
@@ -56,6 +66,28 @@ function App() {
 
   const [appearance, setAppearance] = useState(() => loadAppearanceSettings())
 
+  useCloudSync({
+    user,
+    isConfigured,
+    progress,
+    notes,
+    appearance,
+    setProgress,
+    setNotes,
+    setAppearance,
+  })
+
+  useEffect(() => {
+    if (!user || !isConfigured) return undefined
+    let cancelled = false
+    fetchCommunityPosts().then(posts => {
+      if (!cancelled && posts) setCommunityPosts(posts)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [user?.id, isConfigured])
+
   useEffect(() => {
     applyAppearanceSettings(appearance)
     saveAppearanceSettings(appearance)
@@ -73,13 +105,30 @@ function App() {
     saveCommunityPosts(communityPosts)
   }, [communityPosts])
 
-  const addCommunityPost = post => {
-    setCommunityPosts(prev => [post, ...prev])
-  }
+  const addCommunityPost = useCallback(
+    async post => {
+      if (user) {
+        const saved = await insertCommunityPost(user.id, post)
+        if (saved) {
+          setCommunityPosts(prev => [saved, ...prev])
+          return
+        }
+      }
+      setCommunityPosts(prev => [post, ...prev])
+    },
+    [user],
+  )
 
-  const deleteCommunityPost = postId => {
-    setCommunityPosts(prev => prev.filter(p => p.id !== postId))
-  }
+  const deleteCommunityPost = useCallback(
+    async postId => {
+      if (user && isCloudPostId(postId)) {
+        const ok = await deleteCloudPost(postId)
+        if (!ok) return
+      }
+      setCommunityPosts(prev => prev.filter(p => p.id !== postId))
+    },
+    [user],
+  )
 
   const updateProgress = (examId, result) => {
     setProgress(prev => ({
@@ -237,6 +286,7 @@ function App() {
 
   return (
     <>
+      <AuthBar />
       {screen === 'study' ? (
         <StudyMode
           exams={getStudyExams}

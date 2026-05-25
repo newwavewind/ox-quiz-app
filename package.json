@@ -18,6 +18,7 @@
     "build:exam": "python scripts/merge_explain_chunks.py && python scripts/restore_2016_md.py && python scripts/build_exam_questions.py 2016"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.106.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
