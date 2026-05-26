@@ -27,6 +27,12 @@ const PAGE_SIZE_OPTIONS = [
 
 ]
 
+function noteChipClass(active) {
+  return active
+    ? 'bg-indigo-50 text-indigo-700 border-indigo-300 ring-1 ring-indigo-200/80 dark:bg-indigo-950/40 dark:text-indigo-200 dark:border-indigo-700 dark:ring-indigo-800/60'
+    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-600 dark:hover:border-slate-500'
+}
+
 
 
 function NoteCard({ note, onToggleNote, onToggleImportant, onOpenQuestion }) {
@@ -291,11 +297,7 @@ export default function NotesScreen({ notes, onToggleNote, onToggleImportant, on
               <button
                 type="button"
                 onClick={() => setNoteFilter('all')}
-                className={`flex-1 py-2 rounded-lg text-xs font-semibold border transition-colors ${
-                  noteFilter === 'all'
-                    ? 'bg-slate-800 text-white border-slate-800'
-                    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
-                }`}
+                className={`flex-1 py-2 rounded-lg text-xs font-semibold border transition-colors ${noteChipClass(noteFilter === 'all')}`}
               >
                 전체
               </button>
@@ -320,11 +322,7 @@ export default function NotesScreen({ notes, onToggleNote, onToggleImportant, on
                       key={String(opt.value)}
                       type="button"
                       onClick={() => changePageSize(opt.value)}
-                      className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
-                        pageSize === opt.value
-                          ? 'bg-slate-800 text-white border-slate-800'
-                          : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
-                      }`}
+                      className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${noteChipClass(pageSize === opt.value)}`}
                     >
                       {opt.label}
                     </button>
