@@ -380,10 +380,6 @@ export default function StudyMode({
     sectionRefs.current[idx]?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
-  const goPastExamStep = delta => {
-    scrollToPastExamIndex(currentIndex + delta)
-  }
-
   const jumpToQuestion = (questionNo) => {
     const idx = indexByQuestionNo.get(questionNo)
     if (idx == null) return
@@ -654,7 +650,7 @@ export default function StudyMode({
                     정답 확인
                   </button>
                   <p className="text-center text-xs text-slate-500">
-                    스크롤하거나 오른쪽 화살표로 문항을 이동한 뒤, 「정답 확인」을 누르세요.
+                    스크롤하거나 오른쪽 화살표(맨 위·맨 아래)로 이동한 뒤, 「정답 확인」을 누르세요.
                   </p>
                 </>
               ) : (
@@ -679,11 +675,15 @@ export default function StudyMode({
           </section>
         </div>
         <PastExamScrollArrows
-          canPrev={currentIndex > 0}
-          canNext={currentIndex < exams.length - 1}
-          currentLabel={exams[currentIndex]?.question_no}
-          onPrev={() => goPastExamStep(-1)}
-          onNext={() => goPastExamStep(1)}
+          canGoTop={currentIndex > 0}
+          canGoBottom={currentIndex < exams.length - 1}
+          rangeLabel={
+            exams.length > 0
+              ? `${exams[0].question_no}↕${exams[exams.length - 1].question_no}`
+              : null
+          }
+          onGoTop={() => scrollToPastExamIndex(0)}
+          onGoBottom={() => scrollToPastExamIndex(exams.length - 1)}
           withRoundBar={isPastExamYear && !isPastExamRetry}
         />
         </>
