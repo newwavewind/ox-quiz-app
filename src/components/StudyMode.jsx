@@ -245,7 +245,9 @@ export default function StudyMode({
       isRandomExam || (isPastExamYear && (isPastExamRetry || pastExamRound != null))
     if (!inSolve) return undefined
     const id = requestAnimationFrame(() => {
-      sectionRefs.current[currentIndex]?.scrollIntoView({ behavior: 'auto', block: 'start' })
+      const root = scrollContainerRef.current
+      const el = sectionRefs.current[currentIndex]
+      if (root && el) root.scrollTo({ top: el.offsetTop, behavior: 'auto' })
     })
     return () => cancelAnimationFrame(id)
   }, [examListKey, isRandomExam, isPastExamYear, pastExamRound, isPastExamRetry])
@@ -373,11 +375,36 @@ export default function StudyMode({
     }
   }
 
-  const scrollToPastExamIndex = idx => {
+  const scrollPastExamContainerTo = top => {
+    const root = scrollContainerRef.current
+    if (!root) return
+    root.scrollTo({ top, behavior: 'smooth' })
+  }
+
+  const scrollPastExamSection = idx => {
     if (idx < 0 || idx >= exams.length) return
+    const root = scrollContainerRef.current
+    const el = sectionRefs.current[idx]
+    if (!root || !el) return
     setCurrentIndex(idx)
     pastExamHapticIndexRef.current = idx
-    sectionRefs.current[idx]?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    scrollPastExamContainerTo(el.offsetTop)
+  }
+
+  const goPastExamTop = () => {
+    if (exams.length === 0) return
+    setCurrentIndex(0)
+    pastExamHapticIndexRef.current = 0
+    scrollPastExamContainerTo(0)
+  }
+
+  const goPastExamBottom = () => {
+    const root = scrollContainerRef.current
+    if (!root || exams.length === 0) return
+    const lastIdx = exams.length - 1
+    setCurrentIndex(lastIdx)
+    pastExamHapticIndexRef.current = lastIdx
+    scrollPastExamContainerTo(root.scrollHeight)
   }
 
   const jumpToQuestion = (questionNo) => {
@@ -386,6 +413,10 @@ export default function StudyMode({
     setCurrentIndex(idx)
     if (usePastExamSolveUI && pastExamHapticIndexRef.current !== idx) {
       pastExamHapticIndexRef.current = idx
+    }
+    if (usePastExamSolveUI) {
+      scrollPastExamSection(idx)
+      return
     }
     if (isPastExam) {
       sectionRefs.current[idx]?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -675,15 +706,15 @@ export default function StudyMode({
           </section>
         </div>
         <PastExamScrollArrows
-          canGoTop={currentIndex > 0}
-          canGoBottom={currentIndex < exams.length - 1}
+          canGoTop={exams.length > 0}
+          canGoBottom={exams.length > 0}
           rangeLabel={
             exams.length > 0
               ? `${exams[0].question_no}↕${exams[exams.length - 1].question_no}`
               : null
           }
-          onGoTop={() => scrollToPastExamIndex(0)}
-          onGoBottom={() => scrollToPastExamIndex(exams.length - 1)}
+          onGoTop={goPastExamTop}
+          onGoBottom={goPastExamBottom}
           withRoundBar={isPastExamYear && !isPastExamRetry}
         />
         </>

@@ -16,22 +16,26 @@ export default function PastExamScrollArrows({
     'pointer-events-auto flex items-center justify-center w-10 h-10 rounded-full border border-slate-200/60 bg-white/50 text-slate-700 shadow-sm backdrop-blur-sm transition-all active:scale-95 dark:border-slate-600/50 dark:bg-slate-900/40 dark:text-slate-200'
   const btnDisabled = 'opacity-30 pointer-events-none'
 
-  const handleTop = () => {
+  const handleTop = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
     if (!canGoTop) return
     hapticTap('medium')
-    onGoTop()
+    onGoTop?.()
   }
 
-  const handleBottom = () => {
+  const handleBottom = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
     if (!canGoBottom) return
     hapticTap('medium')
-    onGoBottom()
+    onGoBottom?.()
   }
 
   return (
     <nav
       aria-label="맨 위·맨 아래 문항"
-      className={`fixed right-2 z-30 flex flex-col items-center justify-center gap-2 pointer-events-none ${topClass} bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))]`}
+      className={`fixed right-2 z-40 flex flex-col items-center justify-center gap-2 pointer-events-none ${topClass} bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))]`}
     >
       <button
         type="button"
