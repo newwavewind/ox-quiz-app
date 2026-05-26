@@ -14,7 +14,7 @@ import { getRandomExamCount, isRandomStudyMode } from '../data/randomExamSet'
 import { clearStudyResume, loadStudyResume, saveStudyResume } from '../data/studyResume'
 import PastExamQuestionBlock from './PastExamQuestionBlock'
 import PastExamTenRoundBar from './PastExamTenRoundBar'
-import { PastExamGradeMark, PastExamScoreSheet } from './StudyModeShared'
+import { PastExamScoreSheet, QuestionNumberPrefix } from './StudyModeShared'
 import {
   loadPastExamRounds,
   savePastExamRoundResult,
@@ -832,14 +832,14 @@ export default function StudyMode({
           <div className="relative bg-white border border-slate-200 rounded-2xl p-5 space-y-3">
             <p className="text-xs font-semibold text-slate-400 mb-2">지문</p>
             <p className="text-slate-800 leading-relaxed text-base font-medium whitespace-pre-wrap">
-              <span className="relative inline-flex shrink-0 items-center justify-center min-w-[2.75rem] min-h-[2.25rem] mr-1 align-top -mt-0.5">
-                {isPastExam && questionRevealed && currentPastResult && (
-                  <PastExamGradeMark correct={currentPastResult.questionCorrect} />
-                )}
-                <span className="relative z-[1] font-bold text-slate-800 leading-none">
-                  {exam.question_no}.
-                </span>
-              </span>
+              <QuestionNumberPrefix
+                questionNo={exam.question_no}
+                gradeCorrect={
+                  isPastExam && questionRevealed && currentPastResult
+                    ? currentPastResult.questionCorrect
+                    : null
+                }
+              />
               <HighlightText text={exam.stem} term={highlightTerm} />
             </p>
             {exam.question_type === 'composite' && exam.combo_choices?.length > 0 && (

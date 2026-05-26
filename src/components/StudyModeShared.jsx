@@ -53,6 +53,20 @@ export function PastExamGradeMark({ correct }) {
   )
 }
 
+/** 지문 앞 문항 번호 — 채점 도장이 있을 때만 여백 확보 */
+export function QuestionNumberPrefix({ questionNo, gradeCorrect = null }) {
+  const showMark = gradeCorrect != null
+  if (showMark) {
+    return (
+      <span className="relative inline-flex shrink-0 items-center justify-center min-w-[2.75rem] min-h-[2.25rem] mr-1 align-baseline">
+        <PastExamGradeMark correct={gradeCorrect} />
+        <span className="relative z-[1] font-bold text-slate-800 leading-none">{questionNo}.</span>
+      </span>
+    )
+  }
+  return <span className="font-bold text-slate-800">{questionNo}. </span>
+}
+
 export function PastExamScoreSheet({
   exams,
   results,
