@@ -56,6 +56,7 @@ function emptyStudySlot(returnScreen = 'home') {
     randomExams: null,
     pastExamExams: null,
     pastExamRound: null,
+    pastExamRetryKind: null,
     startExamId: null,
   }
 }
@@ -369,9 +370,9 @@ function App() {
     )
   }
 
-  const retryPastExamWrong = (wrongExamIds, year, roundNo) => {
+  const reviewPastExamRound = (examIds, year, roundNo, kind = 'wrong') => {
     const subset = sortExams(
-      allExams.filter(e => wrongExamIds.includes(e.id)),
+      allExams.filter(e => examIds.includes(e.id)),
       'number'
     )
     if (subset.length === 0) return
@@ -391,6 +392,7 @@ function App() {
       },
       pastExamExams: subset,
       pastExamRound: roundNo ?? null,
+      pastExamRetryKind: kind,
       startExamId: null,
     }
     clearStudyResume(`exam:${studySessionKey(slot)}`)
@@ -467,8 +469,9 @@ function App() {
           savedNotes={notes}
           onToggleNote={toggleStudyNote}
           onBack={() => exitStudy(slotId)}
-          onRetryPastExamWrong={retryPastExamWrong}
+          onReviewPastExamRound={reviewPastExamRound}
           pastExamRetryRound={slot.pastExamRound}
+          pastExamRetryKind={slot.pastExamRetryKind}
           onFilterChange={next => {
             const setSlot = slotId === 'exam' ? setExamStudy : setHomeStudy
             setSlot(prev => ({ ...prev, filter: { ...DEFAULT_FILTER, ...next } }))

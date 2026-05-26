@@ -126,6 +126,7 @@ export default function PastExamTenRoundBar({
   onStartRound,
   onViewResult,
   onRetryWrong,
+  onRetryCorrect,
 }) {
   return (
     <div className="shrink-0 bg-white/90 dark:bg-slate-800/95 border-b border-slate-100 dark:border-slate-700 px-4 py-3.5 backdrop-blur-sm">
@@ -177,7 +178,21 @@ export default function PastExamTenRoundBar({
                     >
                       채점
                     </button>
-                    {rec.wrongCount > 0 ? (
+                    {rec.questionCorrect > 0 && onRetryCorrect ? (
+                      <button
+                        type="button"
+                        onClick={() => onRetryCorrect(n)}
+                        className="flex-1 py-2 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                      >
+                        정답
+                        <span className="block text-[9px] font-bold opacity-80">{rec.questionCorrect}</span>
+                      </button>
+                    ) : (
+                      <span className="flex-1 py-2 text-[10px] font-medium text-slate-300 dark:text-slate-600 text-center">
+                        —
+                      </span>
+                    )}
+                    {rec.wrongCount > 0 && onRetryWrong ? (
                       <button
                         type="button"
                         onClick={() => onRetryWrong(n)}

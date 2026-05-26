@@ -70,9 +70,11 @@ export function PastExamScoreSheet({
   onClose,
   onExit,
   onRetryWrong,
+  onRetryCorrect,
   showPassCriteria = true,
 }) {
   const wrongCount = exams.filter(e => results[e.id] && !results[e.id].questionCorrect).length
+  const correctCount = exams.filter(e => results[e.id]?.questionCorrect).length
   const ungradedCount = exams.filter(e => !results[e.id]).length
   const evalResult = evaluatePastExamScore(summary.questionCorrect, summary.questionTotal)
   const pct =
@@ -261,16 +263,38 @@ export function PastExamScoreSheet({
         </div>
 
         <div className="shrink-0 px-5 pb-4 pt-2 space-y-1.5 border-t border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30">
-          {onRetryWrong && wrongCount > 0 && (
-            <button
-              type="button"
-              onClick={onRetryWrong}
-              className="w-full flex items-center justify-center gap-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg py-2 text-sm font-semibold shadow-sm transition-colors"
-            >
-              <span>오답 다시 풀기</span>
-              <span className="text-[10px] font-semibold bg-white/20 px-1.5 py-px rounded-full">{wrongCount}</span>
-            </button>
-          )}
+          {(onRetryCorrect && correctCount > 0) || (onRetryWrong && wrongCount > 0) ? (
+            <div className="grid grid-cols-2 gap-1.5">
+              {onRetryCorrect && correctCount > 0 ? (
+                <button
+                  type="button"
+                  onClick={onRetryCorrect}
+                  className="flex items-center justify-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg py-2 text-sm font-semibold shadow-sm transition-colors"
+                >
+                  <span>맞춘 문제</span>
+                  <span className="text-[10px] font-semibold bg-white/20 px-1.5 py-px rounded-full">
+                    {correctCount}
+                  </span>
+                </button>
+              ) : (
+                <span />
+              )}
+              {onRetryWrong && wrongCount > 0 ? (
+                <button
+                  type="button"
+                  onClick={onRetryWrong}
+                  className="flex items-center justify-center gap-1 bg-rose-600 hover:bg-rose-700 text-white rounded-lg py-2 text-sm font-semibold shadow-sm transition-colors"
+                >
+                  <span>오답 보기</span>
+                  <span className="text-[10px] font-semibold bg-white/20 px-1.5 py-px rounded-full">
+                    {wrongCount}
+                  </span>
+                </button>
+              ) : (
+                <span />
+              )}
+            </div>
+          ) : null}
           <div className="grid grid-cols-2 gap-1.5">
             <button
               type="button"

@@ -48,9 +48,10 @@ export default function StudyMode({
   onBack,
   onFilterChange,
   onRegenerateRandom,
-  onRetryPastExamWrong,
+  onReviewPastExamRound,
   isPastExamRetry = false,
   pastExamRetryRound = null,
+  pastExamRetryKind = null,
   exitLabel = '홈으로',
   studyVisible = true,
   resumeStorageKey = 'default',
@@ -147,6 +148,24 @@ export default function StudyMode({
     }
     // exams 참조는 progress 갱신마다 바뀌므로 의존성에서 제외 (OX 확인 직후 상태가 초기화되는 버그 방지)
   }, [filter, examListKey, startExamId])
+
+  useEffect(() => {
+    if (!isPastExamRetry || !isPastExamYear || !isValidPastExamRound(pastExamRetryRound)) return
+    const rec = pastExamRoundsData[pastExamRetryRound]
+    if (!rec?.results) return
+    const filteredResults = {}
+    const drafts = {}
+    for (const e of exams) {
+      const r = rec.results[e.id]
+      if (r) {
+        filteredResults[e.id] = r
+        drafts[e.id] = { userAnswers: {}, finalChoice: r.finalChoice ?? null }
+      }
+    }
+    setPastExamResults(filteredResults)
+    setPastExamDrafts(drafts)
+    setPastExamAllRevealed(true)
+  }, [isPastExamRetry, isPastExamYear, pastExamRetryRound, examListKey, pastExamRoundsData, exams])
 
   useEffect(() => {
     if (!examListKey || exams.length === 0) return
@@ -438,6 +457,11 @@ export default function StudyMode({
     setShowPastExamScore(true)
   }
 
+  const getPastExamResultsById = roundNo =>
+    Object.keys(pastExamResults).length > 0
+      ? pastExamResults
+      : pastExamRoundsData[roundNo]?.results ?? {}
+
   const getPastExamWrongIds = (resultsById, roundNo) => {
     const fromState = exams
       .filter(e => resultsById[e.id] && !resultsById[e.id].questionCorrect)
@@ -448,20 +472,31 @@ export default function StudyMode({
     return exams.filter(e => rec.results[e.id] && !rec.results[e.id].questionCorrect).map(e => e.id)
   }
 
-  const startPastExamWrongRetry = roundNo => {
-    if (!onRetryPastExamWrong || !isValidPastExamRound(roundNo)) return
-    const resultsById =
-      Object.keys(pastExamResults).length > 0
-        ? pastExamResults
-        : pastExamRoundsData[roundNo]?.results ?? {}
-    const wrongIds = getPastExamWrongIds(resultsById, roundNo)
-    if (wrongIds.length === 0) return
-    setShowPastExamScore(false)
-    setPastExamScoreRoundNo(null)
-    onRetryPastExamWrong(wrongIds, filter.year, roundNo)
+  const getPastExamCorrectIds = (resultsById, roundNo) => {
+    const fromState = exams
+      .filter(e => resultsById[e.id]?.questionCorrect)
+      .map(e => e.id)
+    if (fromState.length > 0) return fromState
+    const rec = pastExamRoundsData[roundNo]
+    if (!rec?.results) return []
+    return exams.filter(e => rec.results[e.id]?.questionCorrect).map(e => e.id)
   }
 
-  const retryPastExamRoundWrong = roundNo => startPastExamWrongRetry(roundNo)
+  const startPastExamReview = (roundNo, kind) => {
+    if (!onReviewPastExamRound || !isValidPastExamRound(roundNo)) return
+    const resultsById = getPastExamResultsById(roundNo)
+    const ids =
+      kind === 'correct'
+        ? getPastExamCorrectIds(resultsById, roundNo)
+        : getPastExamWrongIds(resultsById, roundNo)
+    if (ids.length === 0) return
+    setShowPastExamScore(false)
+    setPastExamScoreRoundNo(null)
+    onReviewPastExamRound(ids, filter.year, roundNo, kind)
+  }
+
+  const retryPastExamRoundWrong = roundNo => startPastExamReview(roundNo, 'wrong')
+  const retryPastExamRoundCorrect = roundNo => startPastExamReview(roundNo, 'correct')
 
   const exitPastExamSolve = () => {
     setPastExamRound(null)
@@ -508,7 +543,9 @@ export default function StudyMode({
     const pastTitle = isRandomExam
       ? `랜덤 ${randomExamCount}문제`
       : isPastExamRetry
-        ? `오답 다시풀기 · ${filter.year}년 ${pastExamRetryRound}회독`
+        ? pastExamRetryKind === 'correct'
+          ? `맞춘 문제 · ${filter.year}년 ${pastExamRetryRound}회독`
+          : `오답 다시풀기 · ${filter.year}년 ${pastExamRetryRound}회독`
         : pastExamRound != null
           ? `${filter.year}년 · ${pastExamRound}회독`
           : exams[0]?.round != null
@@ -538,6 +575,7 @@ export default function StudyMode({
             onStartRound={startPastExamRound}
             onViewResult={viewPastExamRoundResult}
             onRetryWrong={retryPastExamRoundWrong}
+            onRetryCorrect={retryPastExamRoundCorrect}
           />
         )}
 
@@ -558,7 +596,7 @@ export default function StudyMode({
               스크롤하며 풀 수 있습니다.
             </p>
             <p className="text-slate-500 text-xs mt-3">
-              각 회독마다 채점 결과와 오답 다시 풀기가 저장됩니다. 완료한 회독은 다시 풀 수 없습니다.
+              각 회독마다 채점 결과와 맞춘·틀린 문항 보기가 저장됩니다. 완료한 회독은 다시 풀 수 없습니다.
             </p>
           </div>
         ) : (
@@ -668,12 +706,22 @@ export default function StudyMode({
               }
             }}
             onRetryWrong={
-              isPastExamYear && onRetryPastExamWrong
+              isPastExamYear && onReviewPastExamRound
                 ? () => {
                     const roundNo =
                       pastExamScoreRoundNo ??
                       (isPastExamRetry ? pastExamRetryRound : pastExamRound)
-                    startPastExamWrongRetry(roundNo)
+                    startPastExamReview(roundNo, 'wrong')
+                  }
+                : undefined
+            }
+            onRetryCorrect={
+              isPastExamYear && onReviewPastExamRound
+                ? () => {
+                    const roundNo =
+                      pastExamScoreRoundNo ??
+                      (isPastExamRetry ? pastExamRetryRound : pastExamRound)
+                    startPastExamReview(roundNo, 'correct')
                   }
                 : undefined
             }
@@ -1305,8 +1353,21 @@ export default function StudyMode({
           onClose={() => setShowPastExamScore(false)}
           onExit={onBack}
           onRetryWrong={
-            onRetryPastExamWrong
-              ? () => startPastExamWrongRetry(pastExamScoreRoundNo ?? pastExamRetryRound ?? pastExamRound)
+            onReviewPastExamRound
+              ? () =>
+                  startPastExamReview(
+                    pastExamScoreRoundNo ?? pastExamRetryRound ?? pastExamRound,
+                    'wrong'
+                  )
+              : undefined
+          }
+          onRetryCorrect={
+            onReviewPastExamRound
+              ? () =>
+                  startPastExamReview(
+                    pastExamScoreRoundNo ?? pastExamRetryRound ?? pastExamRound,
+                    'correct'
+                  )
               : undefined
           }
         />
