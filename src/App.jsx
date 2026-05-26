@@ -59,6 +59,13 @@ import {
 } from './data/appearanceSettings'
 import { saveRound5CertWriteIntent } from './data/round5Cert'
 import { getChapterById, filterExamsByChapter } from './data/curriculum'
+import {
+  addExamWrongNote,
+  isExamWrongNote,
+  loadExamWrongNotes,
+  removeExamWrongNote,
+  sortExamWrongNoteIds,
+} from './data/examWrongNotes'
 
 const STORAGE_KEY = 'ox_quiz_progress_v2'
 const NOTES_STORAGE_KEY = 'ox_quiz_notes_v1'
@@ -92,6 +99,9 @@ function emptyStudySlot(returnScreen = 'home') {
 
 function studySessionKey(slot) {
   if (slot.customExams?.length) {
+    if (slot.filter.mode === 'examWrongNotes') {
+      return `exam-wrong-notes-${slot.customExams.map(e => e.id).join(',')}`
+    }
     return `custom-${slot.customExams.map(e => e.id).join(',')}`
   }
   if (slot.filter.mode === 'pastExam') {
@@ -175,6 +185,8 @@ function App() {
   )
 
   const [appearance, setAppearance] = useState(() => loadAppearanceSettings())
+
+  const [examWrongNotes, setExamWrongNotes] = useState(() => loadExamWrongNotes())
 
   const examYears = useMemo(
     () => [...new Set(allExams.map(e => e.year))].sort((a, b) => b - a),
@@ -539,6 +551,42 @@ function App() {
     )
   }
 
+  const examWrongNoteEntries = useMemo(() => {
+    return sortExamWrongNoteIds(examWrongNotes).flatMap(examId => {
+      const exam = allExams.find(e => e.id === examId)
+      if (!exam) return []
+      return [{ exam, addedAt: examWrongNotes[examId]?.addedAt ?? 0 }]
+    })
+  }, [examWrongNotes])
+
+  const toggleExamWrongNote = useCallback(examId => {
+    if (!examId) return
+    setExamWrongNotes(prev =>
+      isExamWrongNote(prev, examId) ? removeExamWrongNote(prev, examId) : addExamWrongNote(prev, examId)
+    )
+  }, [])
+
+  const openExamWrongNotesStudy = useCallback(
+    (startExamId = null) => {
+      const ids = sortExamWrongNoteIds(examWrongNotes)
+      const list = ids.map(id => allExams.find(e => e.id === id)).filter(Boolean)
+      if (!list.length) return
+      const startId = startExamId ?? list[0]?.id ?? null
+      openStudy(
+        {
+          ...DEFAULT_FILTER,
+          mode: 'examWrongNotes',
+          status: 'all',
+          sort: 'number',
+          examId: startId,
+        },
+        'exam',
+        { customExams: list }
+      )
+    },
+    [examWrongNotes]
+  )
+
   const openRandomStudy = (count = 40) => {
     const total = Math.min(count, allExams.length)
     if (total < 1) return
@@ -576,6 +624,20 @@ function App() {
       'exam',
       { pastExamExams: null, pastExamRound: null }
     )
+  }
+
+  const exitPastExamRetry = () => {
+    setExamStudy(prev => {
+      if (!prev.active || prev.filter.mode !== 'pastExam') return prev
+      const next = {
+        ...prev,
+        pastExamExams: null,
+        pastExamRetryKind: null,
+        startExamId: null,
+      }
+      clearStudyResume(`exam:${studySessionKey(next)}`)
+      return next
+    })
   }
 
   const reviewPastExamRound = (examIds, year, roundNo, kind = 'wrong') => {
@@ -684,6 +746,7 @@ function App() {
           savedNotes={notes}
           onToggleNote={toggleStudyNote}
           onBack={() => exitStudy(slotId)}
+          onExitPastExamRetry={slotId === 'exam' ? exitPastExamRetry : undefined}
           onReviewPastExamRound={reviewPastExamRound}
           pastExamRetryRound={slot.pastExamRound}
           pastExamRetryKind={slot.pastExamRetryKind}
@@ -702,6 +765,9 @@ function App() {
           appearance={appearance}
           onAppearanceChange={setAppearance}
           onOpenRound5Cert={openRound5CertWrite}
+          isInExamWrongNotes={examId => isExamWrongNote(examWrongNotes, examId)}
+          onToggleExamWrongNote={toggleExamWrongNote}
+          examWrongNotes={examWrongNotes}
         />
       </div>
     )
@@ -759,6 +825,8 @@ function App() {
           exams={allExams}
           onStartPastExam={openPastExamStudy}
           onStartRandom={openRandomStudy}
+          examWrongNoteEntries={examWrongNoteEntries}
+          onStartExamWrongNotesStudy={() => openExamWrongNotesStudy()}
           onOpenStats={() => {
             setScreen('stats')
             setTab('exam')

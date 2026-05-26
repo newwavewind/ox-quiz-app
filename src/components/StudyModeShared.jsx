@@ -68,14 +68,10 @@ export function PastExamScoreSheet({
   results,
   summary,
   onClose,
-  onRetryWrong,
-  onRetryCorrect,
   onCertifyRound5,
   showPassCriteria = true,
 }) {
   const wrongCount = exams.filter(e => results[e.id] && !results[e.id].questionCorrect).length
-  const correctCount = exams.filter(e => results[e.id]?.questionCorrect).length
-  const ungradedCount = exams.filter(e => !results[e.id]).length
   const evalResult = evaluatePastExamScore(summary.questionCorrect, summary.questionTotal)
   const pct =
     summary.questionTotal > 0
@@ -215,7 +211,7 @@ export function PastExamScoreSheet({
         </div>
 
         <div className="overflow-y-auto px-5 py-4 flex-1 min-h-0">
-          <div className="grid grid-cols-3 gap-1.5 mb-3">
+          <div className="grid grid-cols-2 gap-1.5 mb-3">
             <div className="rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/50 px-2 py-1.5 text-center">
               <p className="text-sm font-bold leading-tight text-emerald-700 dark:text-emerald-300">
                 {summary.questionCorrect}
@@ -225,10 +221,6 @@ export function PastExamScoreSheet({
             <div className="rounded-lg bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 px-2 py-1.5 text-center">
               <p className="text-sm font-bold leading-tight text-rose-700 dark:text-rose-300">{wrongCount}</p>
               <p className="text-[9px] font-medium text-rose-600/80">오답</p>
-            </div>
-            <div className="rounded-lg bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600 px-2 py-1.5 text-center">
-              <p className="text-sm font-bold leading-tight text-slate-600 dark:text-slate-300">{ungradedCount}</p>
-              <p className="text-[9px] font-medium text-slate-500">미채점</p>
             </div>
           </div>
 
@@ -263,38 +255,6 @@ export function PastExamScoreSheet({
         </div>
 
         <div className="shrink-0 px-5 pb-4 pt-2 space-y-1.5 border-t border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30">
-          {(onRetryCorrect && correctCount > 0) || (onRetryWrong && wrongCount > 0) ? (
-            <div className="grid grid-cols-2 gap-1.5">
-              {onRetryCorrect && correctCount > 0 ? (
-                <button
-                  type="button"
-                  onClick={onRetryCorrect}
-                  className="flex items-center justify-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg py-2 text-sm font-semibold shadow-sm transition-colors"
-                >
-                  <span>맞춘 문제</span>
-                  <span className="text-[10px] font-semibold bg-white/20 px-1.5 py-px rounded-full">
-                    {correctCount}
-                  </span>
-                </button>
-              ) : (
-                <span />
-              )}
-              {onRetryWrong && wrongCount > 0 ? (
-                <button
-                  type="button"
-                  onClick={onRetryWrong}
-                  className="flex items-center justify-center gap-1 bg-rose-600 hover:bg-rose-700 text-white rounded-lg py-2 text-sm font-semibold shadow-sm transition-colors"
-                >
-                  <span>오답 보기</span>
-                  <span className="text-[10px] font-semibold bg-white/20 px-1.5 py-px rounded-full">
-                    {wrongCount}
-                  </span>
-                </button>
-              ) : (
-                <span />
-              )}
-            </div>
-          ) : null}
           {onCertifyRound5 && (
             <button
               type="button"

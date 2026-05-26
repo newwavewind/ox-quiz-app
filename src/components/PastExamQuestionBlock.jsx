@@ -63,6 +63,26 @@ function ItemExplanationWithAi({
   )
 }
 
+function ExamWrongNoteCheckbox({ examId, inCollection, onToggle }) {
+  if (!onToggle) return null
+  return (
+    <label
+      className="flex items-center gap-2 mt-2 cursor-pointer select-none"
+      onClick={e => e.stopPropagation()}
+    >
+      <input
+        type="checkbox"
+        checked={inCollection}
+        onChange={() => onToggle(examId)}
+        className="rounded border-slate-300 text-rose-600 focus:ring-rose-400 w-4 h-4"
+      />
+      <span className={`text-xs font-semibold ${inCollection ? 'text-rose-700' : 'text-slate-600'}`}>
+        오답노트
+      </span>
+    </label>
+  )
+}
+
 function NoteSaveCheckbox({ exam, item, savedNotes, onToggleNote }) {
   if (!onToggleNote) return null
   const noteSaved = Boolean(savedNotes?.[makeNoteId(exam.id, item.key)])
@@ -94,6 +114,10 @@ function PastExamQuestionBlock({
   showAnswersAlways = false,
   savedNotes = {},
   onToggleNote,
+  inExamWrongNotes = false,
+  onToggleExamWrongNote,
+  perQuestionReveal = false,
+  onRevealQuestion,
 }) {
   const isComposite = exam.question_type === 'composite'
   const isPickOne = exam.question_type === 'wrong' || exam.question_type === 'correct'
@@ -144,21 +168,37 @@ function PastExamQuestionBlock({
           />
           <HighlightText text={exam.stem} term={highlightTerm} />
         </p>
-        {isComposite && exam.combo_choices?.length > 0 && !showAnswersAlways && (
-          <p className="text-xs text-slate-500 border-t border-slate-100 pt-3">
-            기출 선택지를 고른 뒤, 맨 아래로 스크롤해 「정답 확인」을 누르세요.
-          </p>
-        )}
-        {isPickOne && !showAnswersAlways && (
-          <p className="text-xs text-slate-500 border-t border-slate-100 pt-3">
-            {exam.question_type === 'wrong' ? '틀린' : '옳은'} 보기를 고른 뒤, 맨 아래로 스크롤해 「정답 확인」을
-            누르세요.
-          </p>
-        )}
-        {showAnswersAlways && exam.correct_choice != null && (
-          <p className="text-xs text-slate-500 border-t border-slate-100 pt-3">
-            기출 정답 {CHOICE_MARKERS[exam.correct_choice - 1]}
-          </p>
+        {(onToggleExamWrongNote ||
+          (isComposite && exam.combo_choices?.length > 0 && !showAnswersAlways) ||
+          (isPickOne && !showAnswersAlways) ||
+          (showAnswersAlways && exam.correct_choice != null)) && (
+          <div className="border-t border-slate-100 pt-3">
+            {isComposite && exam.combo_choices?.length > 0 && !showAnswersAlways && (
+              <p className="text-xs text-slate-500">
+                {perQuestionReveal
+                  ? '기출 선택지를 고른 뒤 아래 「정답 확인」을 누르세요.'
+                  : '기출 선택지를 고른 뒤, 맨 아래로 스크롤해 「정답 확인」을 누르세요.'}
+              </p>
+            )}
+            {isPickOne && !showAnswersAlways && (
+              <p className="text-xs text-slate-500">
+                {exam.question_type === 'wrong' ? '틀린' : '옳은'} 보기를 고른 뒤,
+                {perQuestionReveal
+                  ? ' 아래 「정답 확인」을 누르세요.'
+                  : ' 맨 아래로 스크롤해 「정답 확인」을 누르세요.'}
+              </p>
+            )}
+            {showAnswersAlways && exam.correct_choice != null && (
+              <p className="text-xs text-slate-500">
+                기출 정답 {CHOICE_MARKERS[exam.correct_choice - 1]}
+              </p>
+            )}
+            <ExamWrongNoteCheckbox
+              examId={exam.id}
+              inCollection={inExamWrongNotes}
+              onToggle={onToggleExamWrongNote}
+            />
+          </div>
         )}
       </div>
 
@@ -321,6 +361,18 @@ function PastExamQuestionBlock({
               )
             })}
           </div>
+        </div>
+      )}
+
+      {perQuestionReveal && !revealed && onRevealQuestion && (
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={() => onRevealQuestion(exam.id)}
+            className="px-3.5 py-1.5 rounded-lg text-xs font-semibold border border-indigo-300 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors"
+          >
+            정답 확인
+          </button>
         </div>
       )}
 

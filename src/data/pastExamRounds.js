@@ -103,9 +103,30 @@ export function clearPastExamRound(year, roundNo) {
 
 export const PAST_EXAM_ROUND_MIN = 1
 export const PAST_EXAM_ROUND_MAX = 5
+export const PAST_EXAM_INFINITE_ROUND = 'infinite'
+
+export function isPastExamInfiniteRound(roundNo) {
+  return roundNo === PAST_EXAM_INFINITE_ROUND
+}
 
 export function isValidPastExamRound(roundNo) {
   return roundNo >= PAST_EXAM_ROUND_MIN && roundNo <= PAST_EXAM_ROUND_MAX
+}
+
+export function isPastExamPlayableRound(roundNo) {
+  return isValidPastExamRound(roundNo) || isPastExamInfiniteRound(roundNo)
+}
+
+export function formatPastExamRoundLabel(roundNo) {
+  if (isPastExamInfiniteRound(roundNo)) return '회독무한반복'
+  if (isValidPastExamRound(roundNo)) return `${roundNo}회독`
+  return String(roundNo ?? '')
+}
+
+/** 5회독 완료 후에만 회독무한반복 시작 가능 */
+export function getPastExamInfiniteBlockMessage(roundsData = {}) {
+  if (!roundsData[PAST_EXAM_ROUND_MAX]?.completed) return '5회독을 먼저 완료하세요'
+  return null
 }
 
 /** 이전 회독 미완료 시 표시할 안내 문구. 시작 가능하면 null */

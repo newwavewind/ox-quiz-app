@@ -26,10 +26,21 @@ import {
   loadPastExamRounds,
   savePastExamRoundResult,
   isValidPastExamRound,
+  isPastExamInfiniteRound,
+  isPastExamPlayableRound,
+  formatPastExamRoundLabel,
   getPastExamRoundBlockMessage,
+  getPastExamInfiniteBlockMessage,
 } from '../data/pastExamRounds'
 
 const CHOICE_MARKERS = ['①', '②', '③', '④', '⑤']
+
+const EXAM_WRONG_NOTE_PAGE_SIZE_OPTIONS = [
+  { value: 5, label: '5개씩' },
+  { value: 10, label: '10개씩' },
+  { value: 20, label: '20개씩' },
+  { value: 'all', label: '전체 보기' },
+]
 
 function StudyConfirmModal({ message, confirmLabel, onCancel, onConfirm }) {
   useEffect(() => {
@@ -111,6 +122,7 @@ export default function StudyMode({
   savedNotes = {},
   onToggleNote,
   onBack,
+  onExitPastExamRetry,
   onFilterChange,
   onRegenerateRandom,
   onReviewPastExamRound,
@@ -124,6 +136,9 @@ export default function StudyMode({
   appearance = null,
   onAppearanceChange,
   onOpenRound5Cert,
+  isInExamWrongNotes,
+  onToggleExamWrongNote,
+  examWrongNotes = {},
 }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [userAnswers, setUserAnswers] = useState({})
@@ -145,6 +160,9 @@ export default function StudyMode({
   const [pastExamRoundsData, setPastExamRoundsData] = useState({})
   const [pastExamRoundHint, setPastExamRoundHint] = useState(null)
   const [historyConfirm, setHistoryConfirm] = useState(null)
+  const [examWrongNotePageSize, setExamWrongNotePageSize] = useState(10)
+  const [examWrongNotePage, setExamWrongNotePage] = useState(1)
+  const [examWrongNoteSort, setExamWrongNoteSort] = useState('recent')
   const scrollContainerRef = useRef(null)
   const studyScrollRef = useRef(null)
   const sectionRefs = useRef([])
@@ -171,8 +189,40 @@ export default function StudyMode({
   const isRandomExam = isRandomStudyMode(filter)
   const randomExamCount = isRandomExam ? getRandomExamCount(filter) : null
   const isPastExamYear = filter.mode === 'pastExam'
-  const usePastExamSolveUI = isPastExamYear || isRandomExam
+  const isExamWrongNotes = filter.mode === 'examWrongNotes'
+  const usePastExamSolveUI = isPastExamYear || isRandomExam || isExamWrongNotes
   const isPastExam = isPastExamYear
+
+  const examWrongNotesSortedExams = useMemo(() => {
+    if (!isExamWrongNotes) return exams
+    return [...exams].sort((a, b) => {
+      const ta = examWrongNotes?.[a.id]?.addedAt ?? 0
+      const tb = examWrongNotes?.[b.id]?.addedAt ?? 0
+      return examWrongNoteSort === 'oldest' ? ta - tb : tb - ta
+    })
+  }, [isExamWrongNotes, exams, examWrongNotes, examWrongNoteSort])
+
+  const examWrongNotePageMeta = useMemo(() => {
+    if (!isExamWrongNotes) return null
+    const total = examWrongNotesSortedExams.length
+    const isAll = examWrongNotePageSize === 'all'
+    const totalPages = isAll ? 1 : Math.max(1, Math.ceil(total / examWrongNotePageSize))
+    const page = Math.min(examWrongNotePage, totalPages)
+    const start = isAll ? 0 : (page - 1) * examWrongNotePageSize
+    const end = isAll ? total : Math.min(start + examWrongNotePageSize, total)
+    return {
+      total,
+      isAll,
+      totalPages,
+      page,
+      visible: examWrongNotesSortedExams.slice(start, end),
+      rangeStart: total === 0 ? 0 : isAll ? 1 : start + 1,
+      rangeEnd: end,
+    }
+  }, [isExamWrongNotes, examWrongNotesSortedExams, examWrongNotePageSize, examWrongNotePage])
+
+  const pastExamSolveExams =
+    isExamWrongNotes && examWrongNotePageMeta ? examWrongNotePageMeta.visible : exams
 
   const years = useMemo(
     () => [...new Set(allExams.map(q => q.year))].sort((a, b) => b - a),
@@ -376,6 +426,31 @@ export default function StudyMode({
     return () => window.clearTimeout(t)
   }, [pastExamRoundHint])
 
+  useEffect(() => {
+    if (!isExamWrongNotes) return
+    setExamWrongNotePage(1)
+  }, [examWrongNoteSort, examWrongNotePageSize, isExamWrongNotes])
+
+  useEffect(() => {
+    if (!isExamWrongNotes || !examWrongNotePageMeta) return
+    if (examWrongNotePage > examWrongNotePageMeta.totalPages) {
+      setExamWrongNotePage(examWrongNotePageMeta.totalPages)
+    }
+  }, [isExamWrongNotes, examWrongNotePage, examWrongNotePageMeta?.totalPages])
+
+  useEffect(() => {
+    if (!isExamWrongNotes) return
+    setPastExamDrafts({})
+    setPastExamAllRevealed(false)
+    setPastExamResults({})
+    setShowPastExamScore(false)
+  }, [isExamWrongNotes, examWrongNoteSort, examWrongNotePageSize, examWrongNotePage])
+
+  useEffect(() => {
+    if (!isExamWrongNotes || !studyVisible) return
+    scrollStudyToTopRef.current?.()
+  }, [examWrongNotePage, examWrongNoteSort, examWrongNotePageSize, isExamWrongNotes, studyVisible])
+
   const showRoundInJumpBar = useMemo(() => {
     const years = new Set(exams.map(e => e.year))
     const rounds = new Set(exams.map(e => e.round))
@@ -384,8 +459,8 @@ export default function StudyMode({
 
   const showQuestionJump = exams.length > 1
   const pastExamSummary = useMemo(
-    () => (usePastExamSolveUI ? summarizePastExamResults(exams, pastExamResults) : null),
-    [usePastExamSolveUI, exams, pastExamResults]
+    () => (usePastExamSolveUI ? summarizePastExamResults(pastExamSolveExams, pastExamResults) : null),
+    [usePastExamSolveUI, pastExamSolveExams, pastExamResults]
   )
 
   const exam = exams[currentIndex]
@@ -716,7 +791,8 @@ export default function StudyMode({
   }
 
   const setPastExamDraftFinal = (examId, no) => {
-    if (isPastExamRetry || pastExamAllRevealed || no == null) return
+    if (isPastExamRetry || no == null) return
+    if (isExamWrongNotes ? pastExamResults[examId] : pastExamAllRevealed) return
     setPastExamDrafts(prev => ({
       ...prev,
       [examId]: {
@@ -727,10 +803,21 @@ export default function StudyMode({
     }))
   }
 
+  const handleRevealSinglePastExam = examId => {
+    if (!isExamWrongNotes || pastExamResults[examId]) return
+    const target = pastExamSolveExams.find(e => e.id === examId)
+    if (!target) return
+    const draft = pastExamDrafts[examId] ?? { userAnswers: {}, finalChoice: null }
+    setPastExamResults(prev => ({
+      ...prev,
+      [examId]: gradePastExamQuestion(target, draft.userAnswers, draft.finalChoice),
+    }))
+  }
+
   const handleRevealAllPastExam = () => {
     if (pastExamAllRevealed || isPastExamRetry) return
     const graded = {}
-    exams.forEach(e => {
+    pastExamSolveExams.forEach(e => {
       const draft = pastExamDrafts[e.id] ?? { userAnswers: {}, finalChoice: null }
       graded[e.id] = gradePastExamQuestion(e, draft.userAnswers, draft.finalChoice)
     })
@@ -744,7 +831,7 @@ export default function StudyMode({
     }
 
     const roundToSave = pastExamRound
-    if (!isValidPastExamRound(roundToSave)) return
+    if (!isPastExamPlayableRound(roundToSave)) return
 
     const yearExams = allExams.filter(e => e.year === parseInt(filter.year, 10))
     const resultsToSave = graded
@@ -767,13 +854,21 @@ export default function StudyMode({
   }
 
   const startPastExamRound = roundNo => {
-    if (!isValidPastExamRound(roundNo)) return
-    const existing = pastExamRoundsData[roundNo]
-    if (existing?.completed) return
-    const blockMsg = getPastExamRoundBlockMessage(roundNo, pastExamRoundsData)
-    if (blockMsg) {
-      setPastExamRoundHint(blockMsg)
-      return
+    if (isPastExamInfiniteRound(roundNo)) {
+      const blockMsg = getPastExamInfiniteBlockMessage(pastExamRoundsData)
+      if (blockMsg) {
+        setPastExamRoundHint(blockMsg)
+        return
+      }
+    } else {
+      if (!isValidPastExamRound(roundNo)) return
+      const existing = pastExamRoundsData[roundNo]
+      if (existing?.completed) return
+      const blockMsg = getPastExamRoundBlockMessage(roundNo, pastExamRoundsData)
+      if (blockMsg) {
+        setPastExamRoundHint(blockMsg)
+        return
+      }
     }
     setPastExamRound(roundNo)
     setPastExamDrafts({})
@@ -813,7 +908,7 @@ export default function StudyMode({
   }
 
   const startPastExamReview = (roundNo, kind) => {
-    if (!onReviewPastExamRound || !isValidPastExamRound(roundNo)) return
+    if (!onReviewPastExamRound || !isPastExamPlayableRound(roundNo)) return
     const ids = kind === 'correct' ? getPastExamCorrectIds(roundNo) : getPastExamWrongIds(roundNo)
     if (ids.length === 0) return
     setShowPastExamScore(false)
@@ -879,30 +974,40 @@ export default function StudyMode({
   const highlightTerm = filter.highlightTerm
 
   if (usePastExamSolveUI) {
-    const pastTitle = isRandomExam
+    const pastTitle = isExamWrongNotes
+      ? `오답노트 · ${exams.length}문항`
+      : isRandomExam
       ? `랜덤 ${randomExamCount}문제`
       : isPastExamRetry
         ? pastExamRetryKind === 'correct'
-          ? `맞춘 문제 · ${filter.year}년 ${pastExamRetryRound}회독`
-          : `오답 보기 · ${filter.year}년 ${pastExamRetryRound}회독`
+          ? `맞춘 문제 · ${filter.year}년 ${formatPastExamRoundLabel(pastExamRetryRound)}`
+          : `오답 보기 · ${filter.year}년 ${formatPastExamRoundLabel(pastExamRetryRound)}`
         : pastExamRound != null
-          ? `${filter.year}년 · ${pastExamRound}회독`
+          ? `${filter.year}년 · ${formatPastExamRoundLabel(pastExamRound)}`
           : exams[0]?.round != null
             ? `${filter.year}년 제${exams[0].round}회`
             : `${filter.year}년 기출`
-    const inPastExamSolve = isRandomExam || isPastExamRetry || pastExamRound != null
+    const inPastExamSolve = isRandomExam || isExamWrongNotes || isPastExamRetry || pastExamRound != null
     const roundLabel = isPastExamRetry ? pastExamRetryRound : pastExamRound
+
+    const goBackFromPastExam = () => {
+      if (isPastExamRetry && isPastExamYear) {
+        onExitPastExamRetry?.()
+        return
+      }
+      if (inPastExamSolve && isPastExamYear) {
+        exitPastExamSolve()
+        return
+      }
+      onBack()
+    }
 
     const showAuthBar = appearance && onAppearanceChange
 
     const pastTopBar = (
       <TopBar
         title={pastTitle}
-        onBack={() => {
-          if (isPastExamRetry) onBack()
-          else if (inPastExamSolve && isPastExamYear) exitPastExamSolve()
-          else onBack()
-        }}
+        onBack={goBackFromPastExam}
         onFilter={() => setShowFilter(true)}
         actionLabel={isRandomExam ? '다시뽑기' : '필터'}
         actionVariant={isRandomExam ? 'regenerate' : 'filter'}
@@ -947,7 +1052,8 @@ export default function StudyMode({
               스크롤하며 풀 수 있습니다.
             </p>
             <p className="text-slate-500 text-xs mt-3">
-              각 회독마다 채점 결과와 맞춘·틀린 문항 보기가 저장됩니다. 완료한 회독은 다시 풀 수 없습니다.
+              각 회독마다 채점 결과와 맞춘·틀린 문항 보기가 저장됩니다. 1~5회독은 완료 후 다시 풀 수 없고,
+              5회독 완료 후 「회독무한반복」으로 추가 연습할 수 있습니다.
             </p>
           </div>
         ) : (
@@ -965,6 +1071,16 @@ export default function StudyMode({
           {inPastExamSolve && (
             <div className="sticky top-0 z-10 -mx-3 shrink-0 bg-white dark:bg-slate-800">
               {pastTopBar}
+              {isExamWrongNotes && examWrongNotePageMeta && (
+                <ExamWrongNotesPaginationBar
+                  pageMeta={examWrongNotePageMeta}
+                  pageSize={examWrongNotePageSize}
+                  sort={examWrongNoteSort}
+                  onPageSizeChange={setExamWrongNotePageSize}
+                  onSortChange={setExamWrongNoteSort}
+                  onPageChange={setExamWrongNotePage}
+                />
+              )}
             </div>
           )}
           {isPastExamYear && !isPastExamRetry && inPastExamSolve && (
@@ -981,8 +1097,11 @@ export default function StudyMode({
               />
             </div>
           )}
-          {exams.map((e, idx) => {
+          {pastExamSolveExams.map((e, idx) => {
             const draft = pastExamDrafts[e.id] ?? { userAnswers: {}, finalChoice: null }
+            const questionRevealed = isExamWrongNotes
+              ? Boolean(pastExamResults[e.id])
+              : pastExamAllRevealed
             return (
               <section
                 key={e.id}
@@ -996,12 +1115,16 @@ export default function StudyMode({
                   <PastExamQuestionBlock
                     exam={e}
                     finalChoice={draft.finalChoice}
-                    revealed={pastExamAllRevealed}
+                    revealed={questionRevealed}
                     result={pastExamResults[e.id]}
                     onFinalPick={
                       isPastExamRetry ? undefined : no => setPastExamDraftFinal(e.id, no)
                     }
                     highlightTerm={highlightTerm}
+                    inExamWrongNotes={isInExamWrongNotes?.(e.id)}
+                    onToggleExamWrongNote={onToggleExamWrongNote}
+                    perQuestionReveal={isExamWrongNotes}
+                    onRevealQuestion={isExamWrongNotes ? handleRevealSinglePastExam : undefined}
                   />
                 </div>
               </section>
@@ -1010,10 +1133,43 @@ export default function StudyMode({
 
           <section
             ref={pastExamEndRef}
-            className="past-exam-section flex flex-col justify-start min-h-[40vh]"
+            className={`past-exam-section flex flex-col justify-start ${
+              isExamWrongNotes ? '' : 'min-h-[40vh]'
+            }`}
           >
             <div className="space-y-3 px-2 py-8 pb-16">
-              {!pastExamAllRevealed ? (
+              {isExamWrongNotes ? (
+                <>
+                  <p className="text-center text-xs text-slate-500">
+                    {pastExamSummary?.questionGraded ?? 0}/{pastExamSolveExams.length}문항 채점 완료
+                    · 각 문항 아래 「정답 확인」을 누르세요.
+                  </p>
+                  {(pastExamSummary?.questionGraded ?? 0) > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setShowPastExamScore(true)}
+                      className="w-full bg-violet-600 text-white rounded-xl py-4 font-bold text-base hover:bg-violet-700"
+                    >
+                      채점 결과 보기
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={goBackFromPastExam}
+                    className="w-full bg-slate-100 text-slate-700 rounded-xl py-3 font-semibold hover:bg-slate-200"
+                  >
+                    {exitLabel}
+                  </button>
+                  {examWrongNotePageMeta && !examWrongNotePageMeta.isAll
+                    && examWrongNotePageMeta.totalPages > 1 && (
+                    <ExamWrongNotesPageNav
+                      page={examWrongNotePageMeta.page}
+                      totalPages={examWrongNotePageMeta.totalPages}
+                      onPageChange={setExamWrongNotePage}
+                    />
+                  )}
+                </>
+              ) : !pastExamAllRevealed ? (
                 <>
                   <button
                     type="button"
@@ -1037,10 +1193,10 @@ export default function StudyMode({
                   </button>
                   <button
                     type="button"
-                    onClick={onBack}
+                    onClick={goBackFromPastExam}
                     className="w-full bg-slate-100 text-slate-700 rounded-xl py-3 font-semibold hover:bg-slate-200"
                   >
-                    {exitLabel}
+                    {isPastExamYear && (inPastExamSolve || isPastExamRetry) ? '회독 선택으로' : exitLabel}
                   </button>
                 </>
               )}
@@ -1049,8 +1205,8 @@ export default function StudyMode({
         </div>
         </div>
         <PastExamScrollArrows
-          canGoTop={exams.length > 0}
-          canGoBottom={exams.length > 0}
+          canGoTop={pastExamSolveExams.length > 0}
+          canGoBottom={pastExamSolveExams.length > 0}
           onGoTop={goPastExamTop}
           onGoBottom={goPastExamBottom}
         />
@@ -1070,41 +1226,11 @@ export default function StudyMode({
 
         {showPastExamScore && pastExamSummary && (
           <PastExamScoreSheet
-            exams={exams}
+            exams={pastExamSolveExams}
             results={pastExamResults}
             summary={pastExamSummary}
             showPassCriteria={isPastExamYear}
-            onClose={() => {
-              setShowPastExamScore(false)
-              if (
-                isPastExamYear &&
-                !isPastExamRetry &&
-                roundLabel != null &&
-                pastExamRoundsData[roundLabel]?.completed
-              ) {
-                exitPastExamSolve()
-              }
-            }}
-            onRetryWrong={
-              isPastExamYear && onReviewPastExamRound
-                ? () => {
-                    const roundNo =
-                      pastExamScoreRoundNo ??
-                      (isPastExamRetry ? pastExamRetryRound : pastExamRound)
-                    startPastExamReview(roundNo, 'wrong')
-                  }
-                : undefined
-            }
-            onRetryCorrect={
-              isPastExamYear && onReviewPastExamRound
-                ? () => {
-                    const roundNo =
-                      pastExamScoreRoundNo ??
-                      (isPastExamRetry ? pastExamRetryRound : pastExamRound)
-                    startPastExamReview(roundNo, 'correct')
-                  }
-                : undefined
-            }
+            onClose={() => setShowPastExamScore(false)}
             onCertifyRound5={
               pastExamScoreRoundNo === 5 ? round5CertAction : undefined
             }
@@ -1753,24 +1879,6 @@ export default function StudyMode({
           results={pastExamResults}
           summary={pastExamSummary}
           onClose={() => setShowPastExamScore(false)}
-          onRetryWrong={
-            onReviewPastExamRound
-              ? () =>
-                  startPastExamReview(
-                    pastExamScoreRoundNo ?? pastExamRetryRound ?? pastExamRound,
-                    'wrong'
-                  )
-              : undefined
-          }
-          onRetryCorrect={
-            onReviewPastExamRound
-              ? () =>
-                  startPastExamReview(
-                    pastExamScoreRoundNo ?? pastExamRetryRound ?? pastExamRound,
-                    'correct'
-                  )
-              : undefined
-          }
         />
       )}
 
@@ -1976,6 +2084,109 @@ function QuestionJumpBar({
           )
         })}
       </div>
+    </div>
+  )
+}
+
+function ExamWrongNotesPageNav({ page, totalPages, onPageChange }) {
+  return (
+    <div className="flex items-center justify-center gap-2 pt-2">
+      <button
+        type="button"
+        disabled={page <= 1}
+        onClick={() => onPageChange(p => p - 1)}
+        className="px-4 py-2 rounded-lg text-sm font-semibold border border-slate-200 bg-white text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50"
+      >
+        이전
+      </button>
+      <span className="text-xs text-slate-500 tabular-nums min-w-[4rem] text-center">
+        {page} / {totalPages}
+      </span>
+      <button
+        type="button"
+        disabled={page >= totalPages}
+        onClick={() => onPageChange(p => p + 1)}
+        className="px-4 py-2 rounded-lg text-sm font-semibold border border-slate-200 bg-white text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50"
+      >
+        다음
+      </button>
+    </div>
+  )
+}
+
+function examWrongNoteChipClass(active) {
+  return active
+    ? 'bg-indigo-50 text-indigo-700 border-indigo-300 ring-1 ring-indigo-200/80 dark:bg-indigo-950/40 dark:text-indigo-200 dark:border-indigo-700 dark:ring-indigo-800/60'
+    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-600 dark:hover:border-slate-500'
+}
+
+function ExamWrongNotesPaginationBar({
+  pageMeta,
+  pageSize,
+  sort,
+  onPageSizeChange,
+  onSortChange,
+  onPageChange,
+}) {
+  return (
+    <div className="border-t border-slate-100 dark:border-slate-700 px-3 py-2.5 space-y-2 bg-slate-50/80 dark:bg-slate-900/40">
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => onSortChange('recent')}
+          className={`flex-1 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${examWrongNoteChipClass(sort === 'recent')}`}
+        >
+          최신순
+        </button>
+        <button
+          type="button"
+          onClick={() => onSortChange('oldest')}
+          className={`flex-1 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${examWrongNoteChipClass(sort === 'oldest')}`}
+        >
+          과거순
+        </button>
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        {EXAM_WRONG_NOTE_PAGE_SIZE_OPTIONS.map(opt => (
+          <button
+            key={String(opt.value)}
+            type="button"
+            onClick={() => onPageSizeChange(opt.value)}
+            className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${examWrongNoteChipClass(pageSize === opt.value)}`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+      {pageMeta.total > 0 && (
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            {pageMeta.isAll
+              ? `${pageMeta.total}문항 전체`
+              : `${pageMeta.rangeStart}–${pageMeta.rangeEnd} / ${pageMeta.total}문항 · ${pageMeta.page} / ${pageMeta.totalPages}페이지`}
+          </p>
+          {!pageMeta.isAll && pageMeta.totalPages > 1 && (
+            <div className="flex items-center gap-1 shrink-0">
+              <button
+                type="button"
+                disabled={pageMeta.page <= 1}
+                onClick={() => onPageChange(pageMeta.page - 1)}
+                className="px-2 py-1 rounded-md text-xs font-semibold border border-slate-200 bg-white text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50"
+              >
+                이전
+              </button>
+              <button
+                type="button"
+                disabled={pageMeta.page >= pageMeta.totalPages}
+                onClick={() => onPageChange(pageMeta.page + 1)}
+                className="px-2 py-1 rounded-md text-xs font-semibold border border-slate-200 bg-white text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50"
+              >
+                다음
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

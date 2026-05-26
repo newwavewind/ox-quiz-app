@@ -1,4 +1,7 @@
-import { PAST_EXAM_ROUND_MAX } from '../data/pastExamRounds'
+import {
+  PAST_EXAM_INFINITE_ROUND,
+  PAST_EXAM_ROUND_MAX,
+} from '../data/pastExamRounds'
 
 const ROUND_COLUMN_CLASS =
   'flex flex-col items-center min-w-0 w-full min-h-[10.5rem]'
@@ -37,6 +40,18 @@ export default function PastExamTenRoundBar({
   onScrollToTop,
   onCertifyRound5,
 }) {
+  const infiniteRec = roundsData[PAST_EXAM_INFINITE_ROUND]
+  const infiniteActive = activeRound === PAST_EXAM_INFINITE_ROUND
+  const infiniteDone = infiniteRec?.completed
+  const infiniteStatus = infiniteDone ? statusMeta(infiniteRec) : null
+  const infiniteScoreText =
+    infiniteRec?.score != null
+      ? `${infiniteRec.score}점`
+      : infiniteDone
+        ? `${infiniteRec.questionCorrect}/${infiniteRec.questionTotal}`
+        : null
+  const showInfinite = Boolean(roundsData[PAST_EXAM_ROUND_MAX]?.completed)
+
   const roundBarTitle = onScrollToTop ? (
     <button
       type="button"
@@ -86,7 +101,7 @@ export default function PastExamTenRoundBar({
                       {scoreText}
                     </p>
                     <span
-                      className={`inline-flex mt-1.5 px-1.5 py-0.5 rounded-full text-[9px] font-bold ring-1 ring-inset ${status.badge}`}
+                      className={`mx-auto inline-flex items-center justify-center mt-1.5 px-1.5 py-0.5 rounded-full text-[9px] font-bold leading-none ring-1 ring-inset ${status.badge}`}
                     >
                       {status.label}
                     </span>
@@ -176,6 +191,101 @@ export default function PastExamTenRoundBar({
             )
           })}
         </div>
+
+        {showInfinite && (
+          <div className="mt-2.5 w-full">
+            {infiniteDone && !infiniteActive ? (
+              <div className="w-full flex flex-col min-h-0">
+                <div
+                  className={`w-full flex flex-col min-h-0 rounded-2xl border shadow-sm overflow-hidden ${infiniteStatus.card}`}
+                >
+                  <div className="px-3 pt-3 pb-2.5 text-center">
+                    <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400">회독무한반복</p>
+                    <p className="text-base font-extrabold text-slate-800 dark:text-slate-100 mt-0.5 tabular-nums leading-none">
+                      {infiniteScoreText}
+                    </p>
+                    <span
+                      className={`mx-auto inline-flex items-center justify-center mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold leading-none ring-1 ring-inset ${infiniteStatus.badge}`}
+                    >
+                      {infiniteStatus.label}
+                    </span>
+                  </div>
+                  <div className="flex border-t border-slate-200/60 dark:border-slate-600/60 divide-x divide-slate-200/60 dark:divide-slate-600/60">
+                    <button
+                      type="button"
+                      onClick={() => onViewResult(PAST_EXAM_INFINITE_ROUND)}
+                      className="flex-1 py-2.5 text-[11px] font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-900/5 dark:hover:bg-white/5 transition-colors"
+                    >
+                      채점
+                    </button>
+                    {infiniteRec.questionCorrect > 0 && onRetryCorrect ? (
+                      <button
+                        type="button"
+                        onClick={() => onRetryCorrect(PAST_EXAM_INFINITE_ROUND)}
+                        className="flex-1 py-2.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                      >
+                        정답
+                        <span className="block text-[10px] font-bold opacity-80">{infiniteRec.questionCorrect}</span>
+                      </button>
+                    ) : (
+                      <span className="flex-1 py-2.5 text-[11px] font-medium text-slate-300 dark:text-slate-600 text-center">
+                        —
+                      </span>
+                    )}
+                    {infiniteRec.wrongCount > 0 && onRetryWrong ? (
+                      <button
+                        type="button"
+                        onClick={() => onRetryWrong(PAST_EXAM_INFINITE_ROUND)}
+                        className="flex-1 py-2.5 text-[11px] font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                      >
+                        오답
+                        <span className="block text-[10px] font-bold opacity-80">{infiniteRec.wrongCount}</span>
+                      </button>
+                    ) : (
+                      <span className="flex-1 py-2.5 text-[11px] font-medium text-slate-300 dark:text-slate-600 text-center">
+                        —
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onStartRound(PAST_EXAM_INFINITE_ROUND)}
+                  className="w-full mt-1.5 py-2.5 rounded-xl border-2 border-indigo-300 dark:border-indigo-600 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-800 dark:text-indigo-200 text-[11px] font-bold hover:bg-indigo-100 dark:hover:bg-indigo-950/60 transition-colors"
+                >
+                  다시 시작
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => onStartRound(PAST_EXAM_INFINITE_ROUND)}
+                className={`w-full min-h-[4.5rem] relative flex flex-col items-center justify-center rounded-2xl border-2 px-3 py-3 transition-all ${
+                  infiniteActive
+                    ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 shadow-md shadow-indigo-500/15 scale-[1.01]'
+                    : 'border-violet-200 dark:border-violet-700 bg-violet-50/80 dark:bg-violet-950/30 hover:border-violet-400 hover:bg-violet-50 dark:hover:bg-violet-950/50 hover:shadow-sm'
+                }`}
+              >
+                {infiniteActive && (
+                  <span className="absolute top-2 right-2 flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-60" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500" />
+                  </span>
+                )}
+                <span
+                  className={`text-sm font-bold ${infiniteActive ? 'text-indigo-800 dark:text-indigo-200' : 'text-violet-800 dark:text-violet-200'}`}
+                >
+                  회독무한반복
+                </span>
+                <span
+                  className={`mt-1 text-[10px] font-medium ${infiniteActive ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-violet-600/80 dark:text-violet-300/80'}`}
+                >
+                  {infiniteActive ? '진행 중' : '5회독 완료 후 추가 연습'}
+                </span>
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
