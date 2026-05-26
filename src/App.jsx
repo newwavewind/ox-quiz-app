@@ -418,15 +418,6 @@ function App() {
     clearStudyResume(`${slotId}:${studySessionKey(slot)}`)
     const clearSlot = slotId === 'exam' ? setExamStudy : setHomeStudy
     clearSlot(emptyStudySlot(slot.returnScreen))
-
-    const otherActive = slotId === 'exam' ? homeStudy.active : examStudy.active
-    if (otherActive) {
-      const otherId = slotId === 'exam' ? 'home' : 'exam'
-      setVisibleStudySlot(otherId)
-      setScreen('study')
-      setTab(otherId === 'exam' ? 'exam' : 'home')
-      return
-    }
     setVisibleStudySlot(null)
     setScreen(slot.returnScreen)
     setTab(slot.returnScreen)
