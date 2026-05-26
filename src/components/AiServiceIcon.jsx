@@ -30,8 +30,11 @@ export default function AiServiceIcon({ id, className = 'w-3.5 h-3.5 shrink-0' }
   }
 
   return (
-    <svg className={className} viewBox="0 0 24 24" aria-hidden fill="currentColor">
-      <path d="M12 3c4.2 0 7.6 2.8 8.7 6.7h-2.2A6.5 6.5 0 0 0 12 5.2 6.5 6.5 0 0 0 5.5 12 6.5 6.5 0 0 0 12 18.8 6.5 6.5 0 0 0 18.5 12h2.2c-1.1 3.9-4.5 6.7-8.7 6.7S4.4 15.9 3.3 12 7.8 3 12 3zm-1 4.5v3.2H7.8l4.2 7.3 4.2-7.3H13V7.5h-2z" />
-    </svg>
+    <img
+      src="/claude-icon.png"
+      alt=""
+      aria-hidden
+      className={`${className} object-contain`}
+    />
   )
 }

@@ -57,19 +57,21 @@ function looksLikeAutoBlock(plain) {
   return /^\d{4}년 기출 회독별 채점/.test(plain.trim())
 }
 
+/** @param {string} [fullPlain] */
+export function extractRound5CertFreePlain(fullPlain = '') {
+  const plain = fullPlain.trim()
+  if (!plain) return ''
+  const sepIdx = plain.indexOf(ROUND5_CERT_FREE_WRITE_SEPARATOR)
+  if (sepIdx >= 0) return plain.slice(sepIdx + ROUND5_CERT_FREE_WRITE_SEPARATOR.length).trim()
+  if (looksLikeAutoBlock(plain)) return ''
+  return plain
+}
+
 /** @param {number} year @param {string} [existingPlain] */
 export function composeRound5CertContent(year, existingPlain = '') {
   const autoBlock = buildRoundScoresAutoText(year)
   const sep = ROUND5_CERT_FREE_WRITE_SEPARATOR
-  const plain = existingPlain.trim()
-
-  let freePart = ''
-  const sepIdx = plain.indexOf(sep)
-  if (sepIdx >= 0) {
-    freePart = plain.slice(sepIdx + sep.length).trim()
-  } else if (plain && !looksLikeAutoBlock(plain)) {
-    freePart = plain
-  }
+  const freePart = extractRound5CertFreePlain(existingPlain)
 
   return freePart
     ? `${autoBlock}\n\n${sep}\n\n${freePart}`

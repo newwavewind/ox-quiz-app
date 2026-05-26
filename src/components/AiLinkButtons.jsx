@@ -54,7 +54,7 @@ export default function AiLinkButtons({
                 : `${service.label}에서 보기·해설 질문하기`
             }
           >
-            <span className={PROMINENT_ICON_COLOR[service.id]}>
+            <span className={service.id === 'claude' ? '' : PROMINENT_ICON_COLOR[service.id]}>
               <AiServiceIcon id={service.id} className="w-3 h-3" />
             </span>
             <span>{service.label}</span>

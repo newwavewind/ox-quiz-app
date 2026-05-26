@@ -39,17 +39,6 @@ export const SIZE_OPTIONS = [
   { id: '24', label: '24', value: '24px' },
 ]
 
-const COLOR_PRESETS = [
-  '#0f172a',
-  '#dc2626',
-  '#ea580c',
-  '#ca8a04',
-  '#16a34a',
-  '#2563eb',
-  '#7c3aed',
-  '#db2777',
-]
-
 function escapeHtml(text) {
   return text
     .replace(/&/g, '&amp;')
@@ -168,5 +157,3 @@ export function applyEditorFontSize(editor, sizePx) {
 export function applyEditorColor(editor, color) {
   return execEditorCommand(editor, 'foreColor', color)
 }
-
-export { COLOR_PRESETS }

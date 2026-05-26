@@ -68,7 +68,6 @@ export function PastExamScoreSheet({
   results,
   summary,
   onClose,
-  onExit,
   onRetryWrong,
   onRetryCorrect,
   onCertifyRound5,
@@ -308,25 +307,13 @@ export function PastExamScoreSheet({
               5회독 인증글 작성
             </button>
           )}
-          <div className="grid grid-cols-2 gap-1.5">
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-lg py-2 font-medium text-xs bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors"
-            >
-              닫기
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                onClose()
-                onExit()
-              }}
-              className="rounded-lg py-2 font-medium text-xs bg-slate-800 hover:bg-slate-900 text-white transition-colors"
-            >
-              시험 탭
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-full rounded-lg py-2 font-medium text-xs bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors"
+          >
+            닫기
+          </button>
         </div>
       </div>
     </div>

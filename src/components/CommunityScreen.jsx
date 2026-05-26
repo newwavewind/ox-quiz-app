@@ -9,6 +9,8 @@ import {
   sortPostsForTab,
 } from '../data/communityPosts'
 import { enrichPosts, incrementLike, incrementView } from '../data/communityPostMeta'
+import { formatCommentDate } from '../data/communityComments'
+import { isCloudPostId } from '../data/supabaseCommunity'
 import {
   EMPTY_EXTRAS,
   hasExtrasContent,
@@ -33,11 +35,14 @@ import { hasRichHtml, sanitizePostHtml } from '../utils/communityRichText'
 import { getBrokerExamDdayInfo } from '../data/examDday'
 import {
   buildRound5CertDraft,
+  buildRoundScoresAutoText,
   composeRound5CertContent,
   consumeRound5CertWriteIntent,
+  extractRound5CertFreePlain,
   getRound5CertEligibleYears,
   isRound5Completed,
   plainTextToEditorHtml,
+  ROUND5_CERT_FREE_WRITE_SEPARATOR,
 } from '../data/round5Cert'
 
 const TABS = [
@@ -171,9 +176,17 @@ function WriteForm({
 }) {
   const lockRound5Board = defaultBoard === 'round5_cert'
   const [title, setTitle] = useState(writePrefill?.title ?? '')
-  const [content, setContent] = useState(
-    writePrefill?.content ? plainTextToEditorHtml(writePrefill.content) : '',
-  )
+  const [content, setContent] = useState(() => {
+    if (lockRound5Board || writePrefill?.certYear) return ''
+    return writePrefill?.content ? plainTextToEditorHtml(writePrefill.content) : ''
+  })
+  const [freeContent, setFreeContent] = useState(() => {
+    if (!writePrefill?.content) return ''
+    if (lockRound5Board || writePrefill?.certYear) {
+      return plainTextToEditorHtml(extractRound5CertFreePlain(writePrefill.content))
+    }
+    return ''
+  })
   const [extras, setExtras] = useState(EMPTY_EXTRAS)
   const [nickname, setNickname] = useState(authorLabel)
   const [editingNick, setEditingNick] = useState(false)
@@ -187,6 +200,7 @@ function WriteForm({
   const editorRef = useRef(null)
 
   const boardConfig = getBoardConfig(board)
+  const isRound5CertWrite = board === 'round5_cert' && Boolean(certYear)
   const writableBoards = COMMUNITY_BOARDS.filter(
     b => b.id !== 'round5_cert' || round5CertYears.length > 0,
   )
@@ -195,16 +209,13 @@ function WriteForm({
     const el = editorRef.current
     if (!el) return
     const html = el.innerHTML
-    setContent(html === '<br>' ? '' : html)
+    const next = html === '<br>' ? '' : html
+    if (isRound5CertWrite) setFreeContent(next)
+    else setContent(next)
   }
 
   useEffect(() => {
     if (board !== 'round5_cert' || !certYear) return
-    setContent(prev => {
-      const plain = getContentPlainText(prev)
-      const composed = composeRound5CertContent(certYear, plain)
-      return plainTextToEditorHtml(composed)
-    })
     setTitle(prev => {
       const expected = `${certYear}년 5회독 완료 인증`
       const trimmed = prev.trim()
@@ -218,7 +229,7 @@ function WriteForm({
     const t = title.trim()
     const c =
       board === 'round5_cert' && certYear
-        ? composeRound5CertContent(certYear, getContentPlainText(content))
+        ? composeRound5CertContent(certYear, getContentPlainText(freeContent))
         : getContentPlainText(content)
     const nick = nickname.trim() || '익명'
     const poll = extras.poll
@@ -369,16 +380,42 @@ function WriteForm({
 
         <label className="block text-sm font-medium text-slate-600 mb-1.5">내용</label>
         <div className="rounded-xl border border-slate-200 overflow-hidden mb-2">
-          <WriteExtrasEditor extras={extras} onChange={setExtras} editorRef={editorRef} onEditorSync={syncEditor} />
+          <WriteExtrasEditor
+            extras={extras}
+            onChange={setExtras}
+            editorRef={editorRef}
+            onEditorSync={syncEditor}
+          />
+          {isRound5CertWrite && (
+            <>
+              <div
+                className="px-4 py-3 text-sm text-slate-700 leading-relaxed bg-slate-50 border-t border-slate-100 whitespace-pre-wrap select-none"
+                aria-readonly="true"
+              >
+                {buildRoundScoresAutoText(certYear)}
+              </div>
+              <div
+                className="px-4 py-2 text-xs text-slate-400 border-t border-slate-100 bg-slate-50 text-center tracking-widest select-none"
+                aria-hidden
+              >
+                {ROUND5_CERT_FREE_WRITE_SEPARATOR}
+              </div>
+            </>
+          )}
           <CommunityRichEditor
-            value={content}
-            onChange={setContent}
+            value={isRound5CertWrite ? freeContent : content}
+            onChange={isRound5CertWrite ? setFreeContent : setContent}
             editorRef={editorRef}
             maxLength={8000}
+            placeholder={
+              isRound5CertWrite ? '구분선 아래에 소감 등을 자유롭게 작성하세요.' : undefined
+            }
+            className={isRound5CertWrite ? 'min-h-[160px]' : ''}
           />
         </div>
         <p className="text-[11px] text-slate-400 text-right tabular-nums mb-6">
-          {getContentTextLength(content)} / 8000
+          {getContentTextLength(isRound5CertWrite ? freeContent : content)} / 8000
+          {isRound5CertWrite ? ' · 회독 점수는 자동 입력(수정 불가)' : ''}
         </p>
 
         <div className="flex flex-wrap items-center gap-4 mb-2">
@@ -430,10 +467,193 @@ function WriteForm({
   )
 }
 
-function PostDetail({ post, user, onBack, onDelete, onLike, canDelete }) {
+function PostComments({
+  post,
+  user,
+  myNickname,
+  onLoadComments,
+  onAddComment,
+  onUpdateComment,
+  onDeleteComment,
+}) {
+  const [comments, setComments] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [body, setBody] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [editingId, setEditingId] = useState(null)
+  const [editBody, setEditBody] = useState('')
+
+  const cloudPost = isCloudPostId(post.id)
+  const canWrite = !cloudPost || Boolean(user)
+
+  useEffect(() => {
+    let cancelled = false
+    setLoading(true)
+    onLoadComments(post.id).then(list => {
+      if (!cancelled) {
+        setComments(list)
+        setLoading(false)
+      }
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [post.id, onLoadComments])
+
+  const canEditComment = comment => {
+    if (comment.authorId && user) return comment.authorId === user.id
+    return comment.nickname === myNickname
+  }
+
+  const handleSubmit = async e => {
+    e.preventDefault()
+    const text = body.trim()
+    if (!text || submitting || !canWrite) return
+    setSubmitting(true)
+    const saved = await onAddComment(post.id, text, myNickname)
+    if (saved) {
+      setComments(await onLoadComments(post.id))
+      setBody('')
+    }
+    setSubmitting(false)
+  }
+
+  const startEdit = comment => {
+    setEditingId(comment.id)
+    setEditBody(comment.body)
+  }
+
+  const cancelEdit = () => {
+    setEditingId(null)
+    setEditBody('')
+  }
+
+  const saveEdit = async commentId => {
+    const text = editBody.trim()
+    if (!text) return
+    const saved = await onUpdateComment(post.id, commentId, text)
+    if (saved) {
+      setComments(await onLoadComments(post.id))
+      cancelEdit()
+    }
+  }
+
+  const handleDelete = async commentId => {
+    if (!window.confirm('댓글을 삭제할까요?')) return
+    const ok = await onDeleteComment(post.id, commentId)
+    if (ok) setComments(await onLoadComments(post.id))
+  }
+
+  return (
+    <section className="mt-8 border-t border-slate-100 pt-6">
+      <h3 className="text-sm font-bold text-slate-800">
+        댓글 {comments.length > 0 ? comments.length : ''}
+      </h3>
+      {loading ? (
+        <p className="mt-3 text-xs text-slate-400">댓글 불러오는 중…</p>
+      ) : comments.length === 0 ? (
+        <p className="mt-3 text-xs text-slate-400">첫 댓글을 남겨보세요.</p>
+      ) : (
+        <ul className="mt-3 space-y-3">
+          {comments.map(comment => (
+            <li key={comment.id} className="rounded-xl bg-slate-50 px-3 py-2.5">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500">
+                <span className="font-semibold text-slate-700">{comment.nickname}</span>
+                <span>{formatCommentDate(comment.updatedAt ?? comment.createdAt)}</span>
+                {canEditComment(comment) && editingId !== comment.id && (
+                  <span className="ml-auto flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => startEdit(comment)}
+                      className="font-semibold text-slate-500 hover:text-slate-800"
+                    >
+                      수정
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(comment.id)}
+                      className="font-semibold text-red-500 hover:text-red-700"
+                    >
+                      삭제
+                    </button>
+                  </span>
+                )}
+              </div>
+              {editingId === comment.id ? (
+                <div className="mt-2 space-y-2">
+                  <textarea
+                    value={editBody}
+                    onChange={e => setEditBody(e.target.value)}
+                    rows={3}
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => saveEdit(comment.id)}
+                      className="px-3 py-1.5 rounded-lg bg-lime-500 text-white text-xs font-semibold"
+                    >
+                      저장
+                    </button>
+                    <button
+                      type="button"
+                      onClick={cancelEdit}
+                      className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600"
+                    >
+                      취소
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <p className="mt-1.5 text-sm text-slate-800 whitespace-pre-wrap">{comment.body}</p>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {canWrite ? (
+        <form onSubmit={handleSubmit} className="mt-4 space-y-2">
+          <textarea
+            value={body}
+            onChange={e => setBody(e.target.value)}
+            placeholder="댓글을 입력하세요"
+            rows={3}
+            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm"
+          />
+          <button
+            type="submit"
+            disabled={submitting || !body.trim()}
+            className="px-4 py-2 rounded-full bg-lime-500 text-white text-sm font-semibold disabled:opacity-50"
+          >
+            {submitting ? '등록 중…' : '댓글 등록'}
+          </button>
+        </form>
+      ) : (
+        <p className="mt-4 text-xs text-slate-500">댓글 작성은 로그인 후 가능합니다.</p>
+      )}
+    </section>
+  )
+}
+
+function PostDetail({
+  post,
+  user,
+  myNickname,
+  onBack,
+  onDelete,
+  onLike,
+  onSyncPostMeta,
+  canDelete,
+  onLoadComments,
+  onAddComment,
+  onUpdateComment,
+  onDeleteComment,
+}) {
   useEffect(() => {
     incrementView(post.id)
     onLike()
+    onSyncPostMeta?.(post.id)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- count once per post open
   }, [post.id])
 
@@ -468,7 +688,23 @@ function PostDetail({ post, user, onBack, onDelete, onLike, canDelete }) {
               : { children: post.content })}
           />
         )}
-        <PostExtrasContent post={post} user={user} onMetaChange={onLike} />
+        <PostExtrasContent
+          post={post}
+          user={user}
+          onMetaChange={() => {
+            onLike()
+            onSyncPostMeta?.(post.id)
+          }}
+        />
+        <PostComments
+          post={post}
+          user={user}
+          myNickname={myNickname}
+          onLoadComments={onLoadComments}
+          onAddComment={onAddComment}
+          onUpdateComment={onUpdateComment}
+          onDeleteComment={onDeleteComment}
+        />
       </article>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap gap-3 border-t border-slate-100">
         <button
@@ -476,6 +712,7 @@ function PostDetail({ post, user, onBack, onDelete, onLike, canDelete }) {
           onClick={() => {
             incrementLike(post.id)
             onLike()
+            onSyncPostMeta?.(post.id)
           }}
           className="px-4 py-2 rounded-full border border-lime-400 text-sm font-semibold text-lime-800 hover:bg-lime-50"
         >
@@ -502,7 +739,17 @@ function PostDetail({ post, user, onBack, onDelete, onLike, canDelete }) {
   )
 }
 
-export default function CommunityScreen({ posts, onAddPost, onDeletePost, examYears = [] }) {
+export default function CommunityScreen({
+  posts,
+  onAddPost,
+  onDeletePost,
+  onSyncPostMeta,
+  onLoadComments,
+  onAddComment,
+  onUpdateComment,
+  onDeleteComment,
+  examYears = [],
+}) {
   const { user } = useAuth()
   const [view, setView] = useState('list')
   const [selectedId, setSelectedId] = useState(null)
@@ -670,10 +917,16 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost, examYe
         <PostDetail
           post={selectedPost}
           user={user}
+          myNickname={myNickname}
           onBack={backToList}
           onDelete={handleDelete}
           onLike={bumpMeta}
+          onSyncPostMeta={onSyncPostMeta}
           canDelete={canDeletePost(selectedPost)}
+          onLoadComments={onLoadComments}
+          onAddComment={onAddComment}
+          onUpdateComment={onUpdateComment}
+          onDeleteComment={onDeleteComment}
         />
       </div>
     )

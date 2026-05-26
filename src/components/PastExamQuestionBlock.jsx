@@ -1,8 +1,10 @@
 import { memo } from 'react'
+import AiLinkButtons from './AiLinkButtons'
 import HighlightText from './HighlightText'
 import { getTermMatchInfo } from '../data/glossaryIndex'
 import { itemKeyToChoiceNo } from '../data/pastExamGrade'
 import { makeNoteId } from '../data/studyNotes'
+import { buildPastExamItemAiPrompt } from '../utils/aiLinks'
 import { QuestionNumberPrefix } from './StudyModeShared'
 
 const CHOICE_MARKERS = ['①', '②', '③', '④', '⑤']
@@ -14,6 +16,51 @@ function cleanExplanation(text) {
     .replace(/^[ \t]*[-─━=]{3,}[ \t]*$/gm, '')
     .replace(/[ \t]{2,}/g, ' ')
     .trim()
+}
+
+function ItemAiButtons({ exam, item, finalChoice, revealed, questionCorrect }) {
+  return (
+    <AiLinkButtons
+      prompt={buildPastExamItemAiPrompt({
+        exam,
+        item,
+        finalChoice,
+        revealed,
+        questionCorrect,
+      })}
+      className="w-full items-start"
+      buttonRowClassName="justify-start flex-wrap"
+    />
+  )
+}
+
+function ItemExplanationWithAi({
+  exam,
+  item,
+  finalChoice,
+  revealed,
+  questionCorrect,
+  itemExplanation,
+  highlightTerm,
+}) {
+  return (
+    <div className="space-y-1 mt-1">
+      {itemExplanation ? (
+        <p className="text-xs text-slate-600 leading-relaxed min-w-0">
+          <HighlightText text={itemExplanation} term={highlightTerm} />
+        </p>
+      ) : (
+        <p className="text-xs text-slate-400 italic min-w-0">해설 준비 중</p>
+      )}
+      <ItemAiButtons
+        exam={exam}
+        item={item}
+        finalChoice={finalChoice}
+        revealed={revealed}
+        questionCorrect={questionCorrect}
+      />
+    </div>
+  )
 }
 
 function NoteSaveCheckbox({ exam, item, savedNotes, onToggleNote }) {
@@ -157,26 +204,28 @@ function PastExamQuestionBlock({
                       {!revealed && isSelected && (
                         <p className="text-xs font-bold text-indigo-700 mt-2">✓ 내가 고른 답</p>
                       )}
-                      {showAnswer && (
-                        <div className="mt-2 space-y-1">
-                          {isExamAnswer && <p className="text-xs font-semibold text-slate-800">기출 정답</p>}
-                          {revealed && isSelected && (
-                            <p className={`text-xs font-semibold ${pickRight ? 'text-green-600' : 'text-red-600'}`}>
-                              {pickRight ? '✓ 맞았습니다' : '✗ 틀렸습니다'}
-                            </p>
-                          )}
-                          {itemExplanation ? (
-                            <p className="text-xs text-slate-600 leading-relaxed pt-1">
-                              <HighlightText text={itemExplanation} term={highlightTerm} />
-                            </p>
-                          ) : (
-                            <p className="text-xs text-slate-400 italic pt-1">해설 준비 중</p>
-                          )}
-                        </div>
-                      )}
                     </div>
                   </div>
                 </button>
+                {showAnswer && (
+                  <div className="mt-2 pl-8 sm:pl-0 sm:ml-9 border-t border-slate-200/80 pt-2 space-y-1">
+                    {isExamAnswer && <p className="text-xs font-semibold text-slate-800">기출 정답</p>}
+                    {revealed && isSelected && (
+                      <p className={`text-xs font-semibold ${pickRight ? 'text-green-600' : 'text-red-600'}`}>
+                        {pickRight ? '✓ 맞았습니다' : '✗ 틀렸습니다'}
+                      </p>
+                    )}
+                    <ItemExplanationWithAi
+                      exam={exam}
+                      item={item}
+                      finalChoice={finalChoice}
+                      revealed={revealed}
+                      questionCorrect={result?.questionCorrect}
+                      itemExplanation={itemExplanation}
+                      highlightTerm={highlightTerm}
+                    />
+                  </div>
+                )}
                 <NoteSaveCheckbox
                   exam={exam}
                   item={item}
@@ -208,13 +257,15 @@ function PastExamQuestionBlock({
                             정답 {item.answer}
                           </span>
                         </p>
-                        {itemExplanation ? (
-                          <p className="text-xs text-slate-600 leading-relaxed">
-                            <HighlightText text={itemExplanation} term={highlightTerm} />
-                          </p>
-                        ) : (
-                          <p className="text-xs text-slate-400 italic">해설 준비 중</p>
-                        )}
+                        <ItemExplanationWithAi
+                          exam={exam}
+                          item={item}
+                          finalChoice={finalChoice}
+                          revealed={revealed}
+                          questionCorrect={result?.questionCorrect}
+                          itemExplanation={itemExplanation}
+                          highlightTerm={highlightTerm}
+                        />
                       </div>
                     )}
                   </div>

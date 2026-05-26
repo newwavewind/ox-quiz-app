@@ -130,6 +130,7 @@ export function pickMetaFields(post) {
     isNotice: post.isNotice,
     isConcept: post.isConcept,
     board: getPostBoard(post),
+    certYear: post.certYear,
     visibility: post.visibility,
     viewCount: post.viewCount,
     likeCount: post.likeCount,

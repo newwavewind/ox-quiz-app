@@ -8,13 +8,27 @@ import AuthBar from './components/AuthBar'
 import { useAuth } from './contexts/AuthContext'
 import { loadCommunityPosts, pickMetaFields, saveCommunityPosts } from './data/communityPosts'
 import { ensureAppGuideNotice } from './data/seedAppGuideNotice'
-import { enrichPost, removePostMeta, savePostMeta } from './data/communityPostMeta'
+import { enrichPost, getPostMeta, removePostMeta, savePostMeta } from './data/communityPostMeta'
 import {
+  deleteCommunityComment,
   deleteCommunityPost as deleteCloudPost,
+  fetchCommentsForPost,
   fetchCommunityPosts,
+  insertCommunityComment,
   insertCommunityPost,
+  isCloudCommentId,
   isCloudPostId,
+  updateCommunityComment,
+  updateCommunityPostMeta,
 } from './data/supabaseCommunity'
+import {
+  addLocalComment,
+  deleteLocalComment,
+  getCommentsForPost,
+  mergeCommentsForPost,
+  removeCommentsForPost,
+  updateLocalComment,
+} from './data/communityComments'
 import { useCloudSync } from './hooks/useCloudSync'
 import StudyMode from './components/StudyMode'
 import WrongNotes from './components/WrongNotes'
@@ -37,7 +51,7 @@ import {
   maxPerYearForRandomCount,
 } from './data/randomExamSet'
 import { clearStudyResume } from './data/studyResume'
-import { buildStudyNote, makeNoteId } from './data/studyNotes'
+import { countExamStudyRoundAttempts } from './data/studyHistory'
 import {
   applyAppearanceSettings,
   loadAppearanceSettings,
@@ -183,7 +197,10 @@ function App() {
     if (!user || !isConfigured) return undefined
     let cancelled = false
     fetchCommunityPosts().then(posts => {
-      if (!cancelled && posts) setCommunityPosts(ensureAppGuideNotice(posts))
+      if (!cancelled && posts) {
+        posts.forEach(p => savePostMeta(p.id, pickMetaFields(p)))
+        setCommunityPosts(ensureAppGuideNotice(posts))
+      }
     })
     return () => {
       cancelled = true
@@ -207,11 +224,20 @@ function App() {
     saveCommunityPosts(communityPosts)
   }, [communityPosts])
 
+  const syncPostMetaToCloud = useCallback(
+    async postId => {
+      if (!user || !isCloudPostId(postId)) return
+      const meta = pickMetaFields(getPostMeta(postId))
+      await updateCommunityPostMeta(postId, meta)
+    },
+    [user],
+  )
+
   const addCommunityPost = useCallback(
     async post => {
       const meta = pickMetaFields(post)
       if (user) {
-        const saved = await insertCommunityPost(user.id, post)
+        const saved = await insertCommunityPost(user.id, post, meta)
         if (saved) {
           savePostMeta(saved.id, meta)
           setCommunityPosts(prev => [enrichPost({ ...saved, authorId: user.id }), ...prev])
@@ -226,33 +252,108 @@ function App() {
     [user],
   )
 
-  const deleteCommunityPost = useCallback(
+  const deleteCommunityPostHandler = useCallback(
     async postId => {
       if (user && isCloudPostId(postId)) {
         const ok = await deleteCloudPost(postId)
         if (!ok) return
       }
       removePostMeta(postId)
+      removeCommentsForPost(postId)
       setCommunityPosts(prev => prev.filter(p => p.id !== postId))
     },
     [user],
   )
+
+  const loadPostComments = useCallback(async postId => {
+    const cloud = await fetchCommentsForPost(postId)
+    if (cloud) return mergeCommentsForPost(postId, cloud)
+    return getCommentsForPost(postId)
+  }, [])
+
+  const refreshPostCommentCount = useCallback(
+    async postId => {
+      const count = getCommentsForPost(postId).length
+      savePostMeta(postId, { commentCount: count })
+      await syncPostMetaToCloud(postId)
+      setCommunityPosts(prev =>
+        prev.map(p => (p.id === postId ? enrichPost(p) : p)),
+      )
+    },
+    [syncPostMetaToCloud],
+  )
+
+  const addPostComment = useCallback(
+    async (postId, body, nickname) => {
+      if (user && isCloudPostId(postId)) {
+        const saved = await insertCommunityComment(user.id, postId, { nickname, body })
+        if (saved) {
+          addLocalComment(postId, saved)
+          await refreshPostCommentCount(postId)
+          return saved
+        }
+        return null
+      }
+      const comment = addLocalComment(postId, { nickname, body, authorId: user?.id })
+      await refreshPostCommentCount(postId)
+      return comment
+    },
+    [user, refreshPostCommentCount],
+  )
+
+  const updatePostComment = useCallback(
+    async (postId, commentId, body) => {
+      if (user && isCloudCommentId(commentId)) {
+        const saved = await updateCommunityComment(commentId, body)
+        if (saved) {
+          updateLocalComment(postId, commentId, body)
+          return saved
+        }
+        return null
+      }
+      return updateLocalComment(postId, commentId, body)
+    },
+    [user],
+  )
+
+  const deletePostComment = useCallback(
+    async (postId, commentId) => {
+      if (user && isCloudCommentId(commentId)) {
+        const ok = await deleteCommunityComment(commentId)
+        if (!ok) return false
+      }
+      deleteLocalComment(postId, commentId)
+      await refreshPostCommentCount(postId)
+      return true
+    },
+    [user, refreshPostCommentCount],
+  )
+
+  const syncExamAttempts = (examRecord, examId) => {
+    const exam = allExams.find(e => e.id === examId)
+    if (!exam) return examRecord
+    const attempts = countExamStudyRoundAttempts({ [examId]: examRecord }, exam)
+    return { ...examRecord, attempts }
+  }
 
   const updateProgress = (examId, result, studyFilter) => {
     const wrongNoteKind =
       result.correct === false ? getWrongNoteKind(studyFilter) : null
     setProgress(prev => {
       const prevExam = prev[examId] || {}
-      return {
-        ...prev,
-        [examId]: {
+      const nextExam = syncExamAttempts(
+        {
           ...prevExam,
           ...result,
-          attempts: (prevExam.attempts || 0) + 1,
           lastAnswered: Date.now(),
           ...(result.correct === false ? { wrongNoteDismissed: false } : {}),
           ...(wrongNoteKind ? { wrongNoteKind } : {}),
         },
+        examId,
+      )
+      return {
+        ...prev,
+        [examId]: nextExam,
       }
     })
   }
@@ -311,13 +412,16 @@ function App() {
       const prevList = prevItems[itemKey] || []
       return {
         ...prev,
-        [examId]: {
-          ...prevExam,
-          itemAttempts: {
-            ...prevItems,
-            [itemKey]: [...prevList, { at: Date.now(), pick, correct }],
+        [examId]: syncExamAttempts(
+          {
+            ...prevExam,
+            itemAttempts: {
+              ...prevItems,
+              [itemKey]: [...prevList, { at: Date.now(), pick, correct }],
+            },
           },
-        },
+          examId,
+        ),
       }
     })
   }
@@ -330,7 +434,7 @@ function App() {
       delete nextItems[itemKey]
       return {
         ...prev,
-        [examId]: { ...prevExam, itemAttempts: nextItems },
+        [examId]: syncExamAttempts({ ...prevExam, itemAttempts: nextItems }, examId),
       }
     })
   }
@@ -346,7 +450,7 @@ function App() {
       else nextItems[itemKey] = nextList
       return {
         ...prev,
-        [examId]: { ...prevExam, itemAttempts: nextItems },
+        [examId]: syncExamAttempts({ ...prevExam, itemAttempts: nextItems }, examId),
       }
     })
   }
@@ -692,7 +796,12 @@ function App() {
         <CommunityScreen
           posts={communityPosts}
           onAddPost={addCommunityPost}
-          onDeletePost={deleteCommunityPost}
+          onDeletePost={deleteCommunityPostHandler}
+          onSyncPostMeta={syncPostMetaToCloud}
+          onLoadComments={loadPostComments}
+          onAddComment={addPostComment}
+          onUpdateComment={updatePostComment}
+          onDeleteComment={deletePostComment}
           examYears={examYears}
         />
       ) : screen === 'home' ? (

@@ -311,7 +311,7 @@ export default function HomeScreen({
 
   const dashboard = useMemo(
     () => buildTodayDashboard(progress),
-    [progress]
+    [progress],
   )
 
   const yearSpotLabel = dashboard.todaySpots.year

@@ -3,107 +3,7 @@ import { PAST_EXAM_ROUND_MAX } from '../data/pastExamRounds'
 const ROUND_COLUMN_CLASS =
   'flex flex-col items-center min-w-0 w-full min-h-[10.5rem]'
 
-function RoundColumnSpacer() {
-  return <div className="min-h-[2.75rem] mb-1 w-full shrink-0" aria-hidden />
-}
-
 const ROUNDS = Array.from({ length: PAST_EXAM_ROUND_MAX }, (_, i) => i + 1)
-
-function TrophyIcon({ uid, sizeClass }) {
-  const g = `trophy-g-${uid}`
-  const s = `trophy-s-${uid}`
-  return (
-    <span
-      className={`inline-flex shrink-0 ${sizeClass} drop-shadow-[0_2px_4px_rgba(180,83,9,0.45)]`}
-      aria-hidden
-    >
-      <svg viewBox="0 0 32 40" className="w-full h-full overflow-visible">
-        <defs>
-          <linearGradient id={g} x1="16" y1="2" x2="16" y2="38" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#fef9c3" />
-            <stop offset="28%" stopColor="#fcd34d" />
-            <stop offset="62%" stopColor="#f59e0b" />
-            <stop offset="100%" stopColor="#b45309" />
-          </linearGradient>
-          <linearGradient id={s} x1="10" y1="6" x2="22" y2="20" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#fff" stopOpacity="0.55" />
-            <stop offset="100%" stopColor="#fff" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <path
-          d="M6.5 13.5C4 13 3 9.5 5 7.5 6.5 6 8.5 7 9.5 10.5 9 13 8 14.5 9.5 14.5 12 14 13.5 12.5 13.5Z"
-          fill={`url(#${g})`}
-          stroke="#92400e"
-          strokeWidth="0.45"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M25.5 13.5C28 13 29 9.5 27 7.5 25.5 6 23.5 7 22.5 10.5 23 13 24 14.5 22.5 14.5 20 14 18.5 12.5 18.5Z"
-          fill={`url(#${g})`}
-          stroke="#92400e"
-          strokeWidth="0.45"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M9 11h14l-1.8 14.5c-.2 1.4-1.3 2.5-2.7 2.5h-5c-1.4 0-2.5-1.1-2.7-2.5L9 11z"
-          fill={`url(#${g})`}
-          stroke="#92400e"
-          strokeWidth="0.6"
-          strokeLinejoin="round"
-        />
-        <path d="M11.5 12.5h9l-.8 6.5a4 4 0 01-7.4 0l-.8-6.5z" fill={`url(#${s})`} />
-        <path d="M14 26.5h4v3.5h-4z" fill={`url(#${g})`} stroke="#92400e" strokeWidth="0.5" />
-        <path
-          d="M8 31.5h16c1.1 0 2 .9 2 2v1.5c0 .8-.7 1.5-1.5 1.5H7.5c-.8 0-1.5-.7-1.5-1.5V33.5c0-1.1.9-2 2-2z"
-          fill={`url(#${g})`}
-          stroke="#92400e"
-          strokeWidth="0.6"
-        />
-        <circle cx="16" cy="7.5" r="2.2" fill="#fef08a" stroke="#d97706" strokeWidth="0.5" />
-        <path
-          d="M16 5.8l.55 1.1 1.2.18-.87.85.2 1.2-1.08-.57-1.08.57.2-1.2-.87-.85 1.2-.18L16 5.8z"
-          fill="#f59e0b"
-        />
-      </svg>
-    </span>
-  )
-}
-
-function trophySizeForCount(total) {
-  if (total <= 1) return 'w-8 h-10'
-  if (total === 2) return 'w-7 h-9'
-  if (total === 3) return 'w-6 h-8'
-  if (total === 4) return 'w-5 h-6.5'
-  return 'w-4 h-5'
-}
-
-function RoundTrophies({ count }) {
-  if (!count) return null
-  const overlap = count >= 4
-  return (
-    <div
-      className="relative flex justify-center items-end min-h-[2.75rem] mb-1 px-0.5"
-      aria-label={`${count}회독 완료`}
-      role="img"
-    >
-      <div
-        className="absolute inset-x-1 top-1 bottom-2 rounded-full bg-gradient-to-b from-amber-300/25 via-amber-400/10 to-transparent blur-[2px] pointer-events-none"
-        aria-hidden
-      />
-      <div
-        className={`relative flex justify-center items-end ${overlap ? '-space-x-1.5' : 'gap-0.5'}`}
-      >
-        {Array.from({ length: count }, (_, i) => (
-          <TrophyIcon
-            key={i}
-            uid={`${count}-${i}`}
-            sizeClass={`${trophySizeForCount(count)} ${i === count - 1 ? 'z-10' : 'z-0'}`}
-          />
-        ))}
-      </div>
-    </div>
-  )
-}
 
 function statusMeta(rec) {
   if (rec?.passed) {
@@ -141,13 +41,13 @@ export default function PastExamTenRoundBar({
     <button
       type="button"
       onClick={onScrollToTop}
-      className="text-[11px] font-bold tracking-widest text-slate-500 dark:text-slate-400 uppercase touch-manipulation"
+      className="text-lg font-extrabold tracking-wide text-slate-700 dark:text-slate-200 touch-manipulation"
       aria-label="맨 위로"
     >
       5회독
     </button>
   ) : (
-    <p className="text-[11px] font-bold tracking-widest text-slate-500 dark:text-slate-400 uppercase">
+    <p className="text-lg font-extrabold tracking-wide text-slate-700 dark:text-slate-200">
       5회독
     </p>
   )
@@ -155,7 +55,7 @@ export default function PastExamTenRoundBar({
   return (
     <div className="shrink-0 bg-white/90 dark:bg-slate-800/95 border-b border-slate-100 dark:border-slate-700 py-3.5 backdrop-blur-sm">
       <div className="max-w-2xl mx-auto px-3">
-        <div className="flex items-center justify-center gap-2 mb-3">
+        <div className="flex items-center justify-center gap-2 min-h-[2.75rem] mb-1">
           <span className="h-px flex-1 max-w-[4rem] bg-gradient-to-r from-transparent to-slate-200 dark:to-slate-600" />
           {roundBarTitle}
           <span className="h-px flex-1 max-w-[4rem] bg-gradient-to-l from-transparent to-slate-200 dark:to-slate-600" />
@@ -177,7 +77,6 @@ export default function PastExamTenRoundBar({
             if (isDone && !isActive) {
               return (
                 <div key={n} className={ROUND_COLUMN_CLASS}>
-                  <RoundTrophies count={n} />
                   <div
                     className={`w-full flex-1 flex flex-col min-h-0 rounded-2xl border shadow-sm overflow-hidden ${status.card}`}
                   >
@@ -245,7 +144,6 @@ export default function PastExamTenRoundBar({
 
             return (
               <div key={n} className={ROUND_COLUMN_CLASS}>
-              <RoundColumnSpacer />
               <button
                 type="button"
                 onClick={() => onStartRound(n)}

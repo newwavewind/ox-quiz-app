@@ -17,7 +17,6 @@ import {
   applyEditorColor,
   applyEditorFont,
   applyEditorFontSize,
-  COLOR_PRESETS,
   execEditorCommand,
   FONT_OPTIONS,
   SIZE_OPTIONS,
@@ -53,6 +52,33 @@ function FormatToolBtn({ active, title, children, onClick, className = '' }) {
     >
       {children}
     </button>
+  )
+}
+
+function CustomColorSwatch({ onPick }) {
+  const [color, setColor] = useState('#0f172a')
+
+  return (
+    <label
+      className="relative w-6 h-6 rounded-full border border-slate-200 hover:scale-110 transition-transform cursor-pointer shrink-0 overflow-hidden"
+      title="글자색 · 직접 선택"
+    >
+      <span className="sr-only">직접 색 선택</span>
+      <input
+        type="color"
+        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+        value={color}
+        onChange={e => {
+          setColor(e.target.value)
+          onPick(e.target.value)
+        }}
+      />
+      <span
+        className="block w-full h-full rounded-full ring-1 ring-inset ring-black/10"
+        style={{ backgroundColor: color }}
+        aria-hidden
+      />
+    </label>
   )
 }
 
@@ -109,30 +135,7 @@ export function WriteFormatToolbar({ editorRef, onSync }) {
           ))}
         </select>
       </label>
-      <div className="flex items-center gap-1 shrink-0" title="글자색">
-        {COLOR_PRESETS.map(color => (
-          <button
-            key={color}
-            type="button"
-            aria-label={`색상 ${color}`}
-            onClick={() => run(el => applyEditorColor(el, color))}
-            className="w-6 h-6 rounded-full border border-slate-200 hover:scale-110 transition-transform"
-            style={{ backgroundColor: color }}
-          />
-        ))}
-        <label className="relative w-8 h-8 rounded-lg border border-slate-200 overflow-hidden cursor-pointer">
-          <span className="sr-only">직접 색 선택</span>
-          <input
-            type="color"
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            defaultValue="#0f172a"
-            onChange={e => run(el => applyEditorColor(el, e.target.value))}
-          />
-          <span className="flex items-center justify-center w-full h-full text-[10px] text-slate-500 bg-white">
-            +
-          </span>
-        </label>
-      </div>
+      <CustomColorSwatch onPick={color => run(el => applyEditorColor(el, color))} />
       <span className="w-px h-6 bg-slate-200 shrink-0" aria-hidden />
       <FormatToolBtn title="굵게" onClick={() => run(el => execEditorCommand(el, 'bold'))}>
         <span className="font-bold">가</span>

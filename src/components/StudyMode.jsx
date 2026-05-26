@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 import AiLinkButtons from './AiLinkButtons'
 import HighlightText from './HighlightText'
 import { getTermMatchInfo } from '../data/glossaryIndex'
-import { formatStudyTime, getItemAttempts } from '../data/studyHistory'
+import { formatStudyTime, getItemAttempts, countExamStudyRoundAttempts } from '../data/studyHistory'
 import { makeNoteId } from '../data/studyNotes'
 import {
   evaluatePastExamScore,
@@ -403,13 +403,25 @@ export default function StudyMode({
     setPastExamFinalChoice(null)
   }
 
-  const recordOxExamProgress = (targetExam, answers) => {
+  const computeExamRoundCount = (targetExam, pendingItemKey = null) => {
+    if (!targetExam?.items?.length) return 0
+    return targetExam.items.reduce((min, item) => {
+      let n = getItemAttempts(progress, targetExam.id, item.key).length
+      if (pendingItemKey === item.key) n += 1
+      return Math.min(min, n)
+    }, Infinity)
+  }
+
+  const recordOxExamProgress = (targetExam, answers, roundCount) => {
     if (!targetExam || isPastExam || usePastExamSolveUI || !onUpdateProgress) return
     const result = gradeOxStudyQuestion(targetExam, answers)
     const prevCorrect = sessionAttemptRef.current.get(targetExam.id)
     const isRetry = prevCorrect !== undefined
 
-    onUpdateProgress(targetExam.id, result)
+    onUpdateProgress(targetExam.id, {
+      ...result,
+      attempts: roundCount ?? computeExamRoundCount(targetExam),
+    })
     sessionAttemptRef.current.set(targetExam.id, result.correct)
 
     setSessionLog(prev => {
@@ -441,10 +453,17 @@ export default function StudyMode({
     })
   }
 
-  const maybeRecordWhenAllItemsRevealed = (targetExam, nextRevealed, answers) => {
+  const maybeRecordWhenAllItemsRevealed = (targetExam, nextRevealed, answers, justRevealedKey) => {
     if (!targetExam || isPastExam || usePastExamSolveUI) return
     const allRevealed = targetExam.items.every(item => nextRevealed.has(item.key))
-    if (allRevealed) recordOxExamProgress(targetExam, answers)
+    const allPicked = targetExam.items.every(item => answers[item.key] != null)
+    if (allRevealed && allPicked) {
+      recordOxExamProgress(
+        targetExam,
+        answers,
+        computeExamRoundCount(targetExam, justRevealedKey),
+      )
+    }
   }
 
   const requestExit = () => {
@@ -505,7 +524,7 @@ export default function StudyMode({
     }
     setRevealedItems(prev => {
       const next = new Set([...prev, key])
-      maybeRecordWhenAllItemsRevealed(exam, next, { ...userAnswers, [key]: userAnswers[key] })
+      maybeRecordWhenAllItemsRevealed(exam, next, { ...userAnswers, [key]: userAnswers[key] }, key)
       return next
     })
     setCollapsedItemKeys(prev => {
@@ -541,7 +560,6 @@ export default function StudyMode({
     }
     logUnrevealedItemAttempts(exam, userAnswers, revealedItems)
     setQuestionRevealed(true)
-    recordOxExamProgress(exam, userAnswers)
   }
 
   const handleHideQuestionAnswer = () => {
@@ -1065,16 +1083,6 @@ export default function StudyMode({
                 pastExamRoundsData[roundLabel]?.completed
               ) {
                 exitPastExamSolve()
-              }
-            }}
-            onExit={() => {
-              setShowPastExamScore(false)
-              if (isPastExamRetry) onBack()
-              else if (isPastExamYear) {
-                exitPastExamSolve()
-                onBack()
-              } else {
-                onBack()
               }
             }}
             onRetryWrong={
@@ -1745,7 +1753,6 @@ export default function StudyMode({
           results={pastExamResults}
           summary={pastExamSummary}
           onClose={() => setShowPastExamScore(false)}
-          onExit={onBack}
           onRetryWrong={
             onReviewPastExamRound
               ? () =>
@@ -1844,16 +1851,51 @@ function QuestionJumpBar({
     ? `제${currentRound}회 ${currentQuestionNo}번`
     : `${currentQuestionNo}번`
 
+  const currentExam = exams.find(e => e.id === currentExamId) ?? exams[currentIndex] ?? null
+  const currentRoundCount =
+    currentExam && !pastExamResults ? countExamStudyRoundAttempts(progress, currentExam) : 0
+  const currentStatus = currentExam ? getQuestionStatus(currentExam) : 'unanswered'
+  const currentStudyStatusLabel =
+    !pastExamResults && currentRoundCount > 0 && currentStatus !== 'unanswered'
+      ? `${currentQuestionNo}번 ${currentRoundCount}회독 완료`
+      : currentPositionLabel
+
+  const showStudyCompleteBadge =
+    !pastExamResults && currentRoundCount > 0 && currentStatus !== 'unanswered'
+  const studyRoundBadgeClass =
+    currentStatus === 'correct'
+      ? 'bg-green-100 border-green-200'
+      : currentStatus === 'wrong'
+        ? 'bg-red-100 border-red-200'
+        : 'bg-lime-100 border-lime-200'
+
   return (
     <div className="rounded-xl border border-slate-200 bg-white px-2 py-2 space-y-2">
-      <div className="flex items-center gap-2 px-1 min-w-0">
-        <span className="text-[11px] font-semibold text-slate-500 shrink-0">
+      <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 px-2 py-2 min-w-0 rounded-lg bg-slate-50 border border-slate-100">
+        <span className="text-xs font-semibold text-slate-600 shrink-0">
           {yearLabel}{showRoundLabel ? '목차' : '문항'}
         </span>
-        <span className="text-[11px] text-slate-600 truncate flex-1 tabular-nums">
-          {currentPositionLabel} · {progressNumerator}/{exams.length} {progressLabel}
+        <span className="flex flex-wrap items-center gap-1.5 flex-1 min-w-[8rem] min-h-[1.375rem] leading-snug">
+          {showStudyCompleteBadge ? (
+            <span className="inline-flex items-center gap-0.5 text-sm font-semibold text-slate-900 tabular-nums shrink-0">
+              <span>{currentQuestionNo}번</span>
+              <span
+                className={`inline-flex items-center px-1.5 py-0.5 rounded-md border ${studyRoundBadgeClass}`}
+              >
+                {currentRoundCount}회독
+              </span>
+              <span>완료</span>
+            </span>
+          ) : (
+            <span className="text-sm font-medium text-slate-800 tabular-nums shrink-0">
+              {currentStudyStatusLabel}
+            </span>
+          )}
+          <span className="text-sm font-normal text-slate-500 tabular-nums shrink-0">
+            · {progressNumerator}/{exams.length} {progressLabel}
+          </span>
         </span>
-        <span className="text-[10px] text-slate-400 shrink-0 tabular-nums whitespace-nowrap">
+        <span className="text-xs font-medium text-slate-500 shrink-0 tabular-nums whitespace-nowrap">
           {pastExamResults ? `채점 ${gradedCount}` : `풀이 ${answeredCount} · 미풀이 ${unansweredCount}`}
         </span>
       </div>
@@ -1890,9 +1932,15 @@ function QuestionJumpBar({
             statusClass = 'bg-slate-800 text-white border-slate-800 ring-2 ring-offset-1 ring-slate-400'
           }
           const roundLabel = `${e.round}회`
+          const attemptCount = !pastExamResults ? countExamStudyRoundAttempts(progress, e) : 0
+          const studyRoundLabel =
+            !showRoundLabel && attemptCount > 0 ? `${attemptCount}회` : null
+          const topLabel = showRoundLabel ? roundLabel : studyRoundLabel
+          const hasTopLabel = Boolean(topLabel)
           const ariaDetail = showRoundLabel
             ? `${e.year}년 제${e.round}회 ${e.question_no}번`
             : `${e.question_no}번`
+          const studyRoundAria = studyRoundLabel ? ` ${attemptCount}회독` : ''
           return (
             <button
               key={e.id}
@@ -1900,19 +1948,19 @@ function QuestionJumpBar({
               role="listitem"
               onClick={() => onJump(e.id)}
               ref={isCurrent ? currentBtnRef : undefined}
-              aria-label={`${ariaDetail}${status === 'unanswered' ? ' 미풀이' : status === 'correct' ? ' 정답' : ' 오답'}`}
+              aria-label={`${ariaDetail}${studyRoundAria}${status === 'unanswered' ? ' 미풀이' : status === 'correct' ? ' 정답' : ' 오답'}`}
               aria-current={isCurrent ? 'true' : undefined}
               className={`relative snap-center shrink-0 min-w-[2.25rem] rounded-md border text-[11px] font-semibold transition-colors flex flex-col items-center justify-center gap-0.5 py-1 ${
-                showRoundLabel ? 'min-h-[2.75rem]' : 'h-8'
+                hasTopLabel ? 'min-h-[2.75rem]' : 'h-8'
               } ${statusClass}`}
             >
-              {showRoundLabel && (
+              {hasTopLabel && (
                 <span
                   className={`text-[8px] font-medium leading-none tabular-nums ${
                     isCurrent ? 'text-white/85' : 'opacity-80'
                   }`}
                 >
-                  {roundLabel}
+                  {topLabel}
                 </span>
               )}
               <span className="leading-none tabular-nums">{e.question_no}</span>
@@ -2000,12 +2048,20 @@ function FilterSheet({ filter, years, categories, onFilterChange, onClose, onReg
 
   if (isRandomExam) {
     return (
-      <div className="fixed inset-0 z-50 flex flex-col justify-end">
-        <div className="absolute inset-0 bg-black bg-opacity-40" onClick={onClose} />
-        <div className="relative bg-white dark:bg-slate-800 rounded-t-3xl p-6">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" onClick={onClose} aria-hidden />
+        <div
+          role="dialog"
+          aria-labelledby="random-exam-sheet-title"
+          className="relative w-full max-w-lg rounded-3xl bg-white dark:bg-slate-800 shadow-2xl border border-slate-200/80 dark:border-slate-600 p-6"
+        >
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">랜덤 세트</h2>
-            <button type="button" onClick={onClose} className="text-slate-400">✕</button>
+            <h2 id="random-exam-sheet-title" className="text-lg font-bold text-slate-800 dark:text-slate-100">
+              랜덤 세트
+            </h2>
+            <button type="button" onClick={onClose} className="text-slate-400" aria-label="닫기">
+              ✕
+            </button>
           </div>
           <p className="text-sm text-slate-600 dark:text-slate-300 mb-5">
             출제 빈도(소분류)를 반영해 {getRandomExamCount(filter)}문항을 뽑았습니다. 다시 뽑으면 다른
@@ -2036,12 +2092,20 @@ function FilterSheet({ filter, years, categories, onFilterChange, onClose, onReg
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col justify-end">
-      <div className="absolute inset-0 bg-black bg-opacity-40" onClick={onClose} />
-      <div className="relative bg-white rounded-t-3xl p-6 max-h-[80vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" onClick={onClose} aria-hidden />
+      <div
+        role="dialog"
+        aria-labelledby="filter-sheet-title"
+        className="relative w-full max-w-lg max-h-[min(88vh,36rem)] overflow-y-auto rounded-3xl bg-white dark:bg-slate-800 shadow-2xl border border-slate-200/80 dark:border-slate-600 p-6"
+      >
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-lg font-bold text-slate-800">필터</h2>
-          <button onClick={onClose} className="text-slate-400">✕</button>
+          <h2 id="filter-sheet-title" className="text-lg font-bold text-slate-800 dark:text-slate-100">
+            필터
+          </h2>
+          <button type="button" onClick={onClose} className="text-slate-400" aria-label="닫기">
+            ✕
+          </button>
         </div>
 
         <div className="mb-5">
