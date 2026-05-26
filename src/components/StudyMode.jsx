@@ -123,7 +123,7 @@ export default function StudyMode({
     setCurrentIndex(startIdx)
 
     if (usePastExamSolveUI) {
-      if (!isResume) {
+      if (!isResume && !isPastExamRetry) {
         setPastExamDrafts({})
         setPastExamAllRevealed(false)
         setPastExamResults({})
@@ -375,7 +375,7 @@ export default function StudyMode({
   }
 
   const setPastExamDraftFinal = (examId, no) => {
-    if (pastExamAllRevealed || no == null) return
+    if (isPastExamRetry || pastExamAllRevealed || no == null) return
     setPastExamDrafts(prev => ({
       ...prev,
       [examId]: {
@@ -387,7 +387,7 @@ export default function StudyMode({
   }
 
   const handleRevealAllPastExam = () => {
-    if (pastExamAllRevealed) return
+    if (pastExamAllRevealed || isPastExamRetry) return
     const graded = {}
     exams.forEach(e => {
       const draft = pastExamDrafts[e.id] ?? { userAnswers: {}, finalChoice: null }
@@ -402,13 +402,11 @@ export default function StudyMode({
       return
     }
 
-    const roundToSave = isPastExamRetry ? pastExamRetryRound : pastExamRound
+    const roundToSave = pastExamRound
     if (!isValidPastExamRound(roundToSave)) return
 
     const yearExams = allExams.filter(e => e.year === parseInt(filter.year, 10))
-    const resultsToSave = isPastExamRetry
-      ? { ...(pastExamRoundsData[roundToSave]?.results ?? {}), ...graded }
-      : graded
+    const resultsToSave = graded
 
     setPastExamResults(resultsToSave)
     setPastExamAllRevealed(true)
@@ -457,38 +455,25 @@ export default function StudyMode({
     setShowPastExamScore(true)
   }
 
-  const getPastExamResultsById = roundNo =>
-    Object.keys(pastExamResults).length > 0
-      ? pastExamResults
-      : pastExamRoundsData[roundNo]?.results ?? {}
-
-  const getPastExamWrongIds = (resultsById, roundNo) => {
-    const fromState = exams
-      .filter(e => resultsById[e.id] && !resultsById[e.id].questionCorrect)
-      .map(e => e.id)
-    if (fromState.length > 0) return fromState
+  const getPastExamWrongIds = roundNo => {
     const rec = pastExamRoundsData[roundNo]
     if (!rec?.results) return []
-    return exams.filter(e => rec.results[e.id] && !rec.results[e.id].questionCorrect).map(e => e.id)
+    const yearExams = allExams.filter(e => e.year === parseInt(filter.year, 10))
+    return yearExams
+      .filter(e => rec.results[e.id] && !rec.results[e.id].questionCorrect)
+      .map(e => e.id)
   }
 
-  const getPastExamCorrectIds = (resultsById, roundNo) => {
-    const fromState = exams
-      .filter(e => resultsById[e.id]?.questionCorrect)
-      .map(e => e.id)
-    if (fromState.length > 0) return fromState
+  const getPastExamCorrectIds = roundNo => {
     const rec = pastExamRoundsData[roundNo]
     if (!rec?.results) return []
-    return exams.filter(e => rec.results[e.id]?.questionCorrect).map(e => e.id)
+    const yearExams = allExams.filter(e => e.year === parseInt(filter.year, 10))
+    return yearExams.filter(e => rec.results[e.id]?.questionCorrect).map(e => e.id)
   }
 
   const startPastExamReview = (roundNo, kind) => {
     if (!onReviewPastExamRound || !isValidPastExamRound(roundNo)) return
-    const resultsById = getPastExamResultsById(roundNo)
-    const ids =
-      kind === 'correct'
-        ? getPastExamCorrectIds(resultsById, roundNo)
-        : getPastExamWrongIds(resultsById, roundNo)
+    const ids = kind === 'correct' ? getPastExamCorrectIds(roundNo) : getPastExamWrongIds(roundNo)
     if (ids.length === 0) return
     setShowPastExamScore(false)
     setPastExamScoreRoundNo(null)
@@ -545,7 +530,7 @@ export default function StudyMode({
       : isPastExamRetry
         ? pastExamRetryKind === 'correct'
           ? `맞춘 문제 · ${filter.year}년 ${pastExamRetryRound}회독`
-          : `오답 다시풀기 · ${filter.year}년 ${pastExamRetryRound}회독`
+          : `오답 보기 · ${filter.year}년 ${pastExamRetryRound}회독`
         : pastExamRound != null
           ? `${filter.year}년 · ${pastExamRound}회독`
           : exams[0]?.round != null
@@ -621,7 +606,9 @@ export default function StudyMode({
                     finalChoice={draft.finalChoice}
                     revealed={pastExamAllRevealed}
                     result={pastExamResults[e.id]}
-                    onFinalPick={no => setPastExamDraftFinal(e.id, no)}
+                    onFinalPick={
+                      isPastExamRetry ? undefined : no => setPastExamDraftFinal(e.id, no)
+                    }
                     highlightTerm={highlightTerm}
                   />
                 </div>
