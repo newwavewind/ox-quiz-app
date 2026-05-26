@@ -25,6 +25,7 @@ import {
   isRandomStudyMode,
   maxPerYearForRandomCount,
 } from './data/randomExamSet'
+import { clearStudyResume } from './data/studyResume'
 import { buildStudyNote, makeNoteId } from './data/studyNotes'
 import {
   applyAppearanceSettings,
@@ -57,6 +58,7 @@ function App() {
   const [studyPastExamExams, setStudyPastExamExams] = useState(null)
   const [studyPastExamRound, setStudyPastExamRound] = useState(null)
   const [studyStartExamId, setStudyStartExamId] = useState(null)
+  const [hasActiveStudySession, setHasActiveStudySession] = useState(false)
   const [progress, setProgress] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
@@ -284,10 +286,13 @@ function App() {
       const target = allExams.find(e => e.id === startId)
       if (target) next.year = target.year
     }
+    clearStudyResume()
+    setHasActiveStudySession(true)
     setStudyStartExamId(startId ?? null)
     setStudyFilter(next)
     setStudyReturnScreen(returnTo)
     setScreen('study')
+    setTab('home')
   }
 
   const openRandomStudy = (count = 40) => {
@@ -350,7 +355,10 @@ function App() {
       sort: 'number',
     })
     setStudyReturnScreen('exam')
+    clearStudyResume()
+    setHasActiveStudySession(true)
     setScreen('study')
+    setTab('home')
   }
 
   const regenerateRandomStudy = () => {
@@ -366,15 +374,33 @@ function App() {
   }
 
   const goTab = (next) => {
-    setTab(next)
-    if (screen === 'study') {
-      setStudyStartExamId(null)
-      setStudyRandomExams(null)
-      setStudyPastExamExams(null)
-      setStudyPastExamRound(null)
+    if (next === 'home' && hasActiveStudySession && studyReturnScreen !== 'exam') {
+      setTab('home')
+      setScreen('study')
+      return
     }
+    if (next === 'exam' && hasActiveStudySession && studyReturnScreen === 'exam') {
+      setTab('exam')
+      setScreen('study')
+      return
+    }
+    setTab(next)
     setScreen(next)
   }
+
+  const exitStudy = () => {
+    clearStudyResume()
+    setHasActiveStudySession(false)
+    setStudyStartExamId(null)
+    setStudyRandomExams(null)
+    setStudyPastExamExams(null)
+    setStudyPastExamRound(null)
+    setScreen(studyReturnScreen)
+    setTab(studyReturnScreen)
+  }
+
+  const keepStudyMounted = hasActiveStudySession
+  const studyVisible = screen === 'study'
 
   if (screen === 'wrongnotes') {
     return (
@@ -393,41 +419,39 @@ function App() {
   return (
     <>
       <AuthBar appearance={appearance} onAppearanceChange={setAppearance} />
-      {screen === 'study' ? (
-        <StudyMode
-          key={
-            studyFilter.mode === 'pastExam'
-              ? `past-${studyPastExamExams?.map(e => e.id).join(',') ?? `y${studyFilter.year}`}`
-              : isRandomStudyMode(studyFilter)
-                ? `random-${studyFilter.randomCount ?? 40}-${studyRandomExams?.map(e => e.id).join(',') ?? 'new'}`
-                : 'study'
-          }
-          exams={getStudyExams}
-          startExamId={studyStartExamId}
-          isPastExamRetry={Boolean(studyPastExamExams?.length)}
-          progress={progress}
-          filter={studyFilter}
-          allExams={allExams}
-          onUpdateProgress={updateProgress}
-          onLogItemAttempt={logItemAttempt}
-          onClearItemAttempts={clearItemAttempts}
-          onRemoveItemAttempt={removeItemAttempt}
-          savedNotes={notes}
-          onToggleNote={toggleStudyNote}
-          onBack={() => {
-            setStudyStartExamId(null)
-            setStudyRandomExams(null)
-            setStudyPastExamExams(null)
-            setStudyPastExamRound(null)
-            setScreen(studyReturnScreen)
-          }}
-          onRetryPastExamWrong={retryPastExamWrong}
-          pastExamRetryRound={studyPastExamRound}
-          onFilterChange={setStudyFilter}
-          onRegenerateRandom={isRandomStudyMode(studyFilter) ? regenerateRandomStudy : undefined}
-          exitLabel={studyReturnScreen === 'exam' ? '시험으로' : '홈으로'}
-        />
-      ) : screen === 'exam' ? (
+      {keepStudyMounted && (
+        <div className={studyVisible ? undefined : 'hidden'} aria-hidden={!studyVisible}>
+          <StudyMode
+            studyVisible={studyVisible}
+            key={
+              studyFilter.mode === 'pastExam'
+                ? `past-${studyPastExamExams?.map(e => e.id).join(',') ?? `y${studyFilter.year}`}`
+                : isRandomStudyMode(studyFilter)
+                  ? `random-${studyFilter.randomCount ?? 40}-${studyRandomExams?.map(e => e.id).join(',') ?? 'new'}`
+                  : 'study'
+            }
+            exams={getStudyExams}
+            startExamId={studyStartExamId}
+            isPastExamRetry={Boolean(studyPastExamExams?.length)}
+            progress={progress}
+            filter={studyFilter}
+            allExams={allExams}
+            onUpdateProgress={updateProgress}
+            onLogItemAttempt={logItemAttempt}
+            onClearItemAttempts={clearItemAttempts}
+            onRemoveItemAttempt={removeItemAttempt}
+            savedNotes={notes}
+            onToggleNote={toggleStudyNote}
+            onBack={exitStudy}
+            onRetryPastExamWrong={retryPastExamWrong}
+            pastExamRetryRound={studyPastExamRound}
+            onFilterChange={setStudyFilter}
+            onRegenerateRandom={isRandomStudyMode(studyFilter) ? regenerateRandomStudy : undefined}
+            exitLabel={studyReturnScreen === 'exam' ? '시험으로' : '홈으로'}
+          />
+        </div>
+      )}
+      {screen === 'exam' ? (
         <ExamScreen
           exams={allExams}
           onStartPastExam={openPastExamStudy}
@@ -455,7 +479,7 @@ function App() {
           onAddPost={addCommunityPost}
           onDeletePost={deleteCommunityPost}
         />
-      ) : (
+      ) : screen === 'home' ? (
         <HomeScreen
           exams={allExams}
           progress={progress}
@@ -466,9 +490,9 @@ function App() {
             openStudy({ category: null, year, examId: null }, 'home')
           }}
         />
-      )}
+      ) : null}
       <BottomNav
-        active={screen === 'study' ? studyReturnScreen : tab}
+        active={screen === 'study' ? (studyReturnScreen === 'exam' ? 'exam' : 'home') : tab}
         onHome={() => goTab('home')}
         onExam={() => goTab('exam')}
         onIndex={() => goTab('index')}

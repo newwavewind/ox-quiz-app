@@ -11,6 +11,7 @@ import {
   summarizePastExamResults,
 } from '../data/pastExamGrade'
 import { getRandomExamCount, isRandomStudyMode } from '../data/randomExamSet'
+import { clearStudyResume, loadStudyResume, saveStudyResume } from '../data/studyResume'
 import PastExamQuestionBlock from './PastExamQuestionBlock'
 import PastExamTenRoundBar from './PastExamTenRoundBar'
 import { PastExamGradeMark, PastExamScoreSheet } from './StudyModeShared'
@@ -51,6 +52,7 @@ export default function StudyMode({
   isPastExamRetry = false,
   pastExamRetryRound = null,
   exitLabel = '홈으로',
+  studyVisible = true,
 }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [userAnswers, setUserAnswers] = useState({})
@@ -70,7 +72,22 @@ export default function StudyMode({
   const [pastExamRoundsData, setPastExamRoundsData] = useState({})
   const [pastExamRoundHint, setPastExamRoundHint] = useState(null)
   const scrollContainerRef = useRef(null)
+  const studyScrollRef = useRef(null)
   const sectionRefs = useRef([])
+
+  const getStudyScrollTop = () =>
+    scrollContainerRef.current?.scrollTop ?? studyScrollRef.current?.scrollTop ?? 0
+
+  const restoreStudyScroll = (scrollTop, index) => {
+    requestAnimationFrame(() => {
+      const root = scrollContainerRef.current ?? studyScrollRef.current
+      if (scrollTop > 0 && root) {
+        root.scrollTo({ top: scrollTop, behavior: 'auto' })
+        return
+      }
+      sectionRefs.current[index]?.scrollIntoView({ behavior: 'auto', block: 'start' })
+    })
+  }
 
   const isRandomExam = isRandomStudyMode(filter)
   const randomExamCount = isRandomExam ? getRandomExamCount(filter) : null
@@ -91,33 +108,69 @@ export default function StudyMode({
   const examListKey = useMemo(() => exams.map(e => e.id).join('|'), [exams])
 
   useEffect(() => {
+    const saved = loadStudyResume(examListKey)
+    const isResume = saved != null && saved.currentIndex >= 0
+
     let startIdx = 0
-    if (startExamId) {
+    if (isResume) {
+      startIdx = Math.min(saved.currentIndex, Math.max(0, exams.length - 1))
+    } else if (startExamId) {
       const idx = exams.findIndex(e => e.id === startExamId)
       if (idx >= 0) startIdx = idx
     }
     setCurrentIndex(startIdx)
+
     if (usePastExamSolveUI) {
-      setPastExamDrafts({})
-      setPastExamAllRevealed(false)
-      setPastExamResults({})
-      setShowPastExamScore(false)
-      setPastExamScoreRoundNo(null)
+      if (!isResume) {
+        setPastExamDrafts({})
+        setPastExamAllRevealed(false)
+        setPastExamResults({})
+        setShowPastExamScore(false)
+        setPastExamScoreRoundNo(null)
+      }
       if (isPastExamYear) {
         setPastExamRound(
           isPastExamRetry && isValidPastExamRound(pastExamRetryRound) ? pastExamRetryRound : null
         )
         setPastExamRoundsData(loadPastExamRounds(filter.year))
-      } else {
+      } else if (!isResume) {
         setPastExamRound(null)
         setPastExamRoundsData({})
       }
       sectionRefs.current = []
-    } else {
+      if (isResume) {
+        restoreStudyScroll(saved.scrollTop ?? 0, startIdx)
+      }
+    } else if (!isResume) {
       resetQuestionState()
     }
     // exams 참조는 progress 갱신마다 바뀌므로 의존성에서 제외 (OX 확인 직후 상태가 초기화되는 버그 방지)
   }, [filter, examListKey, startExamId])
+
+  useEffect(() => {
+    if (!examListKey || exams.length === 0) return
+    saveStudyResume({
+      examListKey,
+      currentIndex,
+      scrollTop: getStudyScrollTop(),
+    })
+  }, [examListKey, currentIndex])
+
+  useEffect(() => {
+    if (studyVisible || !examListKey) return
+    saveStudyResume({
+      examListKey,
+      currentIndex,
+      scrollTop: getStudyScrollTop(),
+    })
+  }, [studyVisible, examListKey, currentIndex])
+
+  useEffect(() => {
+    if (!studyVisible || !examListKey) return undefined
+    const saved = loadStudyResume(examListKey)
+    if (saved) restoreStudyScroll(saved.scrollTop ?? 0, currentIndex)
+    return undefined
+  }, [studyVisible, examListKey])
 
   useEffect(() => {
     const inSolve =
@@ -687,7 +740,7 @@ export default function StudyMode({
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div ref={studyScrollRef} className="flex-1 overflow-y-auto">
         <div className="max-w-2xl mx-auto px-4 py-5 space-y-4">
           {showQuestionJump && (
             <QuestionJumpBar
