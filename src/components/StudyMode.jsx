@@ -131,6 +131,8 @@ export default function StudyMode({
   pastExamRetryKind = null,
   onRetryWrongOnly,
   exitLabel = '홈으로',
+  topBarTitle = null,
+  hideLastStepNav = false,
   studyVisible = true,
   resumeStorageKey = 'default',
   appearance = null,
@@ -1295,7 +1297,8 @@ export default function StudyMode({
       )}
       <TopBar
         title={
-          isRandomExam
+          topBarTitle
+          ?? (isRandomExam
             ? `랜덤 ${randomExamCount}문제`
             : filter.chapterId
               ? filter.subcategory
@@ -1309,7 +1312,7 @@ export default function StudyMode({
                     : filter.year
                       ? `${filter.year}년 학습`
                       : null)
-                  || '전체 학습'
+                  || '전체 학습')
         }
         onBack={requestExit}
         onFilter={() => setShowFilter(true)}
@@ -1365,19 +1368,23 @@ export default function StudyMode({
             />
           )}
 
+          {((!hideLastStepNav && currentIndex > 0)
+            || !(hideLastStepNav && currentIndex >= exams.length - 1)) && (
           <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={handlePrev}
-              disabled={currentIndex === 0}
-              className="flex-1 bg-white border border-slate-200 text-slate-600 rounded-xl py-2.5 font-semibold text-sm disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50"
-            >
-              이전
-            </button>
+            {!hideLastStepNav && currentIndex > 0 && (
+              <button
+                type="button"
+                onClick={handlePrev}
+                className="flex-1 bg-white border border-slate-200 text-slate-600 rounded-xl py-2.5 font-semibold text-sm hover:bg-slate-50"
+              >
+                이전
+              </button>
+            )}
+            {!(hideLastStepNav && currentIndex >= exams.length - 1) && (
             <button
               type="button"
               onClick={handleNext}
-              className={`flex-1 rounded-xl py-2.5 font-semibold text-sm ${
+              className={`${!hideLastStepNav && currentIndex > 0 ? 'flex-1' : 'w-full'} rounded-xl py-2.5 font-semibold text-sm ${
                 currentIndex >= exams.length - 1
                   ? isPastExam && pastExamSummary?.allGraded
                     ? 'bg-violet-600 text-white hover:bg-violet-700'
@@ -1391,7 +1398,9 @@ export default function StudyMode({
                   : exitLabel
                 : '다음'}
             </button>
+            )}
           </div>
+          )}
 
           <div className="flex w-full items-center gap-2 min-w-0">
             <div

@@ -403,7 +403,7 @@ export default function HomeScreen({
                 className="w-full flex items-center justify-center gap-2 home-card-interactive px-3 py-3.5 text-center"
               >
                 <span className="text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 leading-tight">
-                  {`오답노트 · ${STUDY_VIEWS[kind].todayTitle}`}
+                  {`전체 학습 · ${STUDY_VIEWS[kind].todayTitle}`}
                 </span>
                 <span className="shrink-0 text-xs font-semibold home-wrong-count rounded-full px-2 py-1 tabular-nums">
                   {wrongCounts[kind]}문항

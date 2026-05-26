@@ -161,7 +161,8 @@ export default function WrongNotes({
         onToggleNote={onToggleNote}
         onBack={exitReview}
         onFilterChange={() => {}}
-        exitLabel="오답노트로"
+        topBarTitle="오답노트"
+        hideLastStepNav
         appearance={appearance}
         onAppearanceChange={onAppearanceChange}
       />
@@ -178,7 +179,7 @@ export default function WrongNotes({
             </svg>
           </button>
           <h1 className="flex-1 font-bold text-slate-800 dark:text-slate-100">
-            {kind === 'year' ? '오답노트' : '오답노트 · 목차별'}
+            {kind === 'year' ? '전체 학습' : '전체 학습 · 목차별'}
           </h1>
           <span className="text-xs bg-red-100 text-red-600 rounded-full px-2.5 py-1 font-medium">
             {displayExams.length}문항
