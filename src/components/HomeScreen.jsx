@@ -3,6 +3,7 @@ import taxonomy from '../../data/taxonomy.json'
 import { CATEGORIES } from '../data/categoryStyles'
 import { isExamComplete, isExamCorrect } from '../data/loadExam'
 import { buildTodayDashboard } from '../data/studyDashboard'
+import { formatTodayStudySpot } from '../data/todayStudySpot'
 
 const subcategoryOrder = taxonomy.units.reduce((acc, unit) => {
   if (!acc[unit.category]) acc[unit.category] = []
@@ -30,6 +31,7 @@ export default function HomeScreen({
   wrongCount = 0,
   onStartStudy,
   onStartStudyByYear,
+  onResumeTodayStudy,
   onOpenWrongNotes,
   onOpenStats,
 }) {
@@ -88,12 +90,12 @@ export default function HomeScreen({
     .sort((a, b) => b - a)
     .map(year => ({ year, ...getYearStats(year) }))
 
-  const examYears = useMemo(() => activeYears.map(y => y.year), [activeYears])
-
   const dashboard = useMemo(
-    () => buildTodayDashboard(exams, progress, notes, examYears),
-    [exams, progress, notes, examYears]
+    () => buildTodayDashboard(exams, progress, notes),
+    [exams, progress, notes]
   )
+
+  const todaySpotLabel = dashboard.todaySpot ? formatTodayStudySpot(dashboard.todaySpot) : null
 
   const [expandedSubs, setExpandedSubs] = useState(() => new Set())
 
@@ -137,18 +139,25 @@ export default function HomeScreen({
               </button>
             )}
           </div>
-          <div className="grid grid-cols-3 gap-2 text-center">
-            <div className="rounded-xl bg-slate-50 dark:bg-slate-700/50 py-2.5 px-1">
+          <div className="grid grid-cols-2 gap-2 text-center">
+            <div className="rounded-xl bg-slate-50 dark:bg-slate-700/50 py-2.5 px-2">
               <p className="text-[10px] text-slate-400">오늘 OX</p>
               <p className="text-lg font-bold text-slate-800 dark:text-slate-100 tabular-nums">
                 {dashboard.todayOx}
               </p>
-            </div>
-            <div className="rounded-xl bg-slate-50 dark:bg-slate-700/50 py-2.5 px-1">
-              <p className="text-[10px] text-slate-400">이번 주 5회독</p>
-              <p className="text-lg font-bold text-slate-800 dark:text-slate-100 tabular-nums">
-                {dashboard.weekRounds}
-              </p>
+              {todaySpotLabel && onResumeTodayStudy ? (
+                <button
+                  type="button"
+                  onClick={() => onResumeTodayStudy(dashboard.todaySpot)}
+                  className="mt-1.5 w-full text-[10px] font-medium text-indigo-600 dark:text-indigo-400 leading-snug hover:underline"
+                >
+                  {todaySpotLabel}
+                </button>
+              ) : todaySpotLabel ? (
+                <p className="mt-1.5 text-[10px] font-medium text-slate-500 dark:text-slate-400 leading-snug">
+                  {todaySpotLabel}
+                </p>
+              ) : null}
             </div>
             <div className="rounded-xl bg-slate-50 dark:bg-slate-700/50 py-2.5 px-1">
               <p className="text-[10px] text-slate-400">암기노트</p>

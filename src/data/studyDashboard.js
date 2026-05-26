@@ -1,21 +1,8 @@
 import { isExamComplete } from './loadExam'
-import {
-  loadPastExamRounds,
-  PAST_EXAM_ROUND_MAX,
-  PAST_EXAM_ROUND_MIN,
-} from './pastExamRounds'
+import { loadTodayStudySpot } from './todayStudySpot'
 
 function startOfDay(ts = Date.now()) {
   const d = new Date(ts)
-  d.setHours(0, 0, 0, 0)
-  return d.getTime()
-}
-
-function startOfWeek(ts = Date.now()) {
-  const d = new Date(ts)
-  const day = d.getDay()
-  const diff = day === 0 ? 6 : day - 1
-  d.setDate(d.getDate() - diff)
   d.setHours(0, 0, 0, 0)
   return d.getTime()
 }
@@ -45,19 +32,6 @@ export function countTodayAnsweredExams(progress) {
   return count
 }
 
-export function countWeekPastExamRounds(years) {
-  const from = startOfWeek()
-  let completed = 0
-  for (const year of years) {
-    const rounds = loadPastExamRounds(year)
-    for (let r = PAST_EXAM_ROUND_MIN; r <= PAST_EXAM_ROUND_MAX; r++) {
-      const rec = rounds[r]
-      if (rec?.completed && rec.completedAt >= from) completed++
-    }
-  }
-  return completed
-}
-
 export function findNextStudyRecommendation(exams, progress) {
   const bySub = new Map()
   for (const exam of exams) {
@@ -77,17 +51,17 @@ export function findNextStudyRecommendation(exams, progress) {
   return best
 }
 
-export function buildTodayDashboard(exams, progress, notes, years) {
+export function buildTodayDashboard(exams, progress, notes) {
   const todayOx = countTodayOxAttempts(progress)
   const todayExams = countTodayAnsweredExams(progress)
-  const weekRounds = countWeekPastExamRounds(years)
   const noteCount = Object.keys(notes || {}).length
   const recommendation = findNextStudyRecommendation(exams, progress)
+  const todaySpot = loadTodayStudySpot()
   return {
     todayOx,
     todayExams,
-    weekRounds,
     noteCount,
     recommendation,
+    todaySpot,
   }
 }

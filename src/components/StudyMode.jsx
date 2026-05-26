@@ -13,6 +13,7 @@ import {
 import { getRandomExamCount, isRandomStudyMode } from '../data/randomExamSet'
 import { gradeOxStudyQuestion } from '../data/loadExam'
 import { clearStudyResume, loadStudyResume, saveStudyResume } from '../data/studyResume'
+import { saveTodayStudySpot } from '../data/todayStudySpot'
 import { registerScrollToTop } from '../utils/scrollToTop'
 import AuthBar from './AuthBar'
 import PastExamQuestionBlock from './PastExamQuestionBlock'
@@ -197,6 +198,25 @@ export default function StudyMode({
       scrollTop: getStudyScrollTop(),
     })
   }, [resumeStorageKey, examListKey, currentIndex])
+
+  useEffect(() => {
+    if (usePastExamSolveUI || !exam || exams.length === 0) return
+    saveTodayStudySpot({
+      filter,
+      exam,
+      position: currentIndex + 1,
+      total: exams.length,
+    })
+  }, [
+    usePastExamSolveUI,
+    exam?.id,
+    currentIndex,
+    exams.length,
+    filter.year,
+    filter.category,
+    filter.subcategory,
+    filter.mode,
+  ])
 
   useEffect(() => {
     if (studyVisible || !examListKey) return

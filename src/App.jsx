@@ -635,6 +635,10 @@ function App() {
           onStartStudyByYear={year => {
             openStudy({ category: null, year, examId: null }, 'home')
           }}
+          onResumeTodayStudy={spot => {
+            if (!spot?.filter || !spot.examId) return
+            openStudy({ ...spot.filter, examId: spot.examId }, 'home')
+          }}
           onOpenWrongNotes={() => {
             setScreen('wrongnotes')
             setTab('home')
