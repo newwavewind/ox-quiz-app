@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import HighlightText from './HighlightText'
 import { getTermMatchInfo } from '../data/glossaryIndex'
 import { itemKeyToChoiceNo } from '../data/pastExamGrade'
@@ -36,7 +37,7 @@ function NoteSaveCheckbox({ exam, item, savedNotes, onToggleNote }) {
   )
 }
 
-export default function PastExamQuestionBlock({
+function PastExamQuestionBlock({
   exam,
   finalChoice,
   revealed,
@@ -290,3 +291,5 @@ export default function PastExamQuestionBlock({
     </div>
   )
 }
+
+export default memo(PastExamQuestionBlock)

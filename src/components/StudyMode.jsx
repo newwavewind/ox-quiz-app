@@ -12,7 +12,6 @@ import {
 } from '../data/pastExamGrade'
 import { getRandomExamCount, isRandomStudyMode } from '../data/randomExamSet'
 import { clearStudyResume, loadStudyResume, saveStudyResume } from '../data/studyResume'
-import { hapticTap } from '../utils/haptic'
 import PastExamQuestionBlock from './PastExamQuestionBlock'
 import PastExamScrollArrows from './PastExamScrollArrows'
 import PastExamTenRoundBar from './PastExamTenRoundBar'
@@ -205,34 +204,46 @@ export default function StudyMode({
     const root = scrollContainerRef.current
     if (!root) return undefined
 
-    const observer = new IntersectionObserver(
-      entries => {
-        let best = null
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue
-          if (!best || entry.intersectionRatio > best.intersectionRatio) best = entry
-        }
-        if (best?.target) {
-          const idx = Number(best.target.dataset.index)
-          if (!Number.isNaN(idx) && pastExamHapticIndexRef.current !== idx) {
-            if (pastExamHapticIndexRef.current != null) hapticTap('light')
-            pastExamHapticIndexRef.current = idx
-            setCurrentIndex(idx)
-          }
-        }
-      },
-      { root, threshold: [0.25, 0.4, 0.55, 0.7] }
-    )
+    let scrollEndTimer
 
-    sectionRefs.current.forEach(el => {
-      if (el) observer.observe(el)
-    })
-    return () => observer.disconnect()
+    const syncIndexAfterScroll = () => {
+      const rootTop = root.getBoundingClientRect().top
+      let bestIdx = 0
+      let bestDist = Infinity
+      sectionRefs.current.forEach((el, i) => {
+        if (!el) return
+        const dist = Math.abs(el.getBoundingClientRect().top - rootTop)
+        if (dist < bestDist) {
+          bestDist = dist
+          bestIdx = i
+        }
+      })
+      pastExamHapticIndexRef.current = bestIdx
+      setCurrentIndex(prev => (prev === bestIdx ? prev : bestIdx))
+    }
+
+    const onScroll = () => {
+      window.clearTimeout(scrollEndTimer)
+      scrollEndTimer = window.setTimeout(syncIndexAfterScroll, 150)
+    }
+
+    const onScrollEnd = () => syncIndexAfterScroll()
+
+    root.addEventListener('scroll', onScroll, { passive: true })
+    if ('onscrollend' in window) {
+      root.addEventListener('scrollend', onScrollEnd)
+    }
+    return () => {
+      root.removeEventListener('scroll', onScroll)
+      if ('onscrollend' in window) {
+        root.removeEventListener('scrollend', onScrollEnd)
+      }
+      window.clearTimeout(scrollEndTimer)
+    }
   }, [
     isRandomExam,
     isPastExamYear,
     examListKey,
-    pastExamAllRevealed,
     pastExamRound,
     isPastExamRetry,
   ])
@@ -395,17 +406,12 @@ export default function StudyMode({
       return
     }
 
-    const prevSnap = root.style.scrollSnapType
-    root.style.scrollSnapType = 'none'
     const scrollTop = Math.max(
       0,
       Math.min(scrollOffsetInContainer(root, el), root.scrollHeight - root.clientHeight)
     )
     root.scrollTo({ top: scrollTop, behavior })
     root.scrollTop = scrollTop
-    window.setTimeout(() => {
-      root.style.scrollSnapType = prevSnap || ''
-    }, 450)
   }
 
   const scrollPastExamContainerTo = (top, snapTarget = null) => {
@@ -416,22 +422,10 @@ export default function StudyMode({
       return true
     }
 
-    const run = () => {
-      const prevSnap = root.style.scrollSnapType
-      root.style.scrollSnapType = 'none'
-      const scrollTop = Math.max(0, Math.min(top, root.scrollHeight - root.clientHeight))
-      if (!isPastExamScrollContainerActive(root)) {
-        root.style.scrollSnapType = prevSnap || ''
-        return
-      }
-      root.scrollTo({ top: scrollTop, behavior: 'auto' })
-      root.scrollTop = scrollTop
-      window.setTimeout(() => {
-        root.style.scrollSnapType = prevSnap || ''
-      }, 450)
-    }
-
-    requestAnimationFrame(run)
+    const scrollTop = Math.max(0, Math.min(top, root.scrollHeight - root.clientHeight))
+    if (!isPastExamScrollContainerActive(root)) return false
+    root.scrollTo({ top: scrollTop, behavior: 'auto' })
+    root.scrollTop = scrollTop
     return true
   }
 
@@ -701,7 +695,7 @@ export default function StudyMode({
         <div className="flex flex-1 min-h-0 justify-center overflow-hidden">
         <div
           ref={scrollContainerRef}
-          className="h-full w-full max-w-2xl shrink-0 px-3 overflow-y-auto overscroll-y-contain snap-y snap-proximity scroll-smooth"
+          className="past-exam-scroll h-full w-full max-w-2xl shrink-0 px-3 overflow-y-auto overscroll-y-contain"
         >
           {exams.map((e, idx) => {
             const draft = pastExamDrafts[e.id] ?? { userAnswers: {}, finalChoice: null }
@@ -712,7 +706,7 @@ export default function StudyMode({
                 ref={el => {
                   sectionRefs.current[idx] = el
                 }}
-                className="snap-start snap-always min-h-[calc(100dvh-10.5rem)] flex flex-col justify-start"
+                className="past-exam-section flex flex-col justify-start border-b border-slate-100/90 dark:border-slate-700/50"
               >
                 <div className="px-2 py-5">
                   <PastExamQuestionBlock
@@ -732,7 +726,7 @@ export default function StudyMode({
 
           <section
             ref={pastExamEndRef}
-            className="snap-start snap-always min-h-[50vh] flex flex-col justify-start"
+            className="past-exam-section flex flex-col justify-start min-h-[40vh]"
           >
             <div className="space-y-3 px-2 py-8 pb-16">
               {!pastExamAllRevealed ? (

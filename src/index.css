@@ -249,4 +249,14 @@
   .pb-bottom-nav {
     padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
   }
+
+  .past-exam-scroll {
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+
+  .past-exam-section {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 600px;
+  }
 }
