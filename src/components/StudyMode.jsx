@@ -30,6 +30,7 @@ export default function StudyMode({
   onToggleNote,
   onBack,
   onFilterChange,
+  onRegenerateRandom,
 }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [userAnswers, setUserAnswers] = useState({})
@@ -70,6 +71,7 @@ export default function StudyMode({
   }, [exams])
 
   const showQuestionJump = exams.length > 1
+  const isRandom40 = filter.mode === 'random40'
 
   const exam = exams[currentIndex]
 
@@ -180,20 +182,28 @@ export default function StudyMode({
     <div className="min-h-screen bg-slate-50 flex flex-col pb-bottom-nav">
       <TopBar
         title={
-          filter.subcategory
-            ? `${filter.category} · ${filter.subcategory}`
-            : filter.category
-              || (filter.year && exams[0]?.round != null
-                ? `${filter.year}년 제${exams[0].round}회`
-                : filter.year
-                  ? `${filter.year}년 학습`
-                  : null)
-              || '전체 학습'
+          isRandom40
+            ? '랜덤 40문제'
+            : filter.subcategory
+              ? `${filter.category} · ${filter.subcategory}`
+              : filter.category
+                || (filter.year && exams[0]?.round != null
+                  ? `${filter.year}년 제${exams[0].round}회`
+                  : filter.year
+                    ? `${filter.year}년 학습`
+                    : null)
+                || '전체 학습'
         }
         onBack={onBack}
         onFilter={() => setShowFilter(true)}
         sessionStats={sessionStats}
       />
+
+      {isRandom40 && (
+        <p className="max-w-2xl mx-auto px-4 -mt-2 pb-2 text-[11px] text-slate-500 dark:text-slate-400">
+          소분류 출제 빈도를 반영해 뽑은 {exams.length}문항입니다.
+        </p>
+      )}
 
       <div className="bg-white px-4 pb-3 border-b border-slate-100">
         <div className="flex justify-between text-xs text-slate-400 mb-1.5">
@@ -566,6 +576,7 @@ export default function StudyMode({
           categories={categories}
           onFilterChange={onFilterChange}
           onClose={() => setShowFilter(false)}
+          onRegenerateRandom={onRegenerateRandom}
         />
       )}
     </div>
@@ -679,12 +690,49 @@ function TopBar({ title, onBack, onFilter, sessionStats }) {
   )
 }
 
-function FilterSheet({ filter, years, categories, onFilterChange, onClose }) {
+function FilterSheet({ filter, years, categories, onFilterChange, onClose, onRegenerateRandom }) {
   const [localFilter, setLocalFilter] = useState(filter)
+  const isRandom40 = filter.mode === 'random40'
 
   const handleApply = () => {
     onFilterChange(localFilter)
     onClose()
+  }
+
+  if (isRandom40) {
+    return (
+      <div className="fixed inset-0 z-50 flex flex-col justify-end">
+        <div className="absolute inset-0 bg-black bg-opacity-40" onClick={onClose} />
+        <div className="relative bg-white dark:bg-slate-800 rounded-t-3xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">랜덤 세트</h2>
+            <button type="button" onClick={onClose} className="text-slate-400">✕</button>
+          </div>
+          <p className="text-sm text-slate-600 dark:text-slate-300 mb-5">
+            출제 빈도(소분류)를 반영해 40문항을 뽑았습니다. 다시 뽑으면 다른 조합이 나옵니다.
+          </p>
+          {onRegenerateRandom && (
+            <button
+              type="button"
+              onClick={() => {
+                onRegenerateRandom()
+                onClose()
+              }}
+              className="w-full bg-violet-600 text-white rounded-xl py-4 font-bold hover:bg-violet-700 mb-2"
+            >
+              다시 뽑기
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-full bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl py-3 font-semibold"
+          >
+            닫기
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (

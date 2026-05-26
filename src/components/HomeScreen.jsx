@@ -18,6 +18,7 @@ export default function HomeScreen({
   progress,
   onStartStudy,
   onStartStudyByYear,
+  onStartRandom40,
 }) {
   const getExamStats = (list) => {
     const answered = list.filter(q => isExamComplete(progress, q.id))
@@ -95,6 +96,19 @@ export default function HomeScreen({
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-5">
+        {onStartRandom40 && exams.length >= 40 && (
+          <button
+            type="button"
+            onClick={onStartRandom40}
+            className="w-full rounded-2xl border-2 border-violet-300 bg-gradient-to-br from-violet-50 to-indigo-50 dark:from-violet-950/40 dark:to-indigo-950/40 dark:border-violet-700 px-4 py-4 text-left hover:shadow-md active:scale-[0.99] transition-all"
+          >
+            <p className="text-base font-bold text-violet-900 dark:text-violet-100">랜덤 40문제</p>
+            <p className="text-xs text-violet-700/90 dark:text-violet-300 mt-1">
+              출제 빈도 반영 · 소분류 가중 · 40문항
+            </p>
+          </button>
+        )}
+
         <section className="grid grid-cols-2 gap-2 items-stretch">
           <div className="min-w-0 flex flex-col gap-2 h-full">
             <p className="w-full shrink-0 py-2.5 px-2 rounded-xl text-sm font-semibold border text-center bg-slate-800 text-white border-slate-800">

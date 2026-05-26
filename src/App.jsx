@@ -18,6 +18,7 @@ import StudyMode from './components/StudyMode'
 import WrongNotes from './components/WrongNotes'
 import BottomNav from './components/BottomNav'
 import { allExams, sortExams, isExamComplete, isExamCorrect } from './data/loadExam'
+import { buildWeightedRandomExamSet } from './data/randomExamSet'
 import { buildStudyNote, makeNoteId } from './data/studyNotes'
 import {
   applyAppearanceSettings,
@@ -29,6 +30,7 @@ const STORAGE_KEY = 'ox_quiz_progress_v2'
 const NOTES_STORAGE_KEY = 'ox_quiz_notes_v1'
 
 const DEFAULT_FILTER = {
+  mode: null,
   category: null,
   subcategory: null,
   year: null,
@@ -44,6 +46,7 @@ function App() {
   const [screen, setScreen] = useState('home')
   const [studyReturnScreen, setStudyReturnScreen] = useState('home')
   const [studyFilter, setStudyFilter] = useState({ ...DEFAULT_FILTER })
+  const [studyRandomExams, setStudyRandomExams] = useState(null)
   const [studyStartExamId, setStudyStartExamId] = useState(null)
   const [progress, setProgress] = useState(() => {
     try {
@@ -229,6 +232,9 @@ function App() {
   }
 
   const getStudyExams = useMemo(() => {
+    if (studyFilter.mode === 'random40' && studyRandomExams?.length) {
+      return studyRandomExams
+    }
     let filtered = [...allExams]
     if (studyFilter.category) {
       filtered = filtered.filter(q => q.category === studyFilter.category)
@@ -245,7 +251,7 @@ function App() {
       filtered = filtered.filter(q => isExamComplete(progress, q.id) && !isExamCorrect(progress, q.id))
     }
     return sortExams(filtered, studyFilter.sort)
-  }, [studyFilter, progress])
+  }, [studyFilter, studyRandomExams, progress])
 
   const wrongExams = useMemo(
     () =>
@@ -259,6 +265,9 @@ function App() {
   const openStudy = (filter, returnTo = 'home') => {
     const { examId: startId, ...rest } = filter
     const next = { ...DEFAULT_FILTER, ...rest }
+    if (next.mode !== 'random40') {
+      setStudyRandomExams(null)
+    }
     if (startId && !next.year) {
       const target = allExams.find(e => e.id === startId)
       if (target) next.year = target.year
@@ -269,10 +278,25 @@ function App() {
     setScreen('study')
   }
 
+  const openRandomStudy = () => {
+    const set = buildWeightedRandomExamSet(allExams, { total: 40, maxPerYear: 6 })
+    if (set.length === 0) return
+    setStudyRandomExams(set)
+    openStudy({ mode: 'random40', category: null, subcategory: null, year: null, examId: null, status: 'all' }, 'home')
+  }
+
+  const regenerateRandomStudy = () => {
+    const set = buildWeightedRandomExamSet(allExams, { total: 40, maxPerYear: 6 })
+    if (set.length === 0) return
+    setStudyRandomExams(set)
+    setStudyStartExamId(null)
+  }
+
   const goTab = (next) => {
     setTab(next)
     if (screen === 'study') {
       setStudyStartExamId(null)
+      setStudyRandomExams(null)
     }
     setScreen(next)
   }
@@ -309,9 +333,11 @@ function App() {
           onToggleNote={toggleStudyNote}
           onBack={() => {
             setStudyStartExamId(null)
+            setStudyRandomExams(null)
             setScreen(studyReturnScreen)
           }}
           onFilterChange={setStudyFilter}
+          onRegenerateRandom={studyFilter.mode === 'random40' ? regenerateRandomStudy : undefined}
         />
       ) : screen === 'index' ? (
         <IndexScreen
@@ -345,6 +371,7 @@ function App() {
           onStartStudyByYear={(year) => {
             openStudy({ category: null, year, examId: null }, 'home')
           }}
+          onStartRandom40={openRandomStudy}
         />
       )}
       <BottomNav
