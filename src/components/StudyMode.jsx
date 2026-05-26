@@ -126,18 +126,22 @@ export default function StudyMode({
   useEffect(() => {
     const saved = loadStudyResume(resumeStorageKey, examListKey)
     const isResume = saved != null && saved.currentIndex >= 0
+    const useResume = isResume && !startExamId
 
     let startIdx = 0
-    if (isResume) {
-      startIdx = Math.min(saved.currentIndex, Math.max(0, exams.length - 1))
-    } else if (startExamId) {
+    if (startExamId) {
       const idx = exams.findIndex(e => e.id === startExamId)
-      if (idx >= 0) startIdx = idx
+      if (idx >= 0) {
+        startIdx = idx
+        clearStudyResume(resumeStorageKey)
+      }
+    } else if (isResume) {
+      startIdx = Math.min(saved.currentIndex, Math.max(0, exams.length - 1))
     }
     setCurrentIndex(startIdx)
 
     if (usePastExamSolveUI) {
-      if (!isResume && !isPastExamRetry) {
+      if (!useResume && !isPastExamRetry) {
         setPastExamDrafts({})
         setPastExamAllRevealed(false)
         setPastExamResults({})
@@ -149,15 +153,15 @@ export default function StudyMode({
           isPastExamRetry && isValidPastExamRound(pastExamRetryRound) ? pastExamRetryRound : null
         )
         setPastExamRoundsData(loadPastExamRounds(filter.year))
-      } else if (!isResume) {
+      } else if (!useResume) {
         setPastExamRound(null)
         setPastExamRoundsData({})
       }
       sectionRefs.current = []
-      if (isResume) {
+      if (useResume) {
         restoreStudyScroll(saved.scrollTop ?? 0, startIdx)
       }
-    } else if (!isResume) {
+    } else if (!useResume) {
       resetQuestionState()
     }
     // exams 참조는 progress 갱신마다 바뀌므로 의존성에서 제외 (OX 확인 직후 상태가 초기화되는 버그 방지)

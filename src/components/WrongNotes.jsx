@@ -19,6 +19,7 @@ export default function WrongNotes({
   onAppearanceChange,
 }) {
   const [reviewing, setReviewing] = useState(false)
+  const [reviewExams, setReviewExams] = useState([])
   const [startExamId, setStartExamId] = useState(null)
   const [masteredIds, setMasteredIds] = useState(new Set())
 
@@ -32,20 +33,29 @@ export default function WrongNotes({
   }
 
   const startReview = (examId = null) => {
-    if (examId) clearStudyResume(WRONG_NOTES_RESUME_KEY)
-    setStartExamId(examId)
+    clearStudyResume(WRONG_NOTES_RESUME_KEY)
+    if (examId) {
+      const target = displayExams.find(e => e.id === examId)
+      setReviewExams(target ? [target] : displayExams)
+      setStartExamId(examId)
+    } else {
+      setReviewExams(displayExams)
+      setStartExamId(null)
+    }
     setReviewing(true)
   }
 
   const exitReview = () => {
     setReviewing(false)
+    setReviewExams([])
     setStartExamId(null)
   }
 
-  if (reviewing) {
+  if (reviewing && reviewExams.length > 0) {
     return (
       <StudyMode
-        exams={displayExams}
+        key={startExamId ?? 'all'}
+        exams={reviewExams}
         startExamId={startExamId}
         resumeStorageKey={WRONG_NOTES_RESUME_KEY}
         progress={progress}
