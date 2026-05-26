@@ -2032,37 +2032,33 @@ function QuestionJumpBar({
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white px-2 py-2 space-y-2">
-      <div className="px-2 py-2 min-w-0 rounded-lg bg-slate-50 border border-slate-100 space-y-1 sm:space-y-0 sm:flex sm:flex-wrap sm:items-center sm:gap-x-2.5 sm:gap-y-1">
-        <div className="flex items-center gap-2 min-w-0 sm:min-w-[5rem] sm:flex-1">
-          <span className="text-[11px] font-semibold text-slate-600 shrink-0">
+      <div className="flex items-center justify-between gap-2 px-2 py-1.5 min-w-0 rounded-lg bg-slate-50 border border-slate-100 overflow-x-auto overscroll-x-contain">
+        <div className="flex items-center gap-x-2 shrink-0 leading-none">
+          <span className="text-[11px] font-semibold text-slate-600 whitespace-nowrap">
             {yearLabel}{showRoundLabel ? '목차' : '문항'}
           </span>
-          <div className="min-w-0 flex-1 overflow-x-auto overscroll-x-contain">
-            {showStudyCompleteBadge ? (
-              <span className="inline-flex items-center gap-0.5 text-xs font-semibold text-slate-900 tabular-nums whitespace-nowrap">
-                <span>{currentQuestionNo}번</span>
-                <span
-                  className={`inline-flex items-center px-1 py-0.5 rounded-md border text-[11px] leading-none ${studyRoundBadgeClass}`}
-                >
-                  {currentRoundCount}회독
-                </span>
-                <span className="text-[11px] font-medium">완료</span>
+          {showStudyCompleteBadge ? (
+            <span className="inline-flex items-center gap-0.5 text-[11px] font-semibold text-slate-900 tabular-nums whitespace-nowrap">
+              <span>{currentQuestionNo}번</span>
+              <span
+                className={`inline-flex items-center px-1 py-px rounded-md border text-[10px] leading-none ${studyRoundBadgeClass}`}
+              >
+                {currentRoundCount}회독
               </span>
-            ) : (
-              <span className="text-xs font-medium text-slate-800 tabular-nums whitespace-nowrap">
-                {currentStudyStatusLabel}
-              </span>
-            )}
-          </div>
-        </div>
-        <div className="flex items-center justify-between gap-2 sm:contents">
-          <span className="text-[11px] font-normal text-slate-500 tabular-nums whitespace-nowrap shrink-0">
-            {progressNumerator}/{exams.length} {progressLabel}
-          </span>
-          <span className="text-[11px] font-medium text-slate-500 shrink-0 tabular-nums whitespace-nowrap sm:ml-auto">
-            {pastExamResults ? `채점 ${gradedCount}` : `풀이 ${answeredCount} · 미풀이 ${unansweredCount}`}
+              <span className="font-medium">완료</span>
+            </span>
+          ) : (
+            <span className="text-[11px] font-medium text-slate-800 tabular-nums whitespace-nowrap">
+              {currentStudyStatusLabel}
+            </span>
+          )}
+          <span className="text-[11px] font-normal text-slate-500 tabular-nums whitespace-nowrap">
+            · {progressNumerator}/{exams.length} {progressLabel}
           </span>
         </div>
+        <span className="text-[11px] font-medium text-slate-500 tabular-nums whitespace-nowrap shrink-0 leading-none pl-2">
+          {pastExamResults ? `채점 ${gradedCount}` : `풀이 ${answeredCount} · 미풀이 ${unansweredCount}`}
+        </span>
       </div>
 
       <div className="flex items-center gap-3 px-1 text-[9px] text-slate-400">
