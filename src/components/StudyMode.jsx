@@ -200,11 +200,6 @@ export default function StudyMode({
       />
 
       <div className="bg-white px-4 pb-3 border-b border-slate-100 dark:bg-slate-800 dark:border-slate-700">
-        {isRandom40 && (
-          <p className="max-w-2xl mx-auto text-[11px] leading-relaxed text-slate-500 dark:text-slate-400 pb-2 mb-2 border-b border-slate-100 dark:border-slate-700">
-            출제 빈도(소분류) 반영 · {exams.length}문항 랜덤 세트
-          </p>
-        )}
         <div className="flex justify-between text-xs text-slate-400 mb-1.5">
           <span>{currentIndex + 1} / {exams.length}문항</span>
           <span className="text-green-600 font-medium">
@@ -254,20 +249,31 @@ export default function StudyMode({
             </button>
           </div>
 
-          <div className="flex flex-wrap gap-2 items-center">
-            <span className="text-xs bg-slate-200 text-slate-600 rounded-full px-3 py-1 font-medium">
-              {exam.category}
-            </span>
-            {exam.subcategory && (
-              <span className="text-xs bg-slate-100 text-slate-500 rounded-full px-3 py-1">
-                {highlightTerm ? (
-                  <HighlightText text={exam.subcategory} term={highlightTerm} />
-                ) : (
-                  exam.subcategory
-                )}
+          <div className="flex w-full items-center gap-2 min-w-0">
+            <div
+              className={`flex items-center gap-2 min-w-0 flex-1 ${
+                isRandom40 ? 'flex-nowrap overflow-x-auto overscroll-x-contain py-0.5' : 'flex-wrap'
+              }`}
+            >
+              {isRandom40 && (
+                <span className="shrink-0 text-[11px] text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                  출제 빈도(소분류) 반영 · {exams.length}문항 랜덤 세트
+                </span>
+              )}
+              <span className="shrink-0 text-xs bg-slate-200 text-slate-600 rounded-full px-3 py-1 font-medium">
+                {exam.category}
               </span>
-            )}
-            <span className="text-xs text-slate-400 ml-auto">
+              {exam.subcategory && (
+                <span className="shrink-0 text-xs bg-slate-100 text-slate-500 rounded-full px-3 py-1">
+                  {highlightTerm ? (
+                    <HighlightText text={exam.subcategory} term={highlightTerm} />
+                  ) : (
+                    exam.subcategory
+                  )}
+                </span>
+              )}
+            </div>
+            <span className="shrink-0 text-xs text-slate-400 ml-auto pl-1">
               {exam.year}년 제{exam.round}회
             </span>
           </div>
