@@ -13,6 +13,7 @@ import {
 import { getRandomExamCount, isRandomStudyMode } from '../data/randomExamSet'
 import { clearStudyResume, loadStudyResume, saveStudyResume } from '../data/studyResume'
 import PastExamQuestionBlock from './PastExamQuestionBlock'
+import PastExamScrollRail from './PastExamScrollRail'
 import PastExamTenRoundBar from './PastExamTenRoundBar'
 import { PastExamScoreSheet, QuestionNumberPrefix } from './StudyModeShared'
 import {
@@ -585,9 +586,10 @@ export default function StudyMode({
             </p>
           </div>
         ) : (
+        <div className="relative flex-1 min-h-0">
         <div
           ref={scrollContainerRef}
-          className="flex-1 overflow-y-auto overscroll-y-contain snap-y snap-mandatory scroll-smooth"
+          className="h-full overflow-y-auto overscroll-y-contain snap-y snap-proximity scroll-smooth pr-9 sm:pr-10"
         >
           {exams.map((e, idx) => {
             const draft = pastExamDrafts[e.id] ?? { userAnswers: {}, finalChoice: null }
@@ -628,7 +630,7 @@ export default function StudyMode({
                     정답 확인
                   </button>
                   <p className="text-center text-xs text-slate-500">
-                    위·아래로 스크롤하며 풀이한 뒤, 모든 문항을 확인하고 눌러주세요.
+                    위·아래로 스크롤하거나 오른쪽 번호를 눌러 이동한 뒤, 「정답 확인」을 누르세요.
                   </p>
                 </>
               ) : (
@@ -651,6 +653,14 @@ export default function StudyMode({
               )}
             </div>
           </section>
+        </div>
+        <PastExamScrollRail
+          exams={exams}
+          currentIndex={currentIndex}
+          pastExamResults={pastExamResults}
+          pastExamDrafts={pastExamDrafts}
+          onJump={jumpToQuestion}
+        />
         </div>
         )}
 
