@@ -691,7 +691,7 @@ export default function StudyMode({
           onScrollToTop={inPastExamSolve ? scrollStudyToTop : undefined}
         />
 
-        {isPastExamYear && !isPastExamRetry && (
+        {isPastExamYear && !isPastExamRetry && !inPastExamSolve && (
           <PastExamTenRoundBar
             roundsData={pastExamRoundsData}
             activeRound={pastExamRound}
@@ -699,7 +699,6 @@ export default function StudyMode({
             onViewResult={viewPastExamRoundResult}
             onRetryWrong={retryPastExamRoundWrong}
             onRetryCorrect={retryPastExamRoundCorrect}
-            onScrollToTop={inPastExamSolve ? scrollStudyToTop : undefined}
           />
         )}
 
@@ -730,6 +729,19 @@ export default function StudyMode({
           ref={scrollContainerRef}
           className="past-exam-scroll h-full w-full max-w-2xl shrink-0 px-3 overflow-y-auto overscroll-y-contain"
         >
+          {isPastExamYear && !isPastExamRetry && inPastExamSolve && (
+            <div className="-mx-3 shrink-0">
+              <PastExamTenRoundBar
+                roundsData={pastExamRoundsData}
+                activeRound={pastExamRound}
+                onStartRound={startPastExamRound}
+                onViewResult={viewPastExamRoundResult}
+                onRetryWrong={retryPastExamRoundWrong}
+                onRetryCorrect={retryPastExamRoundCorrect}
+                onScrollToTop={scrollStudyToTop}
+              />
+            </div>
+          )}
           {exams.map((e, idx) => {
             const draft = pastExamDrafts[e.id] ?? { userAnswers: {}, finalChoice: null }
             return (
