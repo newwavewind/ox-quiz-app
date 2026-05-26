@@ -480,6 +480,8 @@ function App() {
             slotId === 'exam' && isRandomStudyMode(slot.filter) ? regenerateRandomStudy : undefined
           }
           exitLabel={slot.returnScreen === 'exam' ? '시험으로' : '홈으로'}
+          appearance={appearance}
+          onAppearanceChange={setAppearance}
         />
       </div>
     )
@@ -501,7 +503,9 @@ function App() {
 
   return (
     <>
-      <AuthBar appearance={appearance} onAppearanceChange={setAppearance} />
+      {!(screen === 'study' && visibleStudySlot) && (
+        <AuthBar appearance={appearance} onAppearanceChange={setAppearance} />
+      )}
       {renderStudySlot('home')}
       {renderStudySlot('exam')}
       {screen === 'exam' ? (

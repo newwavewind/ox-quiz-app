@@ -13,6 +13,7 @@ import {
 import { getRandomExamCount, isRandomStudyMode } from '../data/randomExamSet'
 import { clearStudyResume, loadStudyResume, saveStudyResume } from '../data/studyResume'
 import { registerScrollToTop } from '../utils/scrollToTop'
+import AuthBar from './AuthBar'
 import PastExamQuestionBlock from './PastExamQuestionBlock'
 import PastExamScrollArrows from './PastExamScrollArrows'
 import PastExamTenRoundBar from './PastExamTenRoundBar'
@@ -57,6 +58,8 @@ export default function StudyMode({
   exitLabel = '홈으로',
   studyVisible = true,
   resumeStorageKey = 'default',
+  appearance = null,
+  onAppearanceChange,
 }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [userAnswers, setUserAnswers] = useState({})
@@ -631,6 +634,9 @@ export default function StudyMode({
   if (exams.length === 0) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col pb-bottom-nav">
+        {appearance && onAppearanceChange && (
+          <AuthBar appearance={appearance} onAppearanceChange={onAppearanceChange} />
+        )}
         <TopBar
           title="학습 모드"
           onBack={onBack}
@@ -676,8 +682,13 @@ export default function StudyMode({
     const inPastExamSolve = isRandomExam || isPastExamRetry || pastExamRound != null
     const roundLabel = isPastExamRetry ? pastExamRetryRound : pastExamRound
 
+    const showAuthBar = appearance && onAppearanceChange
+
     return (
       <div className="h-[100dvh] max-h-[100dvh] min-h-0 overflow-hidden bg-slate-50 flex flex-col pb-bottom-nav">
+        {showAuthBar && !inPastExamSolve && (
+          <AuthBar appearance={appearance} onAppearanceChange={onAppearanceChange} />
+        )}
         <TopBar
           title={pastTitle}
           onBack={() => {
@@ -729,6 +740,11 @@ export default function StudyMode({
           ref={scrollContainerRef}
           className="past-exam-scroll h-full w-full max-w-2xl shrink-0 px-3 overflow-y-auto overscroll-y-contain"
         >
+          {showAuthBar && inPastExamSolve && (
+            <div className="-mx-3 shrink-0">
+              <AuthBar appearance={appearance} onAppearanceChange={onAppearanceChange} />
+            </div>
+          )}
           {isPastExamYear && !isPastExamRetry && inPastExamSolve && (
             <div className="-mx-3 shrink-0">
               <PastExamTenRoundBar
@@ -890,6 +906,9 @@ export default function StudyMode({
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col pb-bottom-nav">
+      {appearance && onAppearanceChange && (
+        <AuthBar appearance={appearance} onAppearanceChange={onAppearanceChange} />
+      )}
       <TopBar
         title={
           isRandomExam
