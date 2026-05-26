@@ -60,3 +60,14 @@ export function gradeOxStudyQuestion(exam, userAnswers) {
   }
   return { answered: true, correct: allPicked && allCorrect }
 }
+
+/** @param {ExamQuestion[]} exams */
+export function findProgressAwareStudyExamId(exams, progress, sort = 'number') {
+  const sorted = sortExams(exams, sort)
+  if (sorted.length === 0) return null
+  const unanswered = sorted.find(q => !isExamComplete(progress, q.id))
+  if (unanswered) return unanswered.id
+  const wrong = sorted.find(q => isExamComplete(progress, q.id) && !isExamCorrect(progress, q.id))
+  if (wrong) return wrong.id
+  return sorted[0].id
+}

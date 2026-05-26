@@ -413,6 +413,18 @@ export default function StudyMode({
     })
   }
 
+  const logUnrevealedItemAttempts = (targetExam, answers, revealed) => {
+    if (!targetExam || !onLogItemAttempt) return
+    for (const item of targetExam.items) {
+      const pick = answers[item.key]
+      if (pick == null || revealed.has(item.key)) continue
+      onLogItemAttempt(targetExam.id, item.key, {
+        pick,
+        correct: pick === item.answer,
+      })
+    }
+  }
+
   const handleRevealQuestion = () => {
     if (!exam || questionRevealed) return
     if (isPastExam) {
@@ -424,10 +436,9 @@ export default function StudyMode({
       }))
       return
     }
+    logUnrevealedItemAttempts(exam, userAnswers, revealedItems)
     setQuestionRevealed(true)
-    if (!isPastExam) {
-      recordOxExamProgress(exam, userAnswers)
-    }
+    recordOxExamProgress(exam, userAnswers)
   }
 
   const handleHideQuestionAnswer = () => {

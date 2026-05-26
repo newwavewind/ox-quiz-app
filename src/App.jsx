@@ -20,7 +20,7 @@ import StudyMode from './components/StudyMode'
 import WrongNotes from './components/WrongNotes'
 import StatsScreen from './components/StatsScreen'
 import BottomNav from './components/BottomNav'
-import { allExams, sortExams, isExamComplete, isExamCorrect } from './data/loadExam'
+import { allExams, sortExams, isExamComplete, isExamCorrect, findProgressAwareStudyExamId } from './data/loadExam'
 import {
   buildWeightedRandomExamSet,
   getRandomExamCount,
@@ -213,14 +213,18 @@ function App() {
   )
 
   const updateProgress = (examId, result) => {
-    setProgress(prev => ({
-      ...prev,
-      [examId]: {
-        ...result,
-        attempts: (prev[examId]?.attempts || 0) + 1,
-        lastAnswered: Date.now(),
-      },
-    }))
+    setProgress(prev => {
+      const prevExam = prev[examId] || {}
+      return {
+        ...prev,
+        [examId]: {
+          ...prevExam,
+          ...result,
+          attempts: (prevExam.attempts || 0) + 1,
+          lastAnswered: Date.now(),
+        },
+      }
+    })
   }
 
   const toggleStudyNote = (exam, item) => {
@@ -315,11 +319,32 @@ function App() {
   const openStudy = (filter, returnTo = 'home', slotOverrides = {}) => {
     const slotId = returnTo === 'exam' ? 'exam' : 'home'
     const setSlot = slotId === 'exam' ? setExamStudy : setHomeStudy
-    const { examId: startId, ...rest } = filter
+    const { examId: explicitStartId, ...rest } = filter
     const next = { ...DEFAULT_FILTER, ...rest }
-    if (startId && !next.year) {
-      const target = allExams.find(e => e.id === startId)
+    if (explicitStartId && !next.year) {
+      const target = allExams.find(e => e.id === explicitStartId)
       if (target) next.year = target.year
+    }
+
+    const previewSlot = {
+      active: true,
+      returnScreen: returnTo,
+      filter: next,
+      randomExams: isRandomStudyMode(next) ? slotOverrides.randomExams ?? null : null,
+      pastExamExams: next.mode === 'pastExam' ? slotOverrides.pastExamExams ?? null : null,
+      pastExamRound: null,
+      customExams: slotOverrides.customExams ?? null,
+    }
+
+    let startId = explicitStartId ?? null
+    if (
+      !startId
+      && !slotOverrides.customExams?.length
+      && !isRandomStudyMode(next)
+      && next.mode !== 'pastExam'
+    ) {
+      const scopeExams = buildExamsForSlot(previewSlot, allExams, progress)
+      startId = findProgressAwareStudyExamId(scopeExams, progress, next.sort)
     }
 
     setSlot(prev => {
@@ -335,7 +360,7 @@ function App() {
         active: true,
         returnScreen: returnTo,
         filter: next,
-        startExamId: startId ?? null,
+        startExamId: startId,
         randomExams,
         pastExamExams,
         pastExamRound,
@@ -352,9 +377,13 @@ function App() {
 
   const openStudyWithExams = (examList, returnTo = 'home') => {
     if (!examList?.length) return
-    openStudy({ ...DEFAULT_FILTER, status: 'all', sort: 'number' }, returnTo, {
-      customExams: sortExams(examList, 'number'),
-    })
+    const sorted = sortExams(examList, 'number')
+    const startId = findProgressAwareStudyExamId(sorted, progress, 'number')
+    openStudy(
+      { ...DEFAULT_FILTER, status: 'all', sort: 'number', examId: startId },
+      returnTo,
+      { customExams: sorted }
+    )
   }
 
   const openRandomStudy = (count = 40) => {
