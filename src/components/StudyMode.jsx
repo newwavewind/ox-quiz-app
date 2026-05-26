@@ -14,7 +14,7 @@ import { getRandomExamCount, isRandomStudyMode } from '../data/randomExamSet'
 import { clearStudyResume, loadStudyResume, saveStudyResume } from '../data/studyResume'
 import { hapticTap } from '../utils/haptic'
 import PastExamQuestionBlock from './PastExamQuestionBlock'
-import PastExamScrollRail from './PastExamScrollRail'
+import PastExamScrollArrows from './PastExamScrollArrows'
 import PastExamTenRoundBar from './PastExamTenRoundBar'
 import { PastExamScoreSheet, QuestionNumberPrefix } from './StudyModeShared'
 import {
@@ -373,6 +373,17 @@ export default function StudyMode({
     }
   }
 
+  const scrollToPastExamIndex = idx => {
+    if (idx < 0 || idx >= exams.length) return
+    setCurrentIndex(idx)
+    pastExamHapticIndexRef.current = idx
+    sectionRefs.current[idx]?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  const goPastExamStep = delta => {
+    scrollToPastExamIndex(currentIndex + delta)
+  }
+
   const jumpToQuestion = (questionNo) => {
     const idx = indexByQuestionNo.get(questionNo)
     if (idx == null) return
@@ -643,7 +654,7 @@ export default function StudyMode({
                     정답 확인
                   </button>
                   <p className="text-center text-xs text-slate-500">
-                    위·아래로 스크롤하거나 오른쪽 번호를 눌러 이동한 뒤, 「정답 확인」을 누르세요.
+                    스크롤하거나 오른쪽 화살표로 문항을 이동한 뒤, 「정답 확인」을 누르세요.
                   </p>
                 </>
               ) : (
@@ -667,12 +678,12 @@ export default function StudyMode({
             </div>
           </section>
         </div>
-        <PastExamScrollRail
-          exams={exams}
-          currentIndex={currentIndex}
-          pastExamResults={pastExamResults}
-          pastExamDrafts={pastExamDrafts}
-          onJump={jumpToQuestion}
+        <PastExamScrollArrows
+          canPrev={currentIndex > 0}
+          canNext={currentIndex < exams.length - 1}
+          currentLabel={exams[currentIndex]?.question_no}
+          onPrev={() => goPastExamStep(-1)}
+          onNext={() => goPastExamStep(1)}
           withRoundBar={isPastExamYear && !isPastExamRetry}
         />
         </>
