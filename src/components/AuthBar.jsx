@@ -11,6 +11,7 @@ import {
   saveCommunityNickname,
 } from '../data/supabaseUserState'
 import { isCustomDesignTheme } from '../data/appearanceSettings'
+import { requestScrollToTop } from '../utils/scrollToTop'
 import SettingsGearButton from './SettingsGearButton'
 import SettingsSheet from './SettingsSheet'
 import ThemePickerMenu from './ThemePickerMenu'
@@ -123,8 +124,22 @@ export default function AuthBar({ appearance, onAppearanceChange }) {
 
   return (
     <>
-      <div className="flex justify-end items-center px-3 py-1.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/90 dark:bg-slate-900/90">
-        {toolbar}
+      <div
+        role="button"
+        tabIndex={0}
+        aria-label="맨 위로"
+        onClick={requestScrollToTop}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            requestScrollToTop()
+          }
+        }}
+        className="flex justify-end items-center px-3 py-1.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/90 dark:bg-slate-900/90 touch-manipulation"
+      >
+        <div className="flex items-center gap-1" onClick={e => e.stopPropagation()} onKeyDown={e => e.stopPropagation()}>
+          {toolbar}
+        </div>
       </div>
 
       {showSettings && settingsAvailable && (

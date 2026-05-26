@@ -12,6 +12,7 @@ import {
 } from '../data/pastExamGrade'
 import { getRandomExamCount, isRandomStudyMode } from '../data/randomExamSet'
 import { clearStudyResume, loadStudyResume, saveStudyResume } from '../data/studyResume'
+import { registerScrollToTop } from '../utils/scrollToTop'
 import PastExamQuestionBlock from './PastExamQuestionBlock'
 import PastExamScrollArrows from './PastExamScrollArrows'
 import PastExamTenRoundBar from './PastExamTenRoundBar'
@@ -79,6 +80,7 @@ export default function StudyMode({
   const sectionRefs = useRef([])
   const pastExamEndRef = useRef(null)
   const pastExamHapticIndexRef = useRef(null)
+  const scrollStudyToTopRef = useRef(() => {})
 
   const getStudyScrollTop = () =>
     scrollContainerRef.current?.scrollTop ?? studyScrollRef.current?.scrollTop ?? 0
@@ -481,6 +483,13 @@ export default function StudyMode({
     }
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
+
+  scrollStudyToTopRef.current = scrollStudyToTop
+
+  useEffect(() => {
+    if (!studyVisible) return undefined
+    return registerScrollToTop(() => scrollStudyToTopRef.current())
+  }, [studyVisible])
 
   const jumpToQuestion = (questionNo) => {
     const idx = indexByQuestionNo.get(questionNo)
