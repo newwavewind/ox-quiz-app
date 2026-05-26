@@ -1,0 +1,16 @@
+{
+  "description": "자동 분류 오류·교환 문항 수동 보정 (exam id → category/subcategory)",
+  "overrides": {
+    "민법-2017-Q48": { "category": "권리의변동", "subcategory": "권리의변동" },
+    "민법-2021-Q41": { "category": "권리의변동", "subcategory": "권리의변동" },
+    "민법-2022-Q41": { "category": "권리의변동", "subcategory": "권리의변동" },
+    "민법-2023-Q41": { "category": "권리의변동", "subcategory": "권리의변동" },
+    "민법-2025-Q53": { "category": "권리의변동", "subcategory": "권리의변동" },
+    "민법-2024-Q41": { "category": "법률행위", "subcategory": "반사회·불공정" },
+    "민법-2016-Q79": { "category": "교환", "subcategory": "교환" },
+    "민법-2016-Q80": { "category": "교환", "subcategory": "교환" },
+    "민법-2017-Q71": { "category": "교환", "subcategory": "교환" },
+    "민법-2021-Q72": { "category": "교환", "subcategory": "교환" },
+    "민법-2025-Q71": { "category": "교환", "subcategory": "교환" }
+  }
+}

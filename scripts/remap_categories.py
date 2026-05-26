@@ -25,6 +25,14 @@ LEGACY_CATEGORY = {
 }
 
 
+def load_overrides() -> dict:
+    path = DATA / "category_overrides.json"
+    if not path.is_file():
+        return {}
+    data = load_json(path)
+    return data.get("overrides") or {}
+
+
 def question_blob(q: dict) -> str:
     parts = [q.get("stem") or ""]
     for item in q.get("items") or []:
@@ -33,7 +41,13 @@ def question_blob(q: dict) -> str:
     return " ".join(p for p in parts if p)
 
 
-def remap_record(q: dict, taxonomy: list) -> dict:
+def remap_record(q: dict, taxonomy: list, overrides: dict) -> dict:
+    exam_id = q.get("id")
+    if exam_id and exam_id in overrides:
+        o = overrides[exam_id]
+        q["category"] = o["category"]
+        q["subcategory"] = o["subcategory"]
+        return q
     topic = classify_topic(q.get("stem") or "", taxonomy, question_blob(q))
     q["category"] = topic["category"]
     q["subcategory"] = topic["subcategory"]
@@ -42,14 +56,14 @@ def remap_record(q: dict, taxonomy: list) -> dict:
     return q
 
 
-def process_file(path: Path, taxonomy: list) -> int:
+def process_file(path: Path, taxonomy: list, overrides: dict) -> int:
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, list):
         return 0
     changed = 0
     for q in data:
         before = (q.get("category"), q.get("subcategory"))
-        remap_record(q, taxonomy)
+        remap_record(q, taxonomy, overrides)
         if (q.get("category"), q.get("subcategory")) != before:
             changed += 1
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -58,6 +72,7 @@ def process_file(path: Path, taxonomy: list) -> int:
 
 def main() -> None:
     taxonomy = load_json(DATA / "taxonomy.json")["units"]
+    overrides = load_overrides()
     targets: list[Path] = []
     targets.extend((ROOT / "src/data/exam").glob("*.json"))
     targets.extend((ROOT / "src/data/questions").glob("*.json"))
@@ -67,10 +82,11 @@ def main() -> None:
 
     total = 0
     for path in sorted(set(targets)):
-        n = process_file(path, taxonomy)
+        n = process_file(path, taxonomy, overrides)
         print(f"{path.relative_to(ROOT)}: {n} records updated")
         total += n
 
+    print(f"overrides applied: {len(overrides)} ids")
     print(f"legacy map (reference): {LEGACY_CATEGORY}")
     print(f"done, {total} record field updates")
 

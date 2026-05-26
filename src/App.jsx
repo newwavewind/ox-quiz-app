@@ -20,7 +20,16 @@ import StudyMode from './components/StudyMode'
 import WrongNotes from './components/WrongNotes'
 import StatsScreen from './components/StatsScreen'
 import BottomNav from './components/BottomNav'
-import { allExams, sortExams, isExamComplete, isExamCorrect, findProgressAwareStudyExamId } from './data/loadExam'
+import {
+  allExams,
+  filterWrongExamsByKind,
+  sortWrongExamsByRecent,
+  sortExams,
+  isExamComplete,
+  isExamCorrect,
+  findProgressAwareStudyExamId,
+} from './data/loadExam'
+import { getWrongNoteKind } from './data/todayStudySpot'
 import {
   buildWeightedRandomExamSet,
   getRandomExamCount,
@@ -34,12 +43,14 @@ import {
   loadAppearanceSettings,
   saveAppearanceSettings,
 } from './data/appearanceSettings'
+import { getChapterById, filterExamsByChapter } from './data/curriculum'
 
 const STORAGE_KEY = 'ox_quiz_progress_v2'
 const NOTES_STORAGE_KEY = 'ox_quiz_notes_v1'
 
 const DEFAULT_FILTER = {
   mode: null,
+  chapterId: null,
   category: null,
   subcategory: null,
   year: null,
@@ -74,6 +85,9 @@ function studySessionKey(slot) {
   if (isRandomStudyMode(slot.filter)) {
     return `random-${slot.filter.randomCount ?? 40}-${slot.randomExams?.map(e => e.id).join(',') ?? 'new'}`
   }
+  if (slot.filter.chapterId) {
+    return `study-ch-${slot.filter.chapterId}-${slot.filter.subcategory ?? ''}`
+  }
   return `study-${slot.filter.year ?? 'all'}-${slot.filter.category ?? ''}-${slot.filter.subcategory ?? ''}`
 }
 
@@ -88,11 +102,21 @@ function buildExamsForSlot(slot, allExams, progress) {
     return slot.pastExamExams
   }
   let filtered = [...allExams]
-  if (slot.filter.category) {
-    filtered = filtered.filter(q => q.category === slot.filter.category)
-  }
-  if (slot.filter.subcategory) {
-    filtered = filtered.filter(q => q.subcategory === slot.filter.subcategory)
+  if (slot.filter.chapterId) {
+    const chapter = getChapterById(slot.filter.chapterId)
+    if (chapter) {
+      filtered = filterExamsByChapter(filtered, chapter)
+    }
+    if (slot.filter.subcategory) {
+      filtered = filtered.filter(q => q.subcategory === slot.filter.subcategory)
+    }
+  } else {
+    if (slot.filter.category) {
+      filtered = filtered.filter(q => q.category === slot.filter.category)
+    }
+    if (slot.filter.subcategory) {
+      filtered = filtered.filter(q => q.subcategory === slot.filter.subcategory)
+    }
   }
   if (slot.filter.year) {
     filtered = filtered.filter(q => q.year === parseInt(slot.filter.year, 10))
@@ -109,6 +133,7 @@ function App() {
   const { user, isConfigured } = useAuth()
   const [tab, setTab] = useState('home')
   const [screen, setScreen] = useState('home')
+  const [wrongNotesKind, setWrongNotesKind] = useState('year')
   const [homeStudy, setHomeStudy] = useState(() => emptyStudySlot('home'))
   const [examStudy, setExamStudy] = useState(() => emptyStudySlot('exam'))
   const [visibleStudySlot, setVisibleStudySlot] = useState(null)
@@ -212,7 +237,9 @@ function App() {
     [user],
   )
 
-  const updateProgress = (examId, result) => {
+  const updateProgress = (examId, result, studyFilter) => {
+    const wrongNoteKind =
+      result.correct === false ? getWrongNoteKind(studyFilter) : null
     setProgress(prev => {
       const prevExam = prev[examId] || {}
       return {
@@ -222,6 +249,22 @@ function App() {
           ...result,
           attempts: (prevExam.attempts || 0) + 1,
           lastAnswered: Date.now(),
+          ...(result.correct === false ? { wrongNoteDismissed: false } : {}),
+          ...(wrongNoteKind ? { wrongNoteKind } : {}),
+        },
+      }
+    })
+  }
+
+  const dismissWrongNote = examId => {
+    setProgress(prev => {
+      const prevExam = prev[examId]
+      if (!prevExam) return prev
+      return {
+        ...prev,
+        [examId]: {
+          ...prevExam,
+          wrongNoteDismissed: true,
         },
       }
     })
@@ -307,12 +350,17 @@ function App() {
     })
   }
 
-  const wrongExams = useMemo(
-    () =>
-      sortExams(
-        allExams.filter(q => isExamComplete(progress, q.id) && !isExamCorrect(progress, q.id)),
-        'number'
+  const wrongExamsByKind = useMemo(
+    () => ({
+      year: sortWrongExamsByRecent(
+        filterWrongExamsByKind(allExams, progress, 'year'),
+        progress
       ),
+      category: sortWrongExamsByRecent(
+        filterWrongExamsByKind(allExams, progress, 'category'),
+        progress
+      ),
+    }),
     [progress]
   )
 
@@ -517,7 +565,7 @@ function App() {
           progress={progress}
           filter={slot.filter}
           allExams={allExams}
-          onUpdateProgress={updateProgress}
+          onUpdateProgress={(examId, result) => updateProgress(examId, result, slot.filter)}
           onLogItemAttempt={logItemAttempt}
           onClearItemAttempts={clearItemAttempts}
           onRemoveItemAttempt={removeItemAttempt}
@@ -550,15 +598,23 @@ function App() {
     return (
       <>
         <WrongNotes
-          exams={wrongExams}
+          kind={wrongNotesKind}
+          exams={wrongExamsByKind[wrongNotesKind]}
           allExams={allExams}
           progress={progress}
-          onUpdateProgress={updateProgress}
+          onUpdateProgress={(examId, result) =>
+            updateProgress(
+              examId,
+              result,
+              wrongNotesKind === 'year' ? { year: 2020 } : { chapterId: 'review' }
+            )
+          }
           onLogItemAttempt={logItemAttempt}
           onClearItemAttempts={clearItemAttempts}
           onRemoveItemAttempt={removeItemAttempt}
           savedNotes={notes}
           onToggleNote={toggleStudyNote}
+          onDismissWrongNote={dismissWrongNote}
           onBack={() => {
             setScreen('home')
             setTab('home')
@@ -602,8 +658,14 @@ function App() {
             setScreen('home')
             setTab('home')
           }}
-          onStartStudy={({ category, subcategory }) => {
-            openStudy({ category, subcategory, year: null, examId: null }, 'home')
+          onStartStudy={({ chapterId, category, subcategory }) => {
+            openStudy({
+              chapterId: chapterId ?? null,
+              category: category ?? null,
+              subcategory: subcategory ?? null,
+              year: null,
+              examId: null,
+            }, 'home')
           }}
         />
       ) : screen === 'index' ? (
@@ -628,18 +690,28 @@ function App() {
           exams={allExams}
           progress={progress}
           notes={notes}
-          wrongCount={wrongExams.length}
-          onStartStudy={({ category, subcategory }) => {
-            openStudy({ category, subcategory, year: null, examId: null }, 'home')
+          wrongCounts={{
+            year: wrongExamsByKind.year.length,
+            category: wrongExamsByKind.category.length,
+          }}
+          onStartStudy={({ chapterId, category, subcategory }) => {
+            openStudy({
+              chapterId: chapterId ?? null,
+              category: category ?? null,
+              subcategory: subcategory ?? null,
+              year: null,
+              examId: null,
+            }, 'home')
           }}
           onStartStudyByYear={year => {
-            openStudy({ category: null, year, examId: null }, 'home')
+            openStudy({ chapterId: null, category: null, year, examId: null }, 'home')
           }}
           onResumeTodayStudy={spot => {
             if (!spot?.filter || !spot.examId) return
             openStudy({ ...spot.filter, examId: spot.examId }, 'home')
           }}
-          onOpenWrongNotes={() => {
+          onOpenWrongNotes={kind => {
+            setWrongNotesKind(kind)
             setScreen('wrongnotes')
             setTab('home')
           }}

@@ -1,5 +1,12 @@
 import { PAST_EXAM_ROUND_MAX } from '../data/pastExamRounds'
 
+const ROUND_COLUMN_CLASS =
+  'flex flex-col items-center min-w-0 w-full min-h-[10.5rem]'
+
+function RoundColumnSpacer() {
+  return <div className="min-h-[2.75rem] mb-1 w-full shrink-0" aria-hidden />
+}
+
 const ROUNDS = Array.from({ length: PAST_EXAM_ROUND_MAX }, (_, i) => i + 1)
 
 function TrophyIcon({ uid, sizeClass }) {
@@ -168,12 +175,12 @@ export default function PastExamTenRoundBar({
 
             if (isDone && !isActive) {
               return (
-                <div key={n} className="flex flex-col items-center min-w-0">
+                <div key={n} className={ROUND_COLUMN_CLASS}>
                   <RoundTrophies count={n} />
                   <div
-                    className={`w-full flex flex-col rounded-2xl border shadow-sm overflow-hidden ${status.card}`}
+                    className={`w-full flex-1 flex flex-col min-h-0 rounded-2xl border shadow-sm overflow-hidden ${status.card}`}
                   >
-                  <div className="px-2 pt-2.5 pb-2 text-center">
+                  <div className="px-2 pt-2.5 pb-2 text-center flex-1 flex flex-col justify-center">
                     <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400">{n}회독</p>
                     <p className="text-sm font-extrabold text-slate-800 dark:text-slate-100 mt-0.5 tabular-nums leading-none">
                       {scoreText}
@@ -227,11 +234,12 @@ export default function PastExamTenRoundBar({
             }
 
             return (
-              <div key={n} className="flex flex-col items-center min-w-0 w-full">
+              <div key={n} className={ROUND_COLUMN_CLASS}>
+              <RoundColumnSpacer />
               <button
                 type="button"
                 onClick={() => onStartRound(n)}
-                className={`w-full relative flex flex-col items-center justify-center min-h-[5.25rem] rounded-2xl border-2 px-1 py-2.5 transition-all ${
+                className={`w-full flex-1 min-h-[5.25rem] relative flex flex-col items-center justify-center rounded-2xl border-2 px-1 py-2.5 transition-all ${
                   isActive
                     ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 shadow-md shadow-indigo-500/15 scale-[1.02]'
                     : 'border-slate-200 dark:border-slate-600 bg-slate-50/80 dark:bg-slate-700/40 hover:border-indigo-300 hover:bg-indigo-50/60 dark:hover:bg-indigo-950/20 hover:shadow-sm'

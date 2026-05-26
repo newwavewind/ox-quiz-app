@@ -7,8 +7,8 @@
     "stem": "상대방 있는 단독행위에 해당하지 않는 것은? (다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 5,
-    "category": "법률행위",
-    "subcategory": "의사표시",
+    "category": "권리의변동",
+    "subcategory": "권리의변동",
     "items": [
       {
         "key": "1",
@@ -48,7 +48,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 1
   },
   {
     "id": "민법-2021-Q42",
@@ -99,7 +100,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 8
   },
   {
     "id": "민법-2021-Q43",
@@ -150,7 +152,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 8
   },
   {
     "id": "민법-2021-Q44",
@@ -201,7 +204,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 1
   },
   {
     "id": "민법-2021-Q45",
@@ -211,8 +215,8 @@
     "stem": "효력규정이 아닌 것을 모두 고른 것은? (다툼이 있으면 판례에 따름)",
     "question_type": "composite",
     "correct_choice": 3,
-    "category": "물권변동",
-    "subcategory": "등기",
+    "category": "법률행위",
+    "subcategory": "무효·취소",
     "items": [
       {
         "key": "ㄱ",
@@ -269,7 +273,8 @@
       }
     ],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 5
   },
   {
     "id": "민법-2021-Q46",
@@ -320,7 +325,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 10
   },
   {
     "id": "민법-2021-Q47",
@@ -371,7 +377,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ②입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 1
   },
   {
     "id": "민법-2021-Q48",
@@ -422,7 +429,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 8
   },
   {
     "id": "민법-2021-Q49",
@@ -473,7 +481,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 6
   },
   {
     "id": "민법-2021-Q50",
@@ -524,7 +533,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ①입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 5
   },
   {
     "id": "민법-2021-Q51",
@@ -575,7 +585,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 9
   },
   {
     "id": "민법-2021-Q52",
@@ -626,7 +637,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 13
   },
   {
     "id": "민법-2021-Q53",
@@ -694,7 +706,8 @@
       }
     ],
     "explanation_summary": "정답은 ②입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 10
   },
   {
     "id": "민법-2021-Q54",
@@ -745,7 +758,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 6
   },
   {
     "id": "민법-2021-Q55",
@@ -796,7 +810,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 14
   },
   {
     "id": "민법-2021-Q56",
@@ -847,7 +862,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 14
   },
   {
     "id": "민법-2021-Q57",
@@ -898,7 +914,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 12
   },
   {
     "id": "민법-2021-Q58",
@@ -949,7 +966,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 1
   },
   {
     "id": "민법-2021-Q59",
@@ -1017,7 +1035,8 @@
       }
     ],
     "explanation_summary": "정답은 ①입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 12
   },
   {
     "id": "민법-2021-Q60",
@@ -1068,7 +1087,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ②입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 16
   },
   {
     "id": "민법-2021-Q61",
@@ -1119,7 +1139,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 4
   },
   {
     "id": "민법-2021-Q62",
@@ -1194,7 +1215,8 @@
       }
     ],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 14
   },
   {
     "id": "민법-2021-Q63",
@@ -1245,7 +1267,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ②입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 19
   },
   {
     "id": "민법-2021-Q64",
@@ -1313,7 +1336,8 @@
       }
     ],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 26
   },
   {
     "id": "민법-2021-Q65",
@@ -1381,7 +1405,8 @@
       }
     ],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 26
   },
   {
     "id": "민법-2021-Q66",
@@ -1432,7 +1457,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ①입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 1
   },
   {
     "id": "민법-2021-Q67",
@@ -1483,7 +1509,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 4
   },
   {
     "id": "민법-2021-Q68",
@@ -1534,7 +1561,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 1
   },
   {
     "id": "민법-2021-Q69",
@@ -1545,7 +1573,7 @@
     "question_type": "wrong",
     "correct_choice": 5,
     "category": "법률행위",
-    "subcategory": "무효·취소",
+    "subcategory": "반사회·불공정",
     "items": [
       {
         "key": "1",
@@ -1585,7 +1613,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 2
   },
   {
     "id": "민법-2021-Q70",
@@ -1636,7 +1665,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ②입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 24
   },
   {
     "id": "민법-2021-Q71",
@@ -1687,7 +1717,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 10
   },
   {
     "id": "민법-2021-Q72",
@@ -1697,8 +1728,8 @@
     "stem": "부동산의 교환계약에 관한 설명으로 옳은 것을 모두 고른 것은? (다툼이 있으면 판례에 따름)",
     "question_type": "composite",
     "correct_choice": 3,
-    "category": "매매",
-    "subcategory": "매매",
+    "category": "교환",
+    "subcategory": "교환",
     "items": [
       {
         "key": "ㄱ",
@@ -1813,7 +1844,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 4
   },
   {
     "id": "민법-2021-Q74",
@@ -1823,8 +1855,8 @@
     "stem": "甲은 자기 소유 X창고건물 전부를 乙에게 월차임 60만원에 3년간 임대하였고, 乙은 甲의 동의를 얻어 X건물 전부를 丙에게 월차임 70만원에 2년간 전대하였다. 이에 관한 설명으로 틀린 것은?(단, 이에 관한 특약은 없으며, 다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 1,
-    "category": "법률행위",
-    "subcategory": "조건·기한",
+    "category": "임대차",
+    "subcategory": "임대차",
     "items": [
       {
         "key": "1",
@@ -1864,7 +1896,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ①입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 26
   },
   {
     "id": "민법-2021-Q75",
@@ -1915,7 +1948,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 27
   },
   {
     "id": "민법-2021-Q76",
@@ -1983,7 +2017,8 @@
       }
     ],
     "explanation_summary": "정답은 ①입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 26
   },
   {
     "id": "민법-2021-Q77",
@@ -1993,8 +2028,8 @@
     "stem": "甲은 2021년 2월 1일 서울특별시에 위치한 乙 소유 X상가건물에 대하여 보증금 5억원, 월차임 5백만원으로 임대차계약을 체결하였다. 甲은 2021년 2월 15일 건물의 인도를 받아 영업을 개시하고, 사업자등록을 신청하였다. 이에 관한 설명으로 옳은 것을 모두 고른 것은? (다툼이 있으면 판례에 따름)",
     "question_type": "composite",
     "correct_choice": 5,
-    "category": "민사특별법",
-    "subcategory": "상가건물임대차보호법",
+    "category": "임대차",
+    "subcategory": "임대차",
     "items": [
       {
         "key": "ㄱ",
@@ -2051,7 +2086,8 @@
       }
     ],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 26
   },
   {
     "id": "민법-2021-Q78",
@@ -2102,7 +2138,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ②입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 31
   },
   {
     "id": "민법-2021-Q79",
@@ -2153,7 +2190,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 10
   },
   {
     "id": "민법-2021-Q80",
@@ -2221,6 +2259,7 @@
       }
     ],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제32회 1차 1교시 A형"
+    "source": "제32회 1차 1교시 A형",
+    "textbook_order": 29
   }
 ]

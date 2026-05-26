@@ -44,6 +44,37 @@ export function isExamCorrect(progress, examId) {
   return Boolean(p?.answered && p?.correct)
 }
 
+export function isWrongNoteExam(progress, examId) {
+  return isExamComplete(progress, examId)
+    && !isExamCorrect(progress, examId)
+    && !progress[examId]?.wrongNoteDismissed
+}
+
+/** @param {'year' | 'category'} kind */
+export function isWrongNoteExamForKind(progress, examId, kind) {
+  if (!isWrongNoteExam(progress, examId)) return false
+  const stored = progress[examId]?.wrongNoteKind
+  if (!stored) return kind === 'year'
+  return stored === kind
+}
+
+export function filterWrongExamsByKind(exams, progress, kind) {
+  return exams.filter(q => isWrongNoteExamForKind(progress, q.id, kind))
+}
+
+export function sortWrongExams(exams, progress, order = 'recent') {
+  return [...exams].sort((a, b) => {
+    const ta = progress[a.id]?.lastAnswered ?? 0
+    const tb = progress[b.id]?.lastAnswered ?? 0
+    return order === 'oldest' ? ta - tb : tb - ta
+  })
+}
+
+/** @deprecated use sortWrongExams */
+export function sortWrongExamsByRecent(exams, progress) {
+  return sortWrongExams(exams, progress, 'recent')
+}
+
 /** @param {ExamQuestion} exam */
 export function gradeOxStudyQuestion(exam, userAnswers) {
   if (!exam?.items?.length) return { answered: true, correct: false }

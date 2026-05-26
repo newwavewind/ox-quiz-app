@@ -6,7 +6,7 @@ import {
   filterPostsByTab,
   formatBoardDate,
   searchPosts,
-  sortPostsForBoard,
+  sortPostsForTab,
 } from '../data/communityPosts'
 import { enrichPosts, incrementLike, incrementView } from '../data/communityPostMeta'
 import {
@@ -21,11 +21,22 @@ import CommunityRichEditor, {
   getContentTextLength,
 } from './CommunityRichEditor'
 import { resolveCommunityAdmin } from '../data/communityAdmin'
+import {
+  boardFromTab,
+  COMMUNITY_BOARDS,
+  getBoardConfig,
+  getPostBoard,
+  isRecommendedPost,
+  RECOMMENDED_LIKE_MIN,
+} from '../data/communityBoards'
 import { hasRichHtml, sanitizePostHtml } from '../utils/communityRichText'
+import { getBrokerExamDdayInfo } from '../data/examDday'
 
 const TABS = [
   { id: 'all', label: '전체글' },
-  { id: 'concept', label: '개념글' },
+  { id: 'recommended', label: '추천글' },
+  { id: 'qa', label: 'Q&A' },
+  { id: 'error_report', label: '오류신고' },
   { id: 'notice', label: '공지' },
 ]
 
@@ -65,6 +76,29 @@ function saveNickname(name) {
   }
 }
 
+function ExamDdayChip() {
+  const info = useMemo(() => getBrokerExamDdayInfo(), [])
+
+  return (
+    <div
+      className="inline-flex flex-col items-end rounded-xl border border-lime-300 bg-lime-50 px-3 py-1.5 shrink-0"
+      title={`${info.title} ${info.examDateLabel}`}
+    >
+      <span className="text-[10px] font-semibold text-lime-800/80 leading-none">
+        {info.roundLabel} {info.title}
+      </span>
+      <div className="flex items-baseline gap-1.5 mt-0.5">
+        <span className="text-lg font-black text-slate-900 tabular-nums leading-tight">
+          {info.ddayLabel}
+        </span>
+        <span className="text-[10px] font-medium text-slate-500 tabular-nums leading-none">
+          {info.examDateLabel}
+        </span>
+      </div>
+    </div>
+  )
+}
+
 function LimeButton({ children, className = '', ...props }) {
   return (
     <button
@@ -93,16 +127,43 @@ function PillToggle({ active, children, onClick }) {
   )
 }
 
-function WriteForm({ authorLabel, onSubmit, onCancel, canPostNotice = false }) {
+function RecommendedBadge({ className = '' }) {
+  return (
+    <span
+      className={`inline-block text-[10px] font-bold px-1.5 py-0.5 rounded border mr-1 align-middle text-emerald-700 bg-emerald-50 border-emerald-200 ${className}`}
+    >
+      추천
+    </span>
+  )
+}
+
+function BoardBadge({ boardId, className = '' }) {
+  const board = getBoardConfig(boardId)
+  if (!board || boardId === 'general') return null
+  return (
+    <span
+      className={`inline-block text-[10px] font-bold px-1.5 py-0.5 rounded border mr-1 align-middle ${
+        board.listBadgeClass ?? 'text-slate-600 bg-slate-50 border-slate-200'
+      } ${className}`}
+    >
+      {board.shortLabel ?? board.label}
+    </span>
+  )
+}
+
+function WriteForm({ authorLabel, defaultBoard = 'general', onSubmit, onCancel, canPostNotice = false }) {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [extras, setExtras] = useState(EMPTY_EXTRAS)
   const [nickname, setNickname] = useState(authorLabel)
   const [editingNick, setEditingNick] = useState(false)
   const [visibility, setVisibility] = useState('public')
+  const [board, setBoard] = useState(defaultBoard)
   const [isNotice, setIsNotice] = useState(false)
   const [error, setError] = useState('')
   const editorRef = useRef(null)
+
+  const boardConfig = getBoardConfig(board)
 
   const syncEditor = () => {
     const el = editorRef.current
@@ -140,8 +201,8 @@ function WriteForm({ authorLabel, onSubmit, onCancel, canPostNotice = false }) {
         content: c,
         nickname: nick,
         visibility,
+        board: isNotice ? 'general' : board,
         isNotice: canPostNotice && isNotice,
-        isConcept: false,
         extras: {
           ...extras,
           poll: pollValid
@@ -194,12 +255,33 @@ function WriteForm({ authorLabel, onSubmit, onCancel, canPostNotice = false }) {
           )}
         </div>
 
+        <div className="mb-5">
+          <span className="block text-sm font-medium text-slate-600 mb-2">게시판</span>
+          <div className="flex flex-wrap gap-2">
+            {COMMUNITY_BOARDS.map(opt => (
+              <PillToggle
+                key={opt.id}
+                active={board === opt.id && !isNotice}
+                onClick={() => {
+                  setBoard(opt.id)
+                  setIsNotice(false)
+                }}
+              >
+                {opt.label}
+              </PillToggle>
+            ))}
+          </div>
+          <p className="text-xs text-slate-500 mt-2">{boardConfig.description}</p>
+          <p className="text-[11px] text-slate-400 mt-1">{boardConfig.contentHint}</p>
+        </div>
+
         <label className="block text-sm font-medium text-slate-600 mb-1.5">제목</label>
         <input
           type="text"
           value={title}
           onChange={e => setTitle(e.target.value)}
           maxLength={80}
+          placeholder={boardConfig.titlePlaceholder}
           className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 mb-5 focus:outline-none focus:ring-2 focus:ring-lime-300"
         />
 
@@ -240,7 +322,7 @@ function WriteForm({ authorLabel, onSubmit, onCancel, canPostNotice = false }) {
               onChange={e => setIsNotice(e.target.checked)}
               className="rounded border-slate-300 text-lime-600 focus:ring-lime-400"
             />
-            공지 등록
+            공지 등록 (공지는 전체글·공지 탭에 표시)
           </label>
         )}
 
@@ -280,6 +362,12 @@ function PostDetail({ post, user, onBack, onDelete, onLike, canDelete }) {
           <span className="inline-block text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded mb-2">
             공지
           </span>
+        )}
+        {!post.isNotice && isRecommendedPost(post) && (
+          <RecommendedBadge className="mb-2" />
+        )}
+        {!post.isNotice && getPostBoard(post) !== 'general' && (
+          <BoardBadge boardId={getPostBoard(post)} className="mb-2" />
         )}
         <h2 className="text-xl font-bold text-slate-900 leading-snug">{post.title}</h2>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-slate-500">
@@ -343,6 +431,7 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
   const [pageSize, setPageSize] = useState(30)
   const [page, setPage] = useState(1)
   const [metaTick, setMetaTick] = useState(0)
+  const [writeBoard, setWriteBoard] = useState('general')
   const [nickname, setNickname] = useState(loadNickname)
   const [isCommunityAdmin, setIsCommunityAdmin] = useState(false)
 
@@ -354,7 +443,7 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
     let list = enriched.filter(p => canViewPost(p, isLoggedIn, user?.id, myNickname))
     list = filterPostsByTab(list, tab)
     list = searchPosts(list, appliedQuery, searchType)
-    return sortPostsForBoard(list)
+    return sortPostsForTab(list, tab)
   }, [enriched, tab, appliedQuery, searchType, isLoggedIn, user?.id, myNickname])
 
   const selectedPost = useMemo(
@@ -412,6 +501,7 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
   }
 
   const openWrite = () => {
+    setWriteBoard(boardFromTab(tab))
     setView('write')
     setSelectedId(null)
   }
@@ -452,7 +542,9 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
     return (
       <div className="min-h-screen bg-slate-50 pb-bottom-nav flex flex-col">
         <WriteForm
+          key={writeBoard}
           authorLabel={myNickname}
+          defaultBoard={writeBoard}
           onSubmit={handlePosted}
           onCancel={backToList}
           canPostNotice={isCommunityAdmin}
@@ -476,17 +568,33 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
     )
   }
 
+  const activeTab = TABS.find(t => t.id === tab)
+  const tabBoardHint =
+    tab === 'qa'
+      ? getBoardConfig(boardFromTab(tab)).description
+      : tab === 'error_report'
+        ? '지문·정답·해설 오류 신고'
+        : tab === 'recommended'
+          ? `추천 ${RECOMMENDED_LIKE_MIN}개 이상 받은 글`
+          : null
+
   return (
     <div className="min-h-screen bg-slate-50 pb-bottom-nav">
       <div className="max-w-4xl mx-auto px-4 py-4">
         <div className="flex items-start justify-between gap-3 mb-4">
-          <div>
+          <div className="min-w-0 flex-1">
             <h1 className="text-2xl font-bold text-slate-900">커뮤니티</h1>
-            <p className="text-sm text-slate-500 mt-1">전체 {visiblePosts.length}개</p>
+            <p className="text-sm text-slate-500 mt-1">
+              {activeTab?.label ?? '전체'} {visiblePosts.length}개
+              {tabBoardHint ? ` · ${tabBoardHint}` : ''}
+            </p>
           </div>
-          <LimeButton onClick={openWrite} className="px-5 py-2 text-sm shrink-0">
-            글쓰기
-          </LimeButton>
+          <div className="flex items-start gap-2 shrink-0">
+            <ExamDdayChip />
+            <LimeButton onClick={openWrite} className="px-5 py-2 text-sm">
+              글쓰기
+            </LimeButton>
+          </div>
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
@@ -556,7 +664,14 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
                         {appliedQuery ? '검색 결과가 없습니다.' : '등록된 글이 없습니다.'}
                       </p>
                       {!appliedQuery && (
-                        <p className="text-xs mt-2">오른쪽 위 「글쓰기」로 첫 글을 남겨 보세요.</p>
+                        <p className="text-xs mt-2">
+                          {tab === 'recommended' &&
+                            `추천 ${RECOMMENDED_LIKE_MIN}개 이상 받은 글이 여기에 표시됩니다.`}
+                          {tab === 'qa' && 'Q&A 탭에서 질문을 남겨 보세요.'}
+                          {tab === 'error_report' && '문제·해설 오류를 신고해 주세요.'}
+                          {(tab === 'all' || tab === 'notice') &&
+                            '오른쪽 위 「글쓰기」로 첫 글을 남겨 보세요.'}
+                        </p>
                       )}
                     </td>
                   </tr>
@@ -587,6 +702,12 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
                               </span>
                             )}
                             <PostTitleBadges extras={post.extras} />
+                            {tab === 'all' && !post.isNotice && isRecommendedPost(post) && (
+                              <RecommendedBadge />
+                            )}
+                            {tab === 'all' && !post.isNotice && (
+                              <BoardBadge boardId={getPostBoard(post)} />
+                            )}
                             {post.title}
                           </span>
                         </td>

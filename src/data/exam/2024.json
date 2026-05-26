@@ -7,8 +7,8 @@
     "stem": "반사회질서의 법률행위에 해당하는 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "correct",
     "correct_choice": 3,
-    "category": "저당권",
-    "subcategory": "저당권",
+    "category": "법률행위",
+    "subcategory": "반사회·불공정",
     "items": [
       {
         "key": "1",
@@ -58,8 +58,8 @@
     "stem": "甲은 강제집행을 피하기 위해 자신의 X부동산을 乙에게 가장매도하여 소유권이전등기를 해 주었는데, 乙이 이를 丙에게 매도하고 소유권이전등기를 해 주었다. 다음 설명 중 틀린 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 5,
-    "category": "물권변동",
-    "subcategory": "등기",
+    "category": "법률행위",
+    "subcategory": "비진의·통정허위",
     "items": [
       {
         "key": "1",
@@ -99,7 +99,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 3
   },
   {
     "id": "민법-2024-Q43",
@@ -110,7 +111,7 @@
     "question_type": "composite",
     "correct_choice": 3,
     "category": "법률행위",
-    "subcategory": "의사표시",
+    "subcategory": "착오·사기·강박",
     "items": [
       {
         "key": "ㄱ",
@@ -167,7 +168,8 @@
       }
     ],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 4
   },
   {
     "id": "민법-2024-Q44",
@@ -235,7 +237,8 @@
       }
     ],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 1
   },
   {
     "id": "민법-2024-Q45",
@@ -303,7 +306,8 @@
       }
     ],
     "explanation_summary": "정답은 ②입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 1
   },
   {
     "id": "민법-2024-Q46",
@@ -354,7 +358,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 1
   },
   {
     "id": "민법-2024-Q47",
@@ -405,7 +410,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 1
   },
   {
     "id": "민법-2024-Q48",
@@ -473,7 +479,8 @@
       }
     ],
     "explanation_summary": "정답은 ①입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 7
   },
   {
     "id": "민법-2024-Q49",
@@ -524,7 +531,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "민법 제145조의 법정추인 사유로는 ① 전부나 일부의 이행, ② 이행의 청구, ③ 경개, ④ 담보의 제공, ⑤ 취소할 수 있는 행위로 취득한 권리의 전부나 일부의 양도, ⑥ 강제집행이 있습니다. '혼동'은 물권의 소멸사유일 뿐 법정추인 사유에 해당하지 않습니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 5
   },
   {
     "id": "민법-2024-Q50",
@@ -575,7 +583,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ②입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 6
   },
   {
     "id": "민법-2024-Q51",
@@ -626,7 +635,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 9
   },
   {
     "id": "민법-2024-Q52",
@@ -701,7 +711,8 @@
       }
     ],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 12
   },
   {
     "id": "민법-2024-Q53",
@@ -752,7 +763,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 4
   },
   {
     "id": "민법-2024-Q54",
@@ -803,7 +815,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ②입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 10
   },
   {
     "id": "민법-2024-Q55",
@@ -854,7 +867,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 12
   },
   {
     "id": "민법-2024-Q56",
@@ -929,7 +943,8 @@
       }
     ],
     "explanation_summary": "문제가 전부 옳은 항목을 고르라는 취지인데, 발문의 지문 조합을 확인하면 모든 지문(ㄱ, ㄴ, ㄷ, ㄹ)이 맞습니다. 따라서 정답은 ⑤입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 10
   },
   {
     "id": "민법-2024-Q57",
@@ -939,8 +954,8 @@
     "stem": "甲소유 토지에 乙이 무단으로 건물을 신축한 뒤 丙에게 임대하여 丙이 현재 그 건물을 점유하고 있다. 다음 설명 중 틀린 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 1,
-    "category": "점유·시효",
-    "subcategory": "점유",
+    "category": "소유권",
+    "subcategory": "소유권·공유",
     "items": [
       {
         "key": "1",
@@ -980,7 +995,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ①입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 14
   },
   {
     "id": "민법-2024-Q58",
@@ -990,8 +1006,8 @@
     "stem": "분묘기지권에 관한 설명으로 옳은 것을 모두 고른 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "composite",
     "correct_choice": 2,
-    "category": "물권변동",
-    "subcategory": "등기",
+    "category": "물권총칙",
+    "subcategory": "물권법정주의",
     "items": [
       {
         "key": "ㄱ",
@@ -1048,7 +1064,8 @@
       }
     ],
     "explanation_summary": "정답은 ②입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 9
   },
   {
     "id": "민법-2024-Q59",
@@ -1099,7 +1116,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ②입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 14
   },
   {
     "id": "민법-2024-Q60",
@@ -1150,7 +1168,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ①입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 10
   },
   {
     "id": "민법-2024-Q61",
@@ -1160,8 +1179,8 @@
     "stem": "민법상 유치권에 관한 설명으로 틀린 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 4,
-    "category": "유치권",
-    "subcategory": "유치권",
+    "category": "민사특별법",
+    "subcategory": "주택임대차보호법",
     "items": [
       {
         "key": "1",
@@ -1201,7 +1220,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 27
   },
   {
     "id": "민법-2024-Q62",
@@ -1269,7 +1289,8 @@
       }
     ],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 15
   },
   {
     "id": "민법-2024-Q63",
@@ -1320,7 +1341,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "저당권자는 피담보채권으로서 원본, 이자, 위약금, 채무불이행으로 인한 손해배상(지연배상) 및 저당권실행비용을 담보합니다(민법 제360조). 다만, 지연배상(지연이자)에 대해서는 후순위자가 있는 경우 '이행기를 경과한 후의 1년분'에 한하여 저당권을 행사할 수 있도록 제한 규정이 있습니다. 본 문제에서 乙이 연 5%의 이자를 약정하고 한 번도 지급하지 않은 상태에서 甲이 배당을 받는데, 민법 제360조 단서의 1년분 제한은 '지연배상(지연손해금)'에 한정되는 것이고, 약정 '이자'는 변제기 전까지의 이자이므로 기간 제한 없이 최고액이나 채권액 범위 내에서 전액 담보됩니다. 또한 문제 조건에서 \"이자에 대한 지연손해금 등은 고려하지 않음\"이라고 명시하였으므로 지연손해금 제한 규정(1년분)을 적용할 필요가 없습니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 19
   },
   {
     "id": "민법-2024-Q64",
@@ -1388,7 +1410,8 @@
       }
     ],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 19
   },
   {
     "id": "민법-2024-Q65",
@@ -1398,8 +1421,8 @@
     "stem": "민법상 계약에 관한 설명으로 옳은 것은?",
     "question_type": "correct",
     "correct_choice": 5,
-    "category": "임대차",
-    "subcategory": "임대차",
+    "category": "교환",
+    "subcategory": "교환",
     "items": [
       {
         "key": "1",
@@ -1439,7 +1462,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 25
   },
   {
     "id": "민법-2024-Q66",
@@ -1490,7 +1514,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 1
   },
   {
     "id": "민법-2024-Q67",
@@ -1500,8 +1525,8 @@
     "stem": "계약체결상의 과실책임에 관한 설명으로 옳은 것을 모두 고른 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "composite",
     "correct_choice": 4,
-    "category": "법률행위",
-    "subcategory": "의사표시",
+    "category": "매매",
+    "subcategory": "매매",
     "items": [
       {
         "key": "ㄱ",
@@ -1558,7 +1583,8 @@
       }
     ],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 24
   },
   {
     "id": "민법-2024-Q68",
@@ -1568,8 +1594,8 @@
     "stem": "동시이행의 항변권에 관한 설명으로 틀린 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 5,
-    "category": "소유권",
-    "subcategory": "소유권·공유",
+    "category": "물권변동",
+    "subcategory": "등기",
     "items": [
       {
         "key": "1",
@@ -1609,7 +1635,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 10
   },
   {
     "id": "민법-2024-Q69",
@@ -1619,8 +1646,8 @@
     "stem": "甲은 X건물을 乙에게 매도하고 乙로부터 계약금을 지급받았는데, 그 후 甲과 乙의 귀책사유 없이 X건물이 멸실되었다. 다음 설명 중 옳은 것을 모두 고른 것은? (다툼이 있으면 판례에 따름)",
     "question_type": "composite",
     "correct_choice": 5,
-    "category": "법률행위",
-    "subcategory": "의사표시",
+    "category": "계약총론",
+    "subcategory": "계약해제",
     "items": [
       {
         "key": "ㄱ",
@@ -1677,7 +1704,8 @@
       }
     ],
     "explanation_summary": "甲과 乙의 귀책사유 없이 건물이 멸실된 경우이므로 쌍무계약의 위험부담(민법 제537조 채무자위험부담주의)이 적용됩니다. 이에 따라 건물의 인도채무자인 甲은 대금청구권을 상실합니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 23
   },
   {
     "id": "민법-2024-Q70",
@@ -1688,7 +1716,7 @@
     "question_type": "correct",
     "correct_choice": 5,
     "category": "법률행위",
-    "subcategory": "착오·사기·강박",
+    "subcategory": "의사표시",
     "items": [
       {
         "key": "1",
@@ -1728,7 +1756,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 1
   },
   {
     "id": "민법-2024-Q71",
@@ -1779,7 +1808,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "계약해제 전 이해관계를 맺은 '보호받는 제3자'는 해제된 계약에 바탕을 둔 법률효과에 의하여 대내외적으로 인도나 등기 등을 마쳐 완전한 권리를 취득한 자를 말합니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 10
   },
   {
     "id": "민법-2024-Q72",
@@ -1830,7 +1860,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 10
   },
   {
     "id": "민법-2024-Q73",
@@ -1881,7 +1912,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 26
   },
   {
     "id": "민법-2024-Q74",
@@ -1891,8 +1923,8 @@
     "stem": "甲은 자신의 X주택을 보증금 2억원, 월차임 50만원으로 乙에게 임대하였는데, 乙이 전입신고 후 X주택을 점유·사용하면서 차임을 연체하다가 계약이 종료되었다. 계약 종료 전에 X주택의 소유권이 매매를 원인으로 丙에게 이전되었다. 다음 설명 중 틀린 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 3,
-    "category": "소유권",
-    "subcategory": "소유권·공유",
+    "category": "민사특별법",
+    "subcategory": "주택임대차보호법",
     "items": [
       {
         "key": "1",
@@ -1932,7 +1964,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 27
   },
   {
     "id": "민법-2024-Q75",
@@ -1983,7 +2016,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "주택임대차보호법 제6조의2에 따르면 묵시적 갱신 또는 계약갱신요구권 행사에 따라 계약이 갱신된 경우, 임차인은 언제든지 임대인에게 계약해지를 통지할 수 있으며, 임대인이 그 통지를 받은 날로부터 3개월이 지나면 해지의 효력이 발생합니다. 본 사안에서 갱신된 임대차 계약의 해지 통지가 임대인 甲에게 도달한 날은 2024년 1월 30일입니다. 이 날로부터 3개월이 경과하는 날은 2024년 4월 30일이 됩니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 26
   },
   {
     "id": "민법-2024-Q76",
@@ -2034,7 +2068,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ①입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 29
   },
   {
     "id": "민법-2024-Q77",
@@ -2085,7 +2120,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ①입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 31
   },
   {
     "id": "민법-2024-Q78",
@@ -2136,7 +2172,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "사안은 양자간 등기명의신탁(또는 계약명의신탁이나 명의신탁약정이 무효인 경우)입니다. 친구 乙과의 명의신탁약정과 그에 따른 등기는 부동산실명법 제4조에 의해 무효이며, 소유권은 원래 소유자인 甲에게 그대로 남아 있습니다. 그러나 수탁자 乙이 제3자 丙에게 부동산을 처분한 경우, 丙은 선의·악의를 불문하고 소유권을 취득합니다(부동산실명법 제4조 제3항).",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 10
   },
   {
     "id": "민법-2024-Q79",
@@ -2187,7 +2224,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "상가건물 임대차보호법상 임차인의 계약갱신요구권은 임대차기간이 만료되기 6개월 전부터 1개월 전까지 행사하여야 합니다. 반면 본 사안에서 임차인 乙은 기간 만료 14일 전(2024. 5. 9.)에야 갱신거절 통지를 하였습니다. 임대인과 임차인 모두 기간 만료 6개월 전부터 1개월 전까지 사이에 갱신거절이나 조건변경의 통지를 하지 않았으므로, 이 계약은 임대차 기간 만료일(2024. 5. 23.)에 법정갱신(묵시적 갱신)됩니다. 묵시적 갱신이 되면 임대차 기간은 상가법 제9조 제1항에 따라 1년으로 보므로 원칙적으로 계약은 유지됩니다. 그러나 발문에서 \"임대차계약의 종료일은?\"을 물었고, 지문 조합상 원래 계약 만료일인 2024. 5. 23. 종료되는 것으로 출제 의도가 파악됩니다. (상가건물임대차보호법상 기간 만료 전 1개월까지 통지하지 않으면 묵시적 갱신이 되므로 당초 약정일인 2024. 5. 23.에 계약이 자동 갱신되지만, 당사자 간 합의 종료나 만료 시점을 묻는 정답 기준은 ②번으로 정해집니다.)",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 26
   },
   {
     "id": "민법-2024-Q80",
@@ -2238,6 +2276,7 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제35회 1차 1교시"
+    "source": "제35회 1차 1교시",
+    "textbook_order": 26
   }
 ]

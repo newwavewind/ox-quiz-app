@@ -1,3 +1,4 @@
+import { DEFAULT_BOARD, getPostBoard, isErrorBoard, isRecommendedPost, normalizeBoard } from './communityBoards'
 import { formatStudyTime } from './studyHistory'
 import { DEFAULT_POST_EXTRA } from './communityPostMeta'
 
@@ -13,6 +14,7 @@ const STORAGE_KEY = 'ox_quiz_community_v1'
  * @property {string} [authorId]
  * @property {boolean} [isNotice]
  * @property {boolean} [isConcept]
+ * @property {import('./communityBoards').CommunityBoardId} [board]
  * @property {'public'|'members'|'private'} [visibility]
  * @property {number} [viewCount]
  * @property {number} [likeCount]
@@ -41,6 +43,17 @@ export function sortPostsForBoard(posts) {
   })
 }
 
+export function sortPostsForTab(posts, tab) {
+  if (tab === 'recommended') {
+    return [...posts].sort((a, b) => {
+      const likeDiff = (b.likeCount ?? 0) - (a.likeCount ?? 0)
+      if (likeDiff !== 0) return likeDiff
+      return b.createdAt - a.createdAt
+    })
+  }
+  return sortPostsForBoard(posts)
+}
+
 export function createPostId() {
   return `p_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
 }
@@ -65,7 +78,9 @@ const SEARCH_FIELDS = {
 
 export function filterPostsByTab(posts, tab) {
   if (tab === 'notice') return posts.filter(p => p.isNotice)
-  if (tab === 'concept') return posts.filter(p => p.isConcept)
+  if (tab === 'recommended') return posts.filter(p => isRecommendedPost(p))
+  if (tab === 'qa') return posts.filter(p => getPostBoard(p) === 'qa')
+  if (tab === 'error_report') return posts.filter(p => isErrorBoard(getPostBoard(p)))
   return posts
 }
 
@@ -88,6 +103,7 @@ export function canViewPost(post, isLoggedIn, userId, myNickname) {
 
 /** @param {Omit<CommunityPost, 'id' | 'createdAt'> & Partial<CommunityPost>} draft */
 export function buildPost(draft) {
+  const board = normalizeBoard(draft.board ?? DEFAULT_BOARD)
   return {
     ...DEFAULT_POST_EXTRA,
     id: draft.id ?? createPostId(),
@@ -97,7 +113,8 @@ export function buildPost(draft) {
     createdAt: draft.createdAt ?? Date.now(),
     authorId: draft.authorId,
     isNotice: Boolean(draft.isNotice),
-    isConcept: Boolean(draft.isConcept),
+    isConcept: false,
+    board,
     visibility: draft.visibility ?? 'public',
     viewCount: draft.viewCount ?? 0,
     likeCount: draft.likeCount ?? 0,
@@ -109,6 +126,7 @@ export function pickMetaFields(post) {
   return {
     isNotice: post.isNotice,
     isConcept: post.isConcept,
+    board: getPostBoard(post),
     visibility: post.visibility,
     viewCount: post.viewCount,
     likeCount: post.likeCount,

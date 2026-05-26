@@ -2,9 +2,12 @@ const META_KEY = 'ox_quiz_community_meta_v1'
 
 import { EMPTY_EXTRAS, normalizeExtras } from './communityExtras'
 
+import { DEFAULT_BOARD, getPostBoard, normalizeBoard } from './communityBoards'
+
 export const DEFAULT_POST_EXTRA = {
   isNotice: false,
   isConcept: false,
+  board: DEFAULT_BOARD,
   visibility: 'public',
   viewCount: 0,
   likeCount: 0,

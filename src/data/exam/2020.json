@@ -48,7 +48,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 2
   },
   {
     "id": "민법-2020-Q42",
@@ -99,7 +100,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "통정허위표시에서 제3자란 허위표시에 의하여 외형상 형성된 법률관계를 토대로 '새로운 법률상 이해관계'를 맺은 자를 말합니다. ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 3
   },
   {
     "id": "민법-2020-Q43",
@@ -174,7 +176,8 @@
       }
     ],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 1
   },
   {
     "id": "민법-2020-Q44",
@@ -225,7 +228,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 7
   },
   {
     "id": "민법-2020-Q45",
@@ -236,7 +240,7 @@
     "question_type": "correct",
     "correct_choice": 2,
     "category": "대리",
-    "subcategory": "대리일반",
+    "subcategory": "무권대리",
     "items": [
       {
         "key": "1",
@@ -276,7 +280,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 8
   },
   {
     "id": "민법-2020-Q46",
@@ -351,7 +356,8 @@
       }
     ],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 8
   },
   {
     "id": "민법-2020-Q47",
@@ -402,7 +408,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 6
   },
   {
     "id": "민법-2020-Q48",
@@ -412,8 +419,8 @@
     "stem": "추인할 수 있는 법률행위가 아닌 것은? (다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 5,
-    "category": "민사특별법",
-    "subcategory": "토지거래허가",
+    "category": "법률행위",
+    "subcategory": "무효·취소",
     "items": [
       {
         "key": "1",
@@ -453,7 +460,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 5
   },
   {
     "id": "민법-2020-Q49",
@@ -463,8 +471,8 @@
     "stem": "취소원인이 있는 법률행위는?",
     "question_type": "correct",
     "correct_choice": 4,
-    "category": "법률행위",
-    "subcategory": "반사회·불공정",
+    "category": "교환",
+    "subcategory": "교환",
     "items": [
       {
         "key": "1",
@@ -504,7 +512,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "민법상 취소 사유는 제한능력, 착오, 사기·강박 3가지뿐이며, 무효 사유와 구별해야 합니다. ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 25
   },
   {
     "id": "민법-2020-Q50",
@@ -555,7 +564,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 19
   },
   {
     "id": "민법-2020-Q51",
@@ -606,7 +616,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 15
   },
   {
     "id": "민법-2020-Q52",
@@ -657,7 +668,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 32
   },
   {
     "id": "민법-2020-Q53",
@@ -708,7 +720,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 10
   },
   {
     "id": "민법-2020-Q54",
@@ -759,7 +772,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 4
   },
   {
     "id": "민법-2020-Q55",
@@ -810,7 +824,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 10
   },
   {
     "id": "민법-2020-Q56",
@@ -820,8 +835,8 @@
     "stem": "甲, 乙, 丙은 각 1/3 지분으로 나대지인 X토지를 공유하고 있다. 이에 관한 설명으로 틀린 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 4,
-    "category": "점유·시효",
-    "subcategory": "취득시효",
+    "category": "물권변동",
+    "subcategory": "등기",
     "items": [
       {
         "key": "1",
@@ -861,7 +876,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 10
   },
   {
     "id": "민법-2020-Q57",
@@ -912,7 +928,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 12
   },
   {
     "id": "민법-2020-Q58",
@@ -987,7 +1004,8 @@
       }
     ],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 4
   },
   {
     "id": "민법-2020-Q59",
@@ -1038,7 +1056,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 16
   },
   {
     "id": "민법-2020-Q60",
@@ -1089,7 +1108,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 15
   },
   {
     "id": "민법-2020-Q61",
@@ -1164,7 +1184,8 @@
       }
     ],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 19
   },
   {
     "id": "민법-2020-Q62",
@@ -1215,7 +1236,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 11
   },
   {
     "id": "민법-2020-Q63",
@@ -1225,8 +1247,8 @@
     "stem": "甲은 乙 소유의 X토지에 저당권을 취득하였다. X토지에 Y건물이 존재할 때, 甲이 X토지와 Y건물에 대해 일괄경매를 청구할 수 있는 경우를 모두 고른 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "composite",
     "correct_choice": 2,
-    "category": "소유권",
-    "subcategory": "소유권·공유",
+    "category": "용익물권",
+    "subcategory": "지상권",
     "items": [
       {
         "key": "ㄱ",
@@ -1283,7 +1305,8 @@
       }
     ],
     "explanation_summary": "민법 제365조에 의한 토지·건물의 일괄경매청구권은 저당권 설정 '후'에 토지 소유자가 건물을 축조하여 '경매 신청 당시'에 토지와 건물의 소유자가 동일한 경우에 한하여 인정됩니다. ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 15
   },
   {
     "id": "민법-2020-Q64",
@@ -1334,7 +1357,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 19
   },
   {
     "id": "민법-2020-Q65",
@@ -1385,7 +1409,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 26
   },
   {
     "id": "민법-2020-Q66",
@@ -1395,8 +1420,8 @@
     "stem": "甲은 승낙기간을 2020. 5. 8.로 하여 자신의 X주택을 乙에게 5억원에 팔겠다고 하고, 그 청약은 乙에게 2020. 5. 1. 도달하였다. 이에 관한 설명으로 틀린 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 2,
-    "category": "계약총론",
-    "subcategory": "청약·승낙",
+    "category": "법률행위",
+    "subcategory": "의사표시",
     "items": [
       {
         "key": "1",
@@ -1436,7 +1461,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 1
   },
   {
     "id": "민법-2020-Q67",
@@ -1511,7 +1537,8 @@
       }
     ],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 26
   },
   {
     "id": "민법-2020-Q68",
@@ -1562,7 +1589,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 23
   },
   {
     "id": "민법-2020-Q69",
@@ -1572,8 +1600,8 @@
     "stem": "甲은 자신의 X부동산을 乙에게 매도하면서 대금채권을 丙에게 귀속시키기로하고, 대금지급과 동시에 소유권이전등기를 해 주기로 했다. 그 후 丙은 乙에게 수익의 의사를 표시하였다. 이에 관한 설명으로 옳은 것은? (다툼이 있으면 판례에 따름)",
     "question_type": "correct",
     "correct_choice": 3,
-    "category": "물권변동",
-    "subcategory": "등기",
+    "category": "계약총론",
+    "subcategory": "동시이행",
     "items": [
       {
         "key": "1",
@@ -1613,7 +1641,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "제3자를 위한 계약에 관한 문제입니다. ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 21
   },
   {
     "id": "민법-2020-Q70",
@@ -1623,8 +1652,8 @@
     "stem": "계약해제ㆍ해지에 관한 설명으로 틀린 것은? (다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 2,
-    "category": "계약총론",
-    "subcategory": "동시이행",
+    "category": "저당권",
+    "subcategory": "저당권",
     "items": [
       {
         "key": "1",
@@ -1664,7 +1693,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 19
   },
   {
     "id": "민법-2020-Q71",
@@ -1739,7 +1769,8 @@
       }
     ],
     "explanation_summary": "불특정물(종류물)의 하자로 인한 매도인의 담보책임(제581조)에서 매수인은 다음의 권리를 가집니다. - 계약해제권 (ㄱ) - 손해배상청구권 (ㄴ) - 완전물급부청구권 (하자 없는 물건 청구권) (ㄹ) ※ 종류물 매매에서는 대금감액청구권(ㄷ)은 인정되지 않습니다. ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 24
   },
   {
     "id": "민법-2020-Q72",
@@ -1790,7 +1821,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 4
   },
   {
     "id": "민법-2020-Q73",
@@ -1841,7 +1873,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 32
   },
   {
     "id": "민법-2020-Q74",
@@ -1892,7 +1925,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 26
   },
   {
     "id": "민법-2020-Q75",
@@ -1943,7 +1977,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 27
   },
   {
     "id": "민법-2020-Q76",
@@ -1994,7 +2029,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 26
   },
   {
     "id": "민법-2020-Q77",
@@ -2069,7 +2105,8 @@
       }
     ],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 29
   },
   {
     "id": "민법-2020-Q78",
@@ -2120,7 +2157,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "차용금채무 담보를 위해 소유권이전등기를 마친 형식을 '가등기담보 등에 관한 법률'상 '양도담보'라고 합니다. ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 10
   },
   {
     "id": "민법-2020-Q79",
@@ -2130,8 +2168,8 @@
     "stem": "乙은 甲 소유의 X상가건물을 甲으로부터 임차하고 인도 및 사업자등록을 마쳤다. 乙의 임대차가 제3자에 대하여 효력이 있는 경우를 모두 고른 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "composite",
     "correct_choice": 2,
-    "category": "민사특별법",
-    "subcategory": "상가건물임대차보호법",
+    "category": "임대차",
+    "subcategory": "임대차",
     "items": [
       {
         "key": "ㄱ",
@@ -2188,7 +2226,8 @@
       }
     ],
     "explanation_summary": "상가건물 임대차보호법상 대항력의 유지 여부에 관한 문제입니다. ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 26
   },
   {
     "id": "민법-2020-Q80",
@@ -2198,8 +2237,8 @@
     "stem": "甲은 법령상의 제한을 회피하기 위해 2019. 5. 배우자 乙과 명의신탁약정을하고 자신의 X건물을 乙 명의로 소유권이전등기를 마쳤다. 이에 관한 설명으로 틀린 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 5,
-    "category": "물권변동",
-    "subcategory": "등기",
+    "category": "민사특별법",
+    "subcategory": "명의신탁",
     "items": [
       {
         "key": "1",
@@ -2239,6 +2278,7 @@
     ],
     "combo_choices": [],
     "explanation_summary": "배우자 간 명의신탁약정이 '법령상 제한의 회피 목적'으로 행해진 경우이므로 부동산실명법 제5조에 의해 이 명의신탁약정 및 등기는 '무효'가 됩니다(특례 적용 불가).",
-    "source": "제31회 1차 1교시 A형"
+    "source": "제31회 1차 1교시 A형",
+    "textbook_order": 30
   }
 ]

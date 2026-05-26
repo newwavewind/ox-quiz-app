@@ -48,7 +48,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 2
   },
   {
     "id": "민법-2019-Q42",
@@ -99,7 +100,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 5
   },
   {
     "id": "민법-2019-Q43",
@@ -150,7 +152,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 6
   },
   {
     "id": "민법-2019-Q44",
@@ -201,7 +204,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 1
   },
   {
     "id": "민법-2019-Q45",
@@ -252,7 +256,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 7
   },
   {
     "id": "민법-2019-Q46",
@@ -263,7 +268,7 @@
     "question_type": "wrong",
     "correct_choice": 2,
     "category": "대리",
-    "subcategory": "대리일반",
+    "subcategory": "무권대리",
     "items": [
       {
         "key": "1",
@@ -303,7 +308,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 8
   },
   {
     "id": "민법-2019-Q47",
@@ -314,7 +320,7 @@
     "question_type": "wrong",
     "correct_choice": 3,
     "category": "대리",
-    "subcategory": "대리일반",
+    "subcategory": "무권대리",
     "items": [
       {
         "key": "1",
@@ -354,7 +360,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 8
   },
   {
     "id": "민법-2019-Q48",
@@ -422,7 +429,8 @@
       }
     ],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 8
   },
   {
     "id": "민법-2019-Q49",
@@ -473,7 +481,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "민법 제145조(법정추인) 규정에 따라 취소권자가 이의를 보류하지 않고 행한 행위 중, '상대방이 취소권자에게 이행을 청구한 경우(③)'는 법정추인 사유가 아닙니다. 취소권자가 상대방에게 이행을 청구해야 법정추인이 됩니다. ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 5
   },
   {
     "id": "민법-2019-Q50",
@@ -524,7 +533,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 32
   },
   {
     "id": "민법-2019-Q51",
@@ -575,7 +585,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 26
   },
   {
     "id": "민법-2019-Q52",
@@ -626,7 +637,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 10
   },
   {
     "id": "민법-2019-Q53",
@@ -701,7 +713,8 @@
       }
     ],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 10
   },
   {
     "id": "민법-2019-Q54",
@@ -752,7 +765,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 11
   },
   {
     "id": "민법-2019-Q55",
@@ -803,7 +817,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 29
   },
   {
     "id": "민법-2019-Q56",
@@ -854,7 +869,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 10
   },
   {
     "id": "민법-2019-Q57",
@@ -905,7 +921,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 4
   },
   {
     "id": "민법-2019-Q58",
@@ -915,8 +932,8 @@
     "stem": "공유에 관한 설명으로 옳은 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "correct",
     "correct_choice": 2,
-    "category": "소유권",
-    "subcategory": "소유권·공유",
+    "category": "물권변동",
+    "subcategory": "등기",
     "items": [
       {
         "key": "1",
@@ -956,7 +973,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 10
   },
   {
     "id": "민법-2019-Q59",
@@ -1007,7 +1025,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 19
   },
   {
     "id": "민법-2019-Q60",
@@ -1058,7 +1077,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 16
   },
   {
     "id": "민법-2019-Q61",
@@ -1109,7 +1129,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 14
   },
   {
     "id": "민법-2019-Q62",
@@ -1160,7 +1181,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "유치권의 성립요건 중 점유는 직접점유이든 간접점유이든 상관없으나, '채무자가 직접 점유하는 것을 매개로 한 간접점유'인 경우에는 유치권이 성립하지 않습니다. 따라서 지문 ③의 \"채무자를 매개로 한 간접점유가 아닌 한 직접이든 간접이든 여부\"는 유치권 성립에 영향을 미치지 않습니다(즉, 둘 다 성립 가능함). ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 11
   },
   {
     "id": "민법-2019-Q63",
@@ -1211,7 +1233,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 19
   },
   {
     "id": "민법-2019-Q64",
@@ -1279,7 +1302,8 @@
       }
     ],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 19
   },
   {
     "id": "민법-2019-Q65",
@@ -1347,7 +1371,8 @@
       }
     ],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 23
   },
   {
     "id": "민법-2019-Q66",
@@ -1398,7 +1423,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 22
   },
   {
     "id": "민법-2019-Q67",
@@ -1466,7 +1492,8 @@
       }
     ],
     "explanation_summary": "계약해제 시 보호되는 제3자란 해제된 계약으로부터 생긴 법률적 효과를 기초로 '새로운 권리(물권 등 완전한 권리)'를 취득한 자를 말합니다. ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 10
   },
   {
     "id": "민법-2019-Q68",
@@ -1517,7 +1544,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 20
   },
   {
     "id": "민법-2019-Q69",
@@ -1568,7 +1596,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 24
   },
   {
     "id": "민법-2019-Q70",
@@ -1619,7 +1648,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 10
   },
   {
     "id": "민법-2019-Q71",
@@ -1670,7 +1700,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 23
   },
   {
     "id": "민법-2019-Q72",
@@ -1721,7 +1752,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 10
   },
   {
     "id": "민법-2019-Q73",
@@ -1789,7 +1821,8 @@
       }
     ],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 17
   },
   {
     "id": "민법-2019-Q74",
@@ -1840,7 +1873,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 26
   },
   {
     "id": "민법-2019-Q75",
@@ -1891,7 +1925,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 26
   },
   {
     "id": "민법-2019-Q76",
@@ -1901,8 +1936,8 @@
     "stem": "甲이 그 소유의 X주택에 거주하려는 乙과 존속기간 1년의 임대차계약을 체결한 경우에 관한 설명으로 틀린 것은?",
     "question_type": "wrong",
     "correct_choice": 5,
-    "category": "민사특별법",
-    "subcategory": "주택임대차보호법",
+    "category": "임대차",
+    "subcategory": "임대차",
     "items": [
       {
         "key": "1",
@@ -1942,7 +1977,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 26
   },
   {
     "id": "민법-2019-Q77",
@@ -1952,8 +1988,8 @@
     "stem": "상가건물 임대차보호법에 관한 설명으로 옳은 것은?",
     "question_type": "correct",
     "correct_choice": 2,
-    "category": "임대차",
-    "subcategory": "임대차",
+    "category": "민사특별법",
+    "subcategory": "상가건물임대차보호법",
     "items": [
       {
         "key": "1",
@@ -1993,7 +2029,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 28
   },
   {
     "id": "민법-2019-Q78",
@@ -2044,7 +2081,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 31
   },
   {
     "id": "민법-2019-Q79",
@@ -2095,7 +2133,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 29
   },
   {
     "id": "민법-2019-Q80",
@@ -2105,8 +2144,8 @@
     "stem": "X부동산을 매수하고자 하는 甲은 乙과 명의신탁약정을 하고 乙 명의로 소유권이전등기를 하기로 하였다. 그 후 甲은 丙에게서 그 소유의 X부동산을 매수하고 대금을 지급하였으며, 丙은 甲의 부탁에 따라 乙 앞으로 이전등기를 해 주었다. 다음 설명 중 틀린 것은? (다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 2,
-    "category": "물권변동",
-    "subcategory": "등기",
+    "category": "민사특별법",
+    "subcategory": "명의신탁",
     "items": [
       {
         "key": "1",
@@ -2146,6 +2185,7 @@
     ],
     "combo_choices": [],
     "explanation_summary": "본 사안은 '3자간 등기명의신탁(중간생략형 명의신탁)'에 해당합니다.",
-    "source": "제30회 1차 1교시 A형"
+    "source": "제30회 1차 1교시 A형",
+    "textbook_order": 30
   }
 ]

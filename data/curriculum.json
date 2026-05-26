@@ -1,0 +1,192 @@
+{
+  "version": 1,
+  "source": "공인중개사 민법 교재 차례 (PART / CHAPTER)",
+  "parts": [
+    {
+      "id": "part1",
+      "label": "PART 1　민법총칙",
+      "shortLabel": "민법총칙",
+      "style": "blue",
+      "chapters": [
+        {
+          "id": "p1-c01",
+          "label": "CHAPTER 01　권리의 변동",
+          "shortLabel": "권리의 변동",
+          "filters": [{ "category": "권리의변동" }]
+        },
+        {
+          "id": "p1-c02",
+          "label": "CHAPTER 02　법률행위",
+          "shortLabel": "법률행위",
+          "filters": [
+            { "category": "법률행위", "subcategory": "반사회·불공정" },
+            { "category": "법률행위", "subcategory": "비진의·통정허위" },
+            { "category": "법률행위", "subcategory": "착오·사기·강박" }
+          ]
+        },
+        {
+          "id": "p1-c03",
+          "label": "CHAPTER 03　의사표시",
+          "shortLabel": "의사표시",
+          "filters": [{ "category": "법률행위", "subcategory": "의사표시" }]
+        },
+        {
+          "id": "p1-c04",
+          "label": "CHAPTER 04　법률행위의 대리",
+          "shortLabel": "법률행위의 대리",
+          "filters": [
+            { "category": "대리", "subcategory": "대리일반" },
+            { "category": "대리", "subcategory": "무권대리" }
+          ]
+        },
+        {
+          "id": "p1-c05",
+          "label": "CHAPTER 05　무효와 취소",
+          "shortLabel": "무효와 취소",
+          "filters": [
+            { "category": "법률행위", "subcategory": "무효·취소", "sectionLabel": "무효·취소" },
+            { "category": "민사특별법", "subcategory": "토지거래허가", "sectionLabel": "유동적 무효" }
+          ]
+        },
+        {
+          "id": "p1-c06",
+          "label": "CHAPTER 06　조건과 기한",
+          "shortLabel": "조건과 기한",
+          "filters": [{ "category": "법률행위", "subcategory": "조건·기한" }]
+        }
+      ]
+    },
+    {
+      "id": "part2",
+      "label": "PART 2　물권법",
+      "shortLabel": "물권법",
+      "style": "emerald",
+      "chapters": [
+        {
+          "id": "p2-c01",
+          "label": "CHAPTER 01　물권의 의의",
+          "shortLabel": "물권의 의의",
+          "filters": [
+            { "category": "물권총칙", "subcategory": "물권법정주의" },
+            { "category": "물권적청구권", "subcategory": "물권적청구권" }
+          ]
+        },
+        {
+          "id": "p2-c02",
+          "label": "CHAPTER 02　물권의 변동",
+          "shortLabel": "물권의 변동",
+          "filters": [{ "category": "물권변동" }]
+        },
+        {
+          "id": "p2-c03",
+          "label": "CHAPTER 03　점유권",
+          "shortLabel": "점유권",
+          "filters": [
+            { "category": "점유·시효", "subcategory": "점유" },
+            { "category": "점유·시효", "subcategory": "취득시효" }
+          ]
+        },
+        {
+          "id": "p2-c04",
+          "label": "CHAPTER 04　소유권",
+          "shortLabel": "소유권",
+          "filters": [{ "category": "소유권" }]
+        },
+        {
+          "id": "p2-c05",
+          "label": "CHAPTER 05　용익물권",
+          "shortLabel": "용익물권",
+          "filters": [
+            { "category": "용익물권", "subcategory": "지상권" },
+            { "category": "용익물권", "subcategory": "지역권" },
+            { "category": "용익물권", "subcategory": "전세권" }
+          ]
+        },
+        {
+          "id": "p2-c06",
+          "label": "CHAPTER 06　담보물권",
+          "shortLabel": "담보물권",
+          "filters": [
+            { "category": "유치권", "subcategory": "유치권" },
+            { "category": "저당권", "subcategory": "저당권" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "part3",
+      "label": "PART 3　계약법",
+      "shortLabel": "계약법",
+      "style": "amber",
+      "chapters": [
+        {
+          "id": "p3-c01",
+          "label": "CHAPTER 01　계약법 총론",
+          "shortLabel": "계약법 총론",
+          "filters": [
+            { "category": "계약총론", "subcategory": "청약·승낙" },
+            { "category": "계약총론", "subcategory": "동시이행" },
+            { "category": "계약총론", "subcategory": "제3자계약" },
+            { "category": "계약총론", "subcategory": "계약해제" }
+          ]
+        },
+        {
+          "id": "p3-c02",
+          "label": "CHAPTER 02　매매",
+          "shortLabel": "매매",
+          "filters": [{ "category": "매매" }]
+        },
+        {
+          "id": "p3-c03",
+          "label": "CHAPTER 03　교환",
+          "shortLabel": "교환",
+          "filters": [{ "category": "교환" }]
+        },
+        {
+          "id": "p3-c04",
+          "label": "CHAPTER 04　임대차",
+          "shortLabel": "임대차",
+          "filters": [{ "category": "임대차" }]
+        }
+      ]
+    },
+    {
+      "id": "part4",
+      "label": "PART 4　민사특별법",
+      "shortLabel": "민사특별법",
+      "style": "rose",
+      "chapters": [
+        {
+          "id": "p4-c01",
+          "label": "CHAPTER 01　주택임대차보호법",
+          "shortLabel": "주택임대차보호법",
+          "filters": [{ "category": "민사특별법", "subcategory": "주택임대차보호법" }]
+        },
+        {
+          "id": "p4-c02",
+          "label": "CHAPTER 02　상가건물 임대차보호법",
+          "shortLabel": "상가건물 임대차보호법",
+          "filters": [{ "category": "민사특별법", "subcategory": "상가건물임대차보호법" }]
+        },
+        {
+          "id": "p4-c03",
+          "label": "CHAPTER 03　집합건물의 소유 및 관리에 관한 법률",
+          "shortLabel": "집합건물의 소유 및 관리에 관한 법률",
+          "filters": [{ "category": "민사특별법", "subcategory": "집합건물법" }]
+        },
+        {
+          "id": "p4-c04",
+          "label": "CHAPTER 04　가등기담보 등에 관한 법률",
+          "shortLabel": "가등기담보 등에 관한 법률",
+          "filters": [{ "category": "민사특별법", "subcategory": "가등기담보" }]
+        },
+        {
+          "id": "p4-c05",
+          "label": "CHAPTER 05　부동산 실권리자명의 등기에 관한 법률",
+          "shortLabel": "부동산 실권리자명의 등기에 관한 법률",
+          "filters": [{ "category": "민사특별법", "subcategory": "명의신탁" }]
+        }
+      ]
+    }
+  ]
+}

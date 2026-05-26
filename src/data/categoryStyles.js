@@ -12,6 +12,7 @@ export const CATEGORY_ORDER = [
   '저당권',
   '계약총론',
   '매매',
+  '교환',
   '임대차',
   '민사특별법',
 ]
@@ -29,6 +30,7 @@ const STYLES = {
   저당권: { color: 'bg-sky-500', light: 'bg-sky-50', border: 'border-sky-200', text: 'text-sky-700', icon: '🏦' },
   계약총론: { color: 'bg-amber-500', light: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700', icon: '📄' },
   매매: { color: 'bg-lime-500', light: 'bg-lime-50', border: 'border-lime-200', text: 'text-lime-700', icon: '💼' },
+  교환: { color: 'bg-orange-500', light: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', icon: '🔁' },
   임대차: { color: 'bg-violet-500', light: 'bg-violet-50', border: 'border-violet-200', text: 'text-violet-700', icon: '🏢' },
   민사특별법: { color: 'bg-rose-500', light: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-700', icon: '📜' },
 }

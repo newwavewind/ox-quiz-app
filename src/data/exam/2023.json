@@ -7,8 +7,8 @@
     "stem": "다음 중 연결이 잘못된 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 1,
-    "category": "점유·시효",
-    "subcategory": "점유",
+    "category": "권리의변동",
+    "subcategory": "권리의변동",
     "items": [
       {
         "key": "1",
@@ -48,7 +48,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 1
   },
   {
     "id": "민법-2023-Q42",
@@ -58,8 +59,8 @@
     "stem": "甲으로부터 甲 소유 X토지의 매도 대리권을 수여받은 乙은 甲을 대리하여 丙과 X토지에 대한 매매계약을 체결하였다. 다음 설명 중 틀린 것은? (다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 5,
-    "category": "대리",
-    "subcategory": "대리일반",
+    "category": "법률행위",
+    "subcategory": "비진의·통정허위",
     "items": [
       {
         "key": "1",
@@ -99,7 +100,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 3
   },
   {
     "id": "민법-2023-Q43",
@@ -150,7 +152,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 2
   },
   {
     "id": "민법-2023-Q44",
@@ -161,7 +164,7 @@
     "question_type": "wrong",
     "correct_choice": 4,
     "category": "대리",
-    "subcategory": "무권대리",
+    "subcategory": "대리일반",
     "items": [
       {
         "key": "1",
@@ -201,7 +204,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 7
   },
   {
     "id": "민법-2023-Q45",
@@ -269,7 +273,8 @@
       }
     ],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 3
   },
   {
     "id": "민법-2023-Q46",
@@ -279,8 +284,8 @@
     "stem": "무권대리인 乙이 甲을 대리하여 甲 소유의 X토지를 丙에게 매도하는 계약을 체결하였다. 다음 설명 중 옳은 것은? (다툼이 있으면 판례에 따름)",
     "question_type": "correct",
     "correct_choice": 1,
-    "category": "대리",
-    "subcategory": "대리일반",
+    "category": "법률행위",
+    "subcategory": "의사표시",
     "items": [
       {
         "key": "1",
@@ -320,7 +325,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 1
   },
   {
     "id": "민법-2023-Q47",
@@ -388,7 +394,8 @@
       }
     ],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 2
   },
   {
     "id": "민법-2023-Q48",
@@ -456,7 +463,8 @@
       }
     ],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 32
   },
   {
     "id": "민법-2023-Q49",
@@ -507,7 +515,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 6
   },
   {
     "id": "민법-2023-Q50",
@@ -575,7 +584,8 @@
       }
     ],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 5
   },
   {
     "id": "민법-2023-Q51",
@@ -626,7 +636,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 6
   },
   {
     "id": "민법-2023-Q52",
@@ -677,7 +688,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 14
   },
   {
     "id": "민법-2023-Q53",
@@ -728,7 +740,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 10
   },
   {
     "id": "민법-2023-Q54",
@@ -779,7 +792,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 13
   },
   {
     "id": "민법-2023-Q55",
@@ -789,8 +803,8 @@
     "stem": "부동산 점유취득시효에 관한 설명으로 옳은 것은? (다툼이 있으면 판례에 따름)",
     "question_type": "correct",
     "correct_choice": 2,
-    "category": "물권변동",
-    "subcategory": "등기",
+    "category": "점유·시효",
+    "subcategory": "취득시효",
     "items": [
       {
         "key": "1",
@@ -830,7 +844,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 12
   },
   {
     "id": "민법-2023-Q56",
@@ -881,7 +896,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 14
   },
   {
     "id": "민법-2023-Q57",
@@ -891,8 +907,8 @@
     "stem": "물권에 관한 설명으로 옳은 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "correct",
     "correct_choice": 3,
-    "category": "민사특별법",
-    "subcategory": "집합건물법",
+    "category": "물권총칙",
+    "subcategory": "물권법정주의",
     "items": [
       {
         "key": "1",
@@ -932,7 +948,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 9
   },
   {
     "id": "민법-2023-Q58",
@@ -983,7 +1000,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 4
   },
   {
     "id": "민법-2023-Q59",
@@ -1051,7 +1069,8 @@
       }
     ],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 4
   },
   {
     "id": "민법-2023-Q60",
@@ -1061,8 +1080,8 @@
     "stem": "지역권에 관한 설명으로 틀린 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 4,
-    "category": "용익물권",
-    "subcategory": "지역권",
+    "category": "점유·시효",
+    "subcategory": "취득시효",
     "items": [
       {
         "key": "1",
@@ -1102,7 +1121,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 12
   },
   {
     "id": "민법-2023-Q61",
@@ -1170,7 +1190,8 @@
       }
     ],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 19
   },
   {
     "id": "민법-2023-Q62",
@@ -1221,7 +1242,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 19
   },
   {
     "id": "민법-2023-Q63",
@@ -1272,7 +1294,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 18
   },
   {
     "id": "민법-2023-Q64",
@@ -1323,7 +1346,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 15
   },
   {
     "id": "민법-2023-Q65",
@@ -1333,8 +1357,8 @@
     "stem": "민법상 환매에 관한 설명으로 틀린 것은?",
     "question_type": "wrong",
     "correct_choice": 1,
-    "category": "매매",
-    "subcategory": "매매",
+    "category": "물권변동",
+    "subcategory": "등기",
     "items": [
       {
         "key": "1",
@@ -1374,7 +1398,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 10
   },
   {
     "id": "민법-2023-Q66",
@@ -1384,8 +1409,8 @@
     "stem": "甲은 그 소유의 토지를 乙에게 매도하면서 甲의 丙에 대한 채무변제를 위해 乙이 그 대금 전액을 丙에게 지급하기로 하는 제3자를 위한 계약을 乙과 체결하였고, 丙도 乙에 대해 수익의 의사표시를 하였다. 다음 설명 중 틀린 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 3,
-    "category": "법률행위",
-    "subcategory": "의사표시",
+    "category": "계약총론",
+    "subcategory": "제3자계약",
     "items": [
       {
         "key": "1",
@@ -1425,7 +1450,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 22
   },
   {
     "id": "민법-2023-Q67",
@@ -1493,7 +1519,8 @@
       }
     ],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 10
   },
   {
     "id": "민법-2023-Q68",
@@ -1561,7 +1588,8 @@
       }
     ],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 21
   },
   {
     "id": "민법-2023-Q69",
@@ -1612,7 +1640,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 1
   },
   {
     "id": "민법-2023-Q70",
@@ -1663,7 +1692,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 24
   },
   {
     "id": "민법-2023-Q71",
@@ -1673,8 +1703,8 @@
     "stem": "甲은 2023. 9. 30. 乙에게 자신 소유의 X부동산을 3억원에 매도하되, 계약금 2천만원은 계약 당일, 중도금 2억원은 2023. 10. 30., 잔금 8천만원은 2023. 11. 30.에 지급받기로 하는 매매계약을 체결하고, 乙로부터 계약 당일 계약금 전액을 지급받았다. 다음 설명 중 옳은 것을 모두 고른 것은?(특별한 사정은 없으며, 다툼이 있으면 판례에 따름)",
     "question_type": "composite",
     "correct_choice": 5,
-    "category": "계약총론",
-    "subcategory": "계약해제",
+    "category": "법률행위",
+    "subcategory": "착오·사기·강박",
     "items": [
       {
         "key": "ㄱ",
@@ -1731,7 +1761,8 @@
       }
     ],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 4
   },
   {
     "id": "민법-2023-Q72",
@@ -1782,7 +1813,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 26
   },
   {
     "id": "민법-2023-Q73",
@@ -1792,8 +1824,8 @@
     "stem": "甲은 건물 소유를 목적으로 乙 소유의 X토지를 임차한 후, 그 지상에 Y건물을 신축하여 소유하고 있다. 위 임대차계약이 종료된 후, 甲이 乙에게 Y건물에 관하여 지상물매수청구권을 행사하는 경우에 관한 설명으로 틀린 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 3,
-    "category": "법률행위",
-    "subcategory": "착오·사기·강박",
+    "category": "임대차",
+    "subcategory": "임대차",
     "items": [
       {
         "key": "1",
@@ -1833,7 +1865,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 26
   },
   {
     "id": "민법-2023-Q74",
@@ -1901,7 +1934,8 @@
       }
     ],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 1
   },
   {
     "id": "민법-2023-Q75",
@@ -1952,7 +1986,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 29
   },
   {
     "id": "민법-2023-Q76",
@@ -2003,7 +2038,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "가등기담보법은 '소비대차(차용금채무)'에 기한 채무여야 하고, 대물변제 예약 당시의 담보목적물 가액이 '채권액과 이자의 합산액을 초과'하는 경우에 한하여 적용됩니다. ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 10
   },
   {
     "id": "민법-2023-Q77",
@@ -2078,7 +2114,8 @@
       }
     ],
     "explanation_summary": "부동산실명법 제4조 제3항의 '제3자'는 명의신탁약정과 그에 따른 등기의 무효를 기초로 '새로운' 법률상 이해관계를 맺은 자를 말합니다. ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 30
   },
   {
     "id": "민법-2023-Q78",
@@ -2129,7 +2166,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 27
   },
   {
     "id": "민법-2023-Q79",
@@ -2197,7 +2235,8 @@
       }
     ],
     "explanation_summary": "상가건물 임대차보호법(상임법)에서 서울특별시 기준 환산보증금(보증금 + 월세*100)의 상한선은 9억원입니다. 乙의 경우 보증금 10억원 + 월세 100만원*100 = 11억원이므로 환산보증금 한도(9억원)를 초과합니다. 환산보증금을 초과하는 임대차의 경우 상임법의 일부 규정(대항력, 계약갱신요구권, 3기 연체시 해지 등)만 적용되고, 나머지 규정(기간을 1년으로 보는 규정, 우선변제권 등)은 적용되지 않고 민법의 일반 임대차 규정이 적용됩니다. ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 28
   },
   {
     "id": "민법-2023-Q80",
@@ -2207,8 +2246,8 @@
     "stem": "甲은 법령상 제한을 회피할 목적으로 2023. 5. 1. 배우자 乙과 자신 소유의 X건물에 대해 명의신탁약정을 하고, 甲으로부터 乙 앞으로 소유권이전등기를 마쳤다. 다음 설명 중 틀린 것은?(특별한 사정은 없으며, 다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 2,
-    "category": "물권변동",
-    "subcategory": "등기",
+    "category": "민사특별법",
+    "subcategory": "명의신탁",
     "items": [
       {
         "key": "1",
@@ -2248,6 +2287,7 @@
     ],
     "combo_choices": [],
     "explanation_summary": "배우자 간의 명의신탁이라 하더라도 조세 포탈, 강제집행의 면탈 또는 법령상 제한의 회피를 목적으로 한 경우에는 명의신탁약정과 그에 따른 등기는 '무효'가 됩니다. 계약과 등기가 무효이므로 부동산의 소유권은 여전히 신탁자 甲에게 있습니다.",
-    "source": "제34회 1차 1교시"
+    "source": "제34회 1차 1교시",
+    "textbook_order": 30
   }
 ]

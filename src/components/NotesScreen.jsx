@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import AiLinkButtons from './AiLinkButtons'
 
+import { getSubcategoryDisplayLabel } from '../data/curriculum'
 import {
   countImportantNotes,
   formatExamRef,
@@ -43,6 +44,9 @@ function NoteCard({ note, onToggleNote, onToggleImportant, onOpenQuestion }) {
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
             <p className="text-sm font-bold text-indigo-700">{formatExamRef(note)}</p>
+            <span className="text-xs text-slate-400">
+              · {formatStudyTime(note.savedAt)} 저장
+            </span>
             {important && (
               <span className="text-[10px] font-bold text-amber-700 bg-amber-100 border border-amber-200 rounded px-1.5 py-0.5">
                 중요
@@ -51,15 +55,10 @@ function NoteCard({ note, onToggleNote, onToggleImportant, onOpenQuestion }) {
           </div>
 
           <p className="text-xs text-slate-400 mt-0.5">
-
             {note.category}
-
-            {note.subcategory ? ` · ${note.subcategory}` : ''}
-
-            {' · '}
-
-            {formatStudyTime(note.savedAt)} 저장
-
+            {note.subcategory
+              ? ` · ${getSubcategoryDisplayLabel(note.category, note.subcategory)}`
+              : ''}
           </p>
 
         </div>

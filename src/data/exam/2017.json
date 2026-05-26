@@ -48,7 +48,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 6
   },
   {
     "id": "민법-2017-Q42",
@@ -99,7 +100,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 5
   },
   {
     "id": "민법-2017-Q43",
@@ -150,7 +152,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 7
   },
   {
     "id": "민법-2017-Q44",
@@ -201,7 +204,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 1
   },
   {
     "id": "민법-2017-Q45",
@@ -212,7 +216,7 @@
     "question_type": "wrong",
     "correct_choice": 2,
     "category": "법률행위",
-    "subcategory": "의사표시",
+    "subcategory": "비진의·통정허위",
     "items": [
       {
         "key": "1",
@@ -252,7 +256,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 3
   },
   {
     "id": "민법-2017-Q46",
@@ -303,7 +308,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 6
   },
   {
     "id": "민법-2017-Q47",
@@ -354,7 +360,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 2
   },
   {
     "id": "민법-2017-Q48",
@@ -364,8 +371,8 @@
     "stem": "다음 중 서로 잘못 짝지어진 것은?",
     "question_type": "correct",
     "correct_choice": 1,
-    "category": "법률행위",
-    "subcategory": "의사표시",
+    "category": "권리의변동",
+    "subcategory": "권리의변동",
     "items": [
       {
         "key": "1",
@@ -405,7 +412,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 1
   },
   {
     "id": "민법-2017-Q49",
@@ -415,8 +423,8 @@
     "stem": "甲은 자신의 X부동산을 乙에게 매도하고 계약금과 중도금을 지급받았다. 그 후 丙이 甲의 배임행위에 적극 가담하여 甲과 X부동산에 대한 매매계약을 체결하고 자신의 명의로 소유권이전 등기를 마쳤다. 다음 설명으로 틀린 것은? (다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 5,
-    "category": "물권변동",
-    "subcategory": "등기",
+    "category": "법률행위",
+    "subcategory": "반사회·불공정",
     "items": [
       {
         "key": "1",
@@ -456,7 +464,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 2
   },
   {
     "id": "민법-2017-Q50",
@@ -507,7 +516,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 1
   },
   {
     "id": "민법-2017-Q51",
@@ -558,7 +568,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 17
   },
   {
     "id": "민법-2017-Q52",
@@ -609,7 +620,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 16
   },
   {
     "id": "민법-2017-Q53",
@@ -619,8 +631,8 @@
     "stem": "점유자와 회복자의 관계 등에 관한 설명으로 틀린 것은?",
     "question_type": "wrong",
     "correct_choice": 3,
-    "category": "점유·시효",
-    "subcategory": "점유",
+    "category": "임대차",
+    "subcategory": "임대차",
     "items": [
       {
         "key": "1",
@@ -660,7 +672,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 26
   },
   {
     "id": "민법-2017-Q54",
@@ -670,8 +683,8 @@
     "stem": "점유권에 관한 설명으로 틀린 것은?",
     "question_type": "wrong",
     "correct_choice": 1,
-    "category": "용익물권",
-    "subcategory": "전세권",
+    "category": "점유·시효",
+    "subcategory": "점유",
     "items": [
       {
         "key": "1",
@@ -711,7 +724,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 11
   },
   {
     "id": "민법-2017-Q55",
@@ -762,7 +776,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 15
   },
   {
     "id": "민법-2017-Q56",
@@ -813,7 +828,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 14
   },
   {
     "id": "민법-2017-Q57",
@@ -864,7 +880,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 14
   },
   {
     "id": "민법-2017-Q58",
@@ -915,7 +932,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 15
   },
   {
     "id": "민법-2017-Q59",
@@ -925,8 +943,8 @@
     "stem": "부합에 관한 설명으로 옳은 것을 모두 고른 것은? (다툼이 있으면 판례에 따름)",
     "question_type": "composite",
     "correct_choice": 3,
-    "category": "소유권",
-    "subcategory": "소유권·공유",
+    "category": "임대차",
+    "subcategory": "임대차",
     "items": [
       {
         "key": "ㄱ",
@@ -990,7 +1008,8 @@
       }
     ],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 26
   },
   {
     "id": "민법-2017-Q60",
@@ -1000,8 +1019,8 @@
     "stem": "저당권에 관한 설명으로 틀린 것은?",
     "question_type": "wrong",
     "correct_choice": 2,
-    "category": "용익물권",
-    "subcategory": "지상권",
+    "category": "저당권",
+    "subcategory": "저당권",
     "items": [
       {
         "key": "1",
@@ -1041,7 +1060,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 19
   },
   {
     "id": "민법-2017-Q61",
@@ -1092,7 +1112,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 14
   },
   {
     "id": "민법-2017-Q62",
@@ -1143,7 +1164,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 18
   },
   {
     "id": "민법-2017-Q63",
@@ -1194,7 +1216,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 19
   },
   {
     "id": "민법-2017-Q64",
@@ -1204,8 +1227,8 @@
     "stem": "甲은 乙과의 계약에 따라 乙 소유의 구분건물 201호, 202호 전체를 수리하는 공사를 완료하였지만, 乙이 공사대금을 지급하지 않자 甲이 201호만을 점유하고 있다. 다음 설명 중 옳은 것은? (다툼이 있으면 판례에 따름)",
     "question_type": "correct",
     "correct_choice": 1,
-    "category": "민사특별법",
-    "subcategory": "주택임대차보호법",
+    "category": "임대차",
+    "subcategory": "임대차",
     "items": [
       {
         "key": "1",
@@ -1245,7 +1268,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 26
   },
   {
     "id": "민법-2017-Q65",
@@ -1296,7 +1320,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 1
   },
   {
     "id": "민법-2017-Q66",
@@ -1347,7 +1372,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 26
   },
   {
     "id": "민법-2017-Q67",
@@ -1398,7 +1424,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 22
   },
   {
     "id": "민법-2017-Q68",
@@ -1449,7 +1476,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 24
   },
   {
     "id": "민법-2017-Q69",
@@ -1500,7 +1528,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 24
   },
   {
     "id": "민법-2017-Q70",
@@ -1510,8 +1539,8 @@
     "stem": "계약의 유형에 관한 설명으로 옳은 것은?",
     "question_type": "correct",
     "correct_choice": 5,
-    "category": "임대차",
-    "subcategory": "임대차",
+    "category": "교환",
+    "subcategory": "교환",
     "items": [
       {
         "key": "1",
@@ -1551,7 +1580,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 25
   },
   {
     "id": "민법-2017-Q71",
@@ -1561,8 +1591,8 @@
     "stem": "甲은 자신의 X건물을 乙 소유 Y토지와 서로 교환하기로 합의하면서 가액차이로 발생한 보충금의 지급에 갈음하여 Y토지에 설정된 저당권의 피담보채무를 이행인수하기로 약정하였다. 다음 설명 중 옳은 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "correct",
     "correct_choice": 4,
-    "category": "계약총론",
-    "subcategory": "계약해제",
+    "category": "교환",
+    "subcategory": "교환",
     "items": [
       {
         "key": "1",
@@ -1653,7 +1683,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 1
   },
   {
     "id": "민법-2017-Q73",
@@ -1704,7 +1735,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 1
   },
   {
     "id": "민법-2017-Q74",
@@ -1755,7 +1787,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 1
   },
   {
     "id": "민법-2017-Q75",
@@ -1806,7 +1839,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 26
   },
   {
     "id": "민법-2017-Q76",
@@ -1857,7 +1891,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 26
   },
   {
     "id": "민법-2017-Q77",
@@ -1867,8 +1902,8 @@
     "stem": "甲은 조세포탈ㆍ강제집행의 면탈 또는 법령상 제한의 회피를 목적으로 하지 않고, 배우자 乙과의 명의신탁약정에 따라 자신의 X토지를 乙 명의로 소유권이전등기를 마쳐주었다. 다음 설명 중 틀린 것은? (다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 3,
-    "category": "물권변동",
-    "subcategory": "등기",
+    "category": "법률행위",
+    "subcategory": "반사회·불공정",
     "items": [
       {
         "key": "1",
@@ -1908,7 +1943,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 2
   },
   {
     "id": "민법-2017-Q78",
@@ -1959,7 +1995,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 10
   },
   {
     "id": "민법-2017-Q79",
@@ -2010,7 +2047,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 29
   },
   {
     "id": "민법-2017-Q80",
@@ -2020,8 +2058,8 @@
     "stem": "선순위 담보권 등이 없는 주택에 대해 대항요건과 확정일자를 갖춘 임대차에 관한 설명으로 틀린 것은? (다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 4,
-    "category": "임대차",
-    "subcategory": "임대차",
+    "category": "민사특별법",
+    "subcategory": "주택임대차보호법",
     "items": [
       {
         "key": "1",
@@ -2061,6 +2099,7 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제28회 1차 1교시 A형"
+    "source": "제28회 1차 1교시 A형",
+    "textbook_order": 27
   }
 ]

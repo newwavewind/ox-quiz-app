@@ -11,7 +11,8 @@ import {
   summarizePastExamResults,
 } from '../data/pastExamGrade'
 import { getRandomExamCount, isRandomStudyMode } from '../data/randomExamSet'
-import { gradeOxStudyQuestion } from '../data/loadExam'
+import { gradeOxStudyQuestion, isExamComplete, isExamCorrect } from '../data/loadExam'
+import { getChapterShortLabel } from '../data/curriculum'
 import { clearStudyResume, loadStudyResume, saveStudyResume } from '../data/studyResume'
 import { saveTodayStudySpot } from '../data/todayStudySpot'
 import { registerScrollToTop } from '../utils/scrollToTop'
@@ -215,6 +216,7 @@ export default function StudyMode({
     currentIndex,
     exams.length,
     filter.year,
+    filter.chapterId,
     filter.category,
     filter.subcategory,
     filter.mode,
@@ -313,10 +315,10 @@ export default function StudyMode({
     return () => window.clearTimeout(t)
   }, [pastExamRoundHint])
 
-  const indexByQuestionNo = useMemo(() => {
-    const map = new Map()
-    exams.forEach((e, i) => map.set(e.question_no, i))
-    return map
+  const showRoundInJumpBar = useMemo(() => {
+    const years = new Set(exams.map(e => e.year))
+    const rounds = new Set(exams.map(e => e.round))
+    return years.size > 1 || rounds.size > 1
   }, [exams])
 
   const showQuestionJump = exams.length > 1
@@ -597,9 +599,9 @@ export default function StudyMode({
     return registerScrollToTop(() => scrollStudyToTopRef.current())
   }, [studyVisible])
 
-  const jumpToQuestion = (questionNo) => {
-    const idx = indexByQuestionNo.get(questionNo)
-    if (idx == null) return
+  const jumpToExam = (examId) => {
+    const idx = exams.findIndex(e => e.id === examId)
+    if (idx < 0) return
     setCurrentIndex(idx)
     if (usePastExamSolveUI && pastExamHapticIndexRef.current !== idx) {
       pastExamHapticIndexRef.current = idx
@@ -1026,15 +1028,19 @@ export default function StudyMode({
         title={
           isRandomExam
             ? `랜덤 ${randomExamCount}문제`
-            : filter.subcategory
-              ? `${filter.category} · ${filter.subcategory}`
-              : filter.category
-                || (filter.year && exams[0]?.round != null
-                  ? `${filter.year}년 제${exams[0].round}회`
-                  : filter.year
-                    ? `${filter.year}년 학습`
-                    : null)
-                || '전체 학습'
+            : filter.chapterId
+              ? filter.subcategory
+                ? `${getChapterShortLabel(filter.chapterId) ?? '목차'} · ${filter.subcategory}`
+                : getChapterShortLabel(filter.chapterId) ?? '목차별 학습'
+              : filter.subcategory
+                ? `${filter.category} · ${filter.subcategory}`
+                : filter.category
+                  || (filter.year && exams[0]?.round != null
+                    ? `${filter.year}년 제${exams[0].round}회`
+                    : filter.year
+                      ? `${filter.year}년 학습`
+                      : null)
+                  || '전체 학습'
         }
         onBack={requestExit}
         onFilter={() => setShowFilter(true)}
@@ -1080,10 +1086,13 @@ export default function StudyMode({
             <QuestionJumpBar
               exams={exams}
               currentIndex={currentIndex}
+              currentExamId={exam.id}
               currentQuestionNo={exam.question_no}
+              currentRound={exam.round}
+              showRoundLabel={showRoundInJumpBar}
               progress={progress}
               pastExamResults={isPastExam ? pastExamResults : null}
-              onJump={jumpToQuestion}
+              onJump={jumpToExam}
             />
           )}
 
@@ -1681,98 +1690,127 @@ export default function StudyMode({
 function QuestionJumpBar({
   exams,
   currentIndex,
+  currentExamId,
   currentQuestionNo,
+  currentRound,
+  showRoundLabel = false,
   progress,
   pastExamResults,
   onJump,
 }) {
-  const [open, setOpen] = useState(false)
   const currentBtnRef = useRef(null)
   const yearLabel =
     new Set(exams.map(e => e.year)).size === 1 ? `${exams[0].year}년 ` : ''
 
+  const getQuestionStatus = exam => {
+    const pastRec = pastExamResults?.[exam.id]
+    if (pastRec) return pastRec.questionCorrect ? 'correct' : 'wrong'
+    if (isExamComplete(progress, exam.id)) {
+      return isExamCorrect(progress, exam.id) ? 'correct' : 'wrong'
+    }
+    return 'unanswered'
+  }
+
   const gradedCount = pastExamResults
     ? exams.filter(e => pastExamResults[e.id]).length
     : 0
+  const answeredCount = pastExamResults
+    ? gradedCount
+    : exams.filter(e => getQuestionStatus(e) !== 'unanswered').length
+  const unansweredCount = exams.length - answeredCount
   const positionNo = Math.min(Math.max(currentIndex, 0) + 1, exams.length)
   const progressLabel = pastExamResults ? '채점' : '진행'
   const progressNumerator = pastExamResults ? gradedCount : positionNo
 
   useEffect(() => {
-    if (!open || !currentBtnRef.current) return
+    if (!currentBtnRef.current) return
     currentBtnRef.current.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' })
-  }, [open, currentQuestionNo])
+  }, [currentExamId])
 
-  if (!open) {
-    return (
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="w-full flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-left hover:bg-slate-50 transition-colors"
-        aria-expanded="false"
-      >
-        <span className="text-[11px] font-semibold text-slate-500 shrink-0">
-          {yearLabel}문항
-        </span>
-        <span className="text-[11px] text-slate-400 truncate flex-1">
-          {currentQuestionNo}번 · {progressNumerator}/{exams.length} {progressLabel}
-        </span>
-        <svg className="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-    )
-  }
+  const currentPositionLabel = showRoundLabel
+    ? `제${currentRound}회 ${currentQuestionNo}번`
+    : `${currentQuestionNo}번`
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white px-2 py-1.5">
-      <div className="flex items-center gap-2 mb-1">
+    <div className="rounded-xl border border-slate-200 bg-white px-2 py-2 space-y-2">
+      <div className="flex items-center gap-2 px-1 min-w-0">
         <span className="text-[11px] font-semibold text-slate-500 shrink-0">
-          {yearLabel}바로가기
+          {yearLabel}{showRoundLabel ? '목차' : '문항'}
         </span>
-        <button
-          type="button"
-          onClick={() => setOpen(false)}
-          className="ml-auto text-[11px] text-slate-400 hover:text-slate-600 px-1"
-        >
-          접기
-        </button>
+        <span className="text-[11px] text-slate-600 truncate flex-1 tabular-nums">
+          {currentPositionLabel} · {progressNumerator}/{exams.length} {progressLabel}
+        </span>
+        <span className="text-[10px] text-slate-400 shrink-0 tabular-nums whitespace-nowrap">
+          {pastExamResults ? `채점 ${gradedCount}` : `풀이 ${answeredCount} · 미풀이 ${unansweredCount}`}
+        </span>
       </div>
+
+      <div className="flex items-center gap-3 px-1 text-[9px] text-slate-400">
+        <span className="inline-flex items-center gap-1">
+          <span className="w-2.5 h-2.5 rounded-sm border-2 border-indigo-300 bg-white" aria-hidden />
+          미풀이
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <span className="w-2.5 h-2.5 rounded-sm bg-green-500" aria-hidden />
+          정답
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <span className="w-2.5 h-2.5 rounded-sm bg-red-400" aria-hidden />
+          오답
+        </span>
+      </div>
+
       <div
-        className="flex gap-0.5 overflow-x-auto overscroll-x-contain pb-0.5 -mx-0.5 px-0.5 snap-x snap-mandatory"
+        className="flex gap-1 overflow-x-auto overscroll-x-contain pb-0.5 -mx-0.5 px-0.5 snap-x snap-mandatory"
         role="list"
       >
         {exams.map(e => {
-          const isCurrent = e.question_no === currentQuestionNo
-          const pastRec = pastExamResults?.[e.id]
-          const rec = progress[e.id]
-          let statusClass = 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-          if (pastRec) {
-            statusClass = pastRec.questionCorrect
-              ? 'bg-green-50 text-green-700 border-green-200'
-              : 'bg-red-50 text-red-700 border-red-200'
-          } else if (rec?.answered) {
-            statusClass = rec.correct
-              ? 'bg-green-50 text-green-700 border-green-200'
-              : 'bg-red-50 text-red-700 border-red-200'
+          const isCurrent = e.id === currentExamId
+          const status = getQuestionStatus(e)
+          let statusClass = 'bg-white text-slate-700 border-2 border-indigo-200 hover:border-indigo-400'
+          if (status === 'correct') {
+            statusClass = 'bg-green-100 text-green-800 border-green-300 hover:bg-green-200'
+          } else if (status === 'wrong') {
+            statusClass = 'bg-red-100 text-red-800 border-red-300 hover:bg-red-200'
           }
           if (isCurrent) {
-            statusClass = 'bg-slate-800 text-white border-slate-800'
+            statusClass = 'bg-slate-800 text-white border-slate-800 ring-2 ring-offset-1 ring-slate-400'
           }
+          const roundLabel = `${e.round}회`
+          const ariaDetail = showRoundLabel
+            ? `${e.year}년 제${e.round}회 ${e.question_no}번`
+            : `${e.question_no}번`
           return (
             <button
               key={e.id}
               type="button"
               role="listitem"
-              onClick={() => {
-                onJump(e.question_no)
-              }}
+              onClick={() => onJump(e.id)}
               ref={isCurrent ? currentBtnRef : undefined}
-              aria-label={`${e.question_no}번으로 이동`}
+              aria-label={`${ariaDetail}${status === 'unanswered' ? ' 미풀이' : status === 'correct' ? ' 정답' : ' 오답'}`}
               aria-current={isCurrent ? 'true' : undefined}
-              className={`snap-center shrink-0 h-7 min-w-[1.75rem] rounded-md border text-[11px] font-semibold transition-colors ${statusClass}`}
+              className={`relative snap-center shrink-0 min-w-[2.25rem] rounded-md border text-[11px] font-semibold transition-colors flex flex-col items-center justify-center gap-0.5 py-1 ${
+                showRoundLabel ? 'min-h-[2.75rem]' : 'h-8'
+              } ${statusClass}`}
             >
-              {e.question_no}
+              {showRoundLabel && (
+                <span
+                  className={`text-[8px] font-medium leading-none tabular-nums ${
+                    isCurrent ? 'text-white/85' : 'opacity-80'
+                  }`}
+                >
+                  {roundLabel}
+                </span>
+              )}
+              <span className="leading-none tabular-nums">{e.question_no}</span>
+              {status !== 'unanswered' && !isCurrent && (
+                <span
+                  className={`absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full border border-white ${
+                    status === 'correct' ? 'bg-green-500' : 'bg-red-500'
+                  }`}
+                  aria-hidden
+                />
+              )}
             </button>
           )
         })}

@@ -8,7 +8,7 @@
     "question_type": "wrong",
     "correct_choice": 2,
     "category": "법률행위",
-    "subcategory": "반사회·불공정",
+    "subcategory": "착오·사기·강박",
     "items": [
       {
         "key": "1",
@@ -48,7 +48,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ②입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 4
   },
   {
     "id": "민법-2025-Q42",
@@ -116,7 +117,8 @@
       }
     ],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 3
   },
   {
     "id": "민법-2025-Q43",
@@ -167,7 +169,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ①입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 8
   },
   {
     "id": "민법-2025-Q44",
@@ -218,7 +221,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 7
   },
   {
     "id": "민법-2025-Q45",
@@ -269,7 +273,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 5
   },
   {
     "id": "민법-2025-Q46",
@@ -320,7 +325,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ①입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 1
   },
   {
     "id": "민법-2025-Q47",
@@ -371,7 +377,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ②입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 2
   },
   {
     "id": "민법-2025-Q48",
@@ -422,7 +429,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 6
   },
   {
     "id": "민법-2025-Q49",
@@ -473,7 +481,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 5
   },
   {
     "id": "민법-2025-Q50",
@@ -541,7 +550,8 @@
       }
     ],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 1
   },
   {
     "id": "민법-2025-Q51",
@@ -609,7 +619,8 @@
       }
     ],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 10
   },
   {
     "id": "민법-2025-Q52",
@@ -660,7 +671,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ②입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 9
   },
   {
     "id": "민법-2025-Q53",
@@ -670,8 +682,8 @@
     "stem": "권리의 객체가 토지인 경우, 그 토지를 점유할 권리가 인정되지 않는 물권을 모두 고른 것은?",
     "question_type": "composite",
     "correct_choice": 1,
-    "category": "용익물권",
-    "subcategory": "지상권",
+    "category": "권리의변동",
+    "subcategory": "권리의변동",
     "items": [
       {
         "key": "ㄱ",
@@ -728,7 +740,8 @@
       }
     ],
     "explanation_summary": "정답은 ①입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 15
   },
   {
     "id": "민법-2025-Q54",
@@ -779,7 +792,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 14
   },
   {
     "id": "민법-2025-Q55",
@@ -830,7 +844,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 10
   },
   {
     "id": "민법-2025-Q56",
@@ -881,7 +896,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 14
   },
   {
     "id": "민법-2025-Q57",
@@ -891,8 +907,8 @@
     "stem": "등기 없이도 물권변동의 효력이 생기는 사유가 아닌 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 3,
-    "category": "물권총칙",
-    "subcategory": "물권법정주의",
+    "category": "소유권",
+    "subcategory": "소유권·공유",
     "items": [
       {
         "key": "1",
@@ -932,7 +948,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 14
   },
   {
     "id": "민법-2025-Q58",
@@ -983,7 +1000,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ①입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 10
   },
   {
     "id": "민법-2025-Q59",
@@ -1034,7 +1052,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ②입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 15
   },
   {
     "id": "민법-2025-Q60",
@@ -1085,7 +1104,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 16
   },
   {
     "id": "민법-2025-Q61",
@@ -1136,7 +1156,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 15
   },
   {
     "id": "민법-2025-Q62",
@@ -1146,8 +1167,8 @@
     "stem": "저당권에 관한 설명으로 틀린 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 4,
-    "category": "법률행위",
-    "subcategory": "착오·사기·강박",
+    "category": "저당권",
+    "subcategory": "저당권",
     "items": [
       {
         "key": "1",
@@ -1187,7 +1208,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 19
   },
   {
     "id": "민법-2025-Q63",
@@ -1238,7 +1260,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ②입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 19
   },
   {
     "id": "민법-2025-Q64",
@@ -1289,7 +1312,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 17
   },
   {
     "id": "민법-2025-Q65",
@@ -1299,8 +1323,8 @@
     "stem": "甲은 자신의 토지를 乙에게 매도하고 중도금까지 수령하였으나 그 토지가 재결수용되어 乙에게 소유권을 이전할 수 없게 되었다. 이에 관한 설명으로 옳은 것을 모두 고른 것은? (다툼이 있으면 판례에 따름)",
     "question_type": "composite",
     "correct_choice": 1,
-    "category": "소유권",
-    "subcategory": "소유권·공유",
+    "category": "계약총론",
+    "subcategory": "계약해제",
     "items": [
       {
         "key": "ㄱ",
@@ -1357,7 +1381,8 @@
       }
     ],
     "explanation_summary": "정답은 ①입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 23
   },
   {
     "id": "민법-2025-Q66",
@@ -1408,7 +1433,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 1
   },
   {
     "id": "민법-2025-Q67",
@@ -1418,8 +1444,8 @@
     "stem": "동시이행관계가 인정되지 않는 것을 모두 고른 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "composite",
     "correct_choice": 5,
-    "category": "임대차",
-    "subcategory": "임대차",
+    "category": "민사특별법",
+    "subcategory": "상가건물임대차보호법",
     "items": [
       {
         "key": "ㄱ",
@@ -1476,7 +1502,8 @@
       }
     ],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 28
   },
   {
     "id": "민법-2025-Q68",
@@ -1486,8 +1513,8 @@
     "stem": "부동산 매매계약이 합의해제된 경우에 관한 설명으로 틀린 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 4,
-    "category": "법률행위",
-    "subcategory": "의사표시",
+    "category": "물권변동",
+    "subcategory": "등기",
     "items": [
       {
         "key": "1",
@@ -1527,7 +1554,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 10
   },
   {
     "id": "민법-2025-Q69",
@@ -1595,7 +1623,8 @@
       }
     ],
     "explanation_summary": "정답은 ①입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 4
   },
   {
     "id": "민법-2025-Q70",
@@ -1646,7 +1675,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ④입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 24
   },
   {
     "id": "민법-2025-Q71",
@@ -1656,8 +1686,8 @@
     "stem": "甲은 자기 소유의 X토지와 乙 소유의 Y건물을 교환하자고 청약하였고, 乙이 승낙하였다. 이에 관한 설명으로 옳은 것을 모두 고른 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "composite",
     "correct_choice": 5,
-    "category": "계약총론",
-    "subcategory": "청약·승낙",
+    "category": "교환",
+    "subcategory": "교환",
     "items": [
       {
         "key": "ㄱ",
@@ -1782,7 +1812,8 @@
       }
     ],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 26
   },
   {
     "id": "민법-2025-Q73",
@@ -1850,7 +1881,8 @@
       }
     ],
     "explanation_summary": "정답은 ②입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 26
   },
   {
     "id": "민법-2025-Q74",
@@ -1901,7 +1933,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ②입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 26
   },
   {
     "id": "민법-2025-Q75",
@@ -1911,8 +1944,8 @@
     "stem": "甲이 2023. 6. 1. 乙로부터 乙 소유의 X주택을 보증금 2억 원, 기간은 1년으로 정하여 임차하는 계약을 체결한 경우, 주택임대차보호법에 관한 설명으로 옳은 것을 모두 고른 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "composite",
     "correct_choice": 5,
-    "category": "민사특별법",
-    "subcategory": "주택임대차보호법",
+    "category": "임대차",
+    "subcategory": "임대차",
     "items": [
       {
         "key": "ㄱ",
@@ -1969,7 +2002,8 @@
       }
     ],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 26
   },
   {
     "id": "민법-2025-Q76",
@@ -2020,7 +2054,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ②입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 29
   },
   {
     "id": "민법-2025-Q77",
@@ -2088,7 +2123,8 @@
       }
     ],
     "explanation_summary": "정답은 ③입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 31
   },
   {
     "id": "민법-2025-Q78",
@@ -2098,8 +2134,8 @@
     "stem": "甲은 2022. 7. 1. 자신의 X토지에 관하여 乙과 유효한 명의신탁약정을 체결하고, 乙 명의로 소유권이전등기를 마쳤다. 이에 관한 설명으로 틀린 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "wrong",
     "correct_choice": 5,
-    "category": "물권변동",
-    "subcategory": "등기",
+    "category": "민사특별법",
+    "subcategory": "명의신탁",
     "items": [
       {
         "key": "1",
@@ -2139,7 +2175,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ⑤입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 30
   },
   {
     "id": "민법-2025-Q79",
@@ -2149,8 +2186,8 @@
     "stem": "甲이 그 소유의 X토지에 관하여 2025. 5. 3. 친구 乙과의 명의신탁약정에 따라 乙 명의로 소유권이전등기를 마쳤다. 이에 관한 설명으로 옳은 것은?(다툼이 있으면 판례에 따름)",
     "question_type": "correct",
     "correct_choice": 1,
-    "category": "물권변동",
-    "subcategory": "등기",
+    "category": "민사특별법",
+    "subcategory": "명의신탁",
     "items": [
       {
         "key": "1",
@@ -2190,7 +2227,8 @@
     ],
     "combo_choices": [],
     "explanation_summary": "정답은 ①입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 30
   },
   {
     "id": "민법-2025-Q80",
@@ -2258,6 +2296,7 @@
       }
     ],
     "explanation_summary": "정답은 ②입니다.",
-    "source": "제36회 1차 1교시"
+    "source": "제36회 1차 1교시",
+    "textbook_order": 26
   }
 ]
