@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import {
   buildPost,
@@ -16,6 +16,12 @@ import {
   PostTitleBadges,
   WriteExtrasEditor,
 } from './CommunityPostExtras'
+import CommunityRichEditor, {
+  getContentPlainText,
+  getContentTextLength,
+} from './CommunityRichEditor'
+import { resolveCommunityAdmin } from '../data/communityAdmin'
+import { hasRichHtml, sanitizePostHtml } from '../utils/communityRichText'
 
 const TABS = [
   { id: 'all', label: '전체글' },
@@ -87,7 +93,7 @@ function PillToggle({ active, children, onClick }) {
   )
 }
 
-function WriteForm({ authorLabel, onSubmit, onCancel }) {
+function WriteForm({ authorLabel, onSubmit, onCancel, canPostNotice = false }) {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [extras, setExtras] = useState(EMPTY_EXTRAS)
@@ -96,11 +102,19 @@ function WriteForm({ authorLabel, onSubmit, onCancel }) {
   const [visibility, setVisibility] = useState('public')
   const [isNotice, setIsNotice] = useState(false)
   const [error, setError] = useState('')
+  const editorRef = useRef(null)
+
+  const syncEditor = () => {
+    const el = editorRef.current
+    if (!el) return
+    const html = el.innerHTML
+    setContent(html === '<br>' ? '' : html)
+  }
 
   const handleSubmit = e => {
     e.preventDefault()
     const t = title.trim()
-    const c = content.trim()
+    const c = getContentPlainText(content)
     const nick = nickname.trim() || '익명'
     const poll = extras.poll
     const pollValid =
@@ -112,7 +126,7 @@ function WriteForm({ authorLabel, onSubmit, onCancel }) {
       return
     }
     if ((!c || c.length < 2) && !hasExtrasContent(extras)) {
-      setError('내용을 2자 이상 입력하거나 사진·투표·YouTube를 추가하세요.')
+      setError('내용을 2자 이상 입력하거나 사진·투표를 추가하세요.')
       return
     }
     if (poll && poll.question.trim() && !pollValid) {
@@ -126,7 +140,7 @@ function WriteForm({ authorLabel, onSubmit, onCancel }) {
         content: c,
         nickname: nick,
         visibility,
-        isNotice,
+        isNotice: canPostNotice && isNotice,
         isConcept: false,
         extras: {
           ...extras,
@@ -191,17 +205,17 @@ function WriteForm({ authorLabel, onSubmit, onCancel }) {
 
         <label className="block text-sm font-medium text-slate-600 mb-1.5">내용</label>
         <div className="rounded-xl border border-slate-200 overflow-hidden mb-2">
-          <WriteExtrasEditor extras={extras} onChange={setExtras} />
-          <textarea
+          <WriteExtrasEditor extras={extras} onChange={setExtras} editorRef={editorRef} onEditorSync={syncEditor} />
+          <CommunityRichEditor
             value={content}
-            onChange={e => setContent(e.target.value)}
+            onChange={setContent}
+            editorRef={editorRef}
             maxLength={8000}
-            rows={14}
-            placeholder="내용을 입력하세요..."
-            className="w-full px-4 py-3 text-sm text-slate-800 leading-relaxed resize-y min-h-[220px] focus:outline-none"
           />
         </div>
-        <p className="text-[11px] text-slate-400 text-right tabular-nums mb-6">{content.length} / 8000</p>
+        <p className="text-[11px] text-slate-400 text-right tabular-nums mb-6">
+          {getContentTextLength(content)} / 8000
+        </p>
 
         <div className="flex flex-wrap items-center gap-4 mb-2">
           <span className="text-sm font-medium text-slate-600 shrink-0">공개</span>
@@ -218,15 +232,17 @@ function WriteForm({ authorLabel, onSubmit, onCancel }) {
           </div>
         </div>
 
-        <label className="inline-flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={isNotice}
-            onChange={e => setIsNotice(e.target.checked)}
-            className="rounded border-slate-300 text-lime-600 focus:ring-lime-400"
-          />
-          공지 등록
-        </label>
+        {canPostNotice && (
+          <label className="inline-flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={isNotice}
+              onChange={e => setIsNotice(e.target.checked)}
+              className="rounded border-slate-300 text-lime-600 focus:ring-lime-400"
+            />
+            공지 등록
+          </label>
+        )}
 
         {error && <p className="text-sm text-red-600 font-medium mt-4">{error}</p>}
       </div>
@@ -273,7 +289,14 @@ function PostDetail({ post, user, onBack, onDelete, onLike, canDelete }) {
           <span>추천 {post.likeCount}</span>
         </div>
         {post.content && (
-          <p className="mt-6 text-sm text-slate-800 leading-relaxed whitespace-pre-wrap">{post.content}</p>
+          <div
+            className={`mt-6 text-sm text-slate-800 leading-relaxed ${
+              hasRichHtml(post.content) ? 'community-post-body' : 'whitespace-pre-wrap'
+            }`}
+            {...(hasRichHtml(post.content)
+              ? { dangerouslySetInnerHTML: { __html: sanitizePostHtml(post.content) } }
+              : { children: post.content })}
+          />
         )}
         <PostExtrasContent post={post} user={user} onMetaChange={onLike} />
       </article>
@@ -321,6 +344,7 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
   const [page, setPage] = useState(1)
   const [metaTick, setMetaTick] = useState(0)
   const [nickname, setNickname] = useState(loadNickname)
+  const [isCommunityAdmin, setIsCommunityAdmin] = useState(false)
 
   const enriched = useMemo(() => enrichPosts(posts), [posts, metaTick])
   const myNickname = nickname.trim() || '익명'
@@ -365,6 +389,20 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
   useEffect(() => {
     setPage(1)
   }, [tab, appliedQuery, pageSize, visiblePosts.length])
+
+  useEffect(() => {
+    if (!user) {
+      setIsCommunityAdmin(false)
+      return undefined
+    }
+    let cancelled = false
+    resolveCommunityAdmin(user).then(admin => {
+      if (!cancelled) setIsCommunityAdmin(admin)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [user?.id, user?.email])
 
   const bumpMeta = () => setMetaTick(t => t + 1)
 
@@ -417,6 +455,7 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
           authorLabel={myNickname}
           onSubmit={handlePosted}
           onCancel={backToList}
+          canPostNotice={isCommunityAdmin}
         />
       </div>
     )

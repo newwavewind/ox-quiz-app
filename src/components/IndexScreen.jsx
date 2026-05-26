@@ -59,25 +59,22 @@ export default function IndexScreen({ exams, savedNotes = {}, onToggleNote }) {
       <div className="bg-white border-b border-slate-200 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <h1 className="text-lg font-bold text-slate-800">민법 용어집</h1>
-          <input
-            type="search"
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder="용어 검색 (예: 의사표시, 저당권)"
-            className="mt-3 w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
-          />
         </div>
       </div>
 
       <div className="flex-1 max-w-4xl mx-auto w-full flex flex-row min-h-0 overflow-hidden max-h-[calc(100vh-10rem)]">
         <aside className="w-[38%] min-w-[7.5rem] max-w-[11rem] sm:max-w-none sm:w-2/5 shrink-0 border-r border-slate-200 overflow-y-auto">
           <div className="px-2 sm:px-4 py-4 space-y-4">
-            {filtered.length === 0 ? (
-              <p className="text-xs sm:text-sm text-slate-400 text-center py-8">검색 결과가 없습니다.</p>
-            ) : (
-              <>
+            <div className="sticky top-0 z-10 -mx-0.5 px-0.5 pt-0 pb-2 space-y-2 bg-slate-50/95 backdrop-blur-sm border-b border-slate-100">
+              <input
+                type="search"
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                placeholder="용어 검색 (예: 의사표시, 저당권)"
+                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
+              />
+              {filtered.length > 0 && (
                 <div
-                  className="sticky top-0 z-10 -mx-0.5 px-0.5 py-1.5 mb-1 bg-slate-50/95 backdrop-blur-sm border-b border-slate-100"
                   role="navigation"
                   aria-label="초성 바로가기"
                 >
@@ -102,6 +99,12 @@ export default function IndexScreen({ exams, savedNotes = {}, onToggleNote }) {
                     })}
                   </div>
                 </div>
+              )}
+            </div>
+            {filtered.length === 0 ? (
+              <p className="text-xs sm:text-sm text-slate-400 text-center py-8">검색 결과가 없습니다.</p>
+            ) : (
+              <>
                 <div className="flex flex-col gap-1">
                   {filtered.map((entry, idx) => {
                     const active = selectedTerm === entry.term

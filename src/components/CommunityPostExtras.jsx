@@ -10,10 +10,18 @@ import {
   MAX_VIDEO_BYTES,
   MAX_VIDEOS,
   normalizeExtras,
-  parseYoutubeUrl,
   readFileAsDataUrl,
 } from '../data/communityExtras'
 import { votePoll } from '../data/communityPostMeta'
+import {
+  applyEditorColor,
+  applyEditorFont,
+  applyEditorFontSize,
+  COLOR_PRESETS,
+  execEditorCommand,
+  FONT_OPTIONS,
+  SIZE_OPTIONS,
+} from '../utils/communityRichText'
 
 function ToolbarChip({ active, children, onClick }) {
   return (
@@ -31,30 +39,138 @@ function ToolbarChip({ active, children, onClick }) {
   )
 }
 
-/** @param {{ extras: object, onChange: (e: object) => void }} props */
-export function WriteExtrasEditor({ extras, onChange }) {
+function FormatToolBtn({ active, title, children, onClick, className = '' }) {
+  return (
+    <button
+      type="button"
+      title={title}
+      onClick={onClick}
+      className={`flex items-center justify-center min-w-[2rem] h-8 px-2 rounded-lg border text-xs font-semibold transition-colors ${
+        active
+          ? 'bg-lime-100 border-lime-400 text-slate-900'
+          : 'bg-white border-slate-200 text-slate-700 hover:border-lime-400'
+      } ${className}`}
+    >
+      {children}
+    </button>
+  )
+}
+
+/** @param {{ editorRef: import('react').RefObject<HTMLElement|null>, onSync: () => void }} props */
+export function WriteFormatToolbar({ editorRef, onSync }) {
+  const run = fn => {
+    const el = editorRef?.current
+    if (!el) return
+    fn(el)
+    onSync?.()
+  }
+
+  return (
+    <div className="px-3 py-2.5 flex flex-wrap items-center gap-2">
+      <label className="flex items-center gap-1.5 text-[11px] text-slate-500 shrink-0">
+        <span className="sr-only">글꼴</span>
+        <select
+          className="h-8 rounded-lg border border-slate-200 bg-white px-2 text-xs text-slate-700"
+          defaultValue=""
+          onChange={e => {
+            const id = e.target.value
+            if (id) run(el => applyEditorFont(el, id))
+            e.target.value = ''
+          }}
+        >
+          <option value="" disabled>
+            글꼴
+          </option>
+          {FONT_OPTIONS.map(f => (
+            <option key={f.id} value={f.id}>
+              {f.label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="flex items-center gap-1.5 text-[11px] text-slate-500 shrink-0">
+        <span className="sr-only">크기</span>
+        <select
+          className="h-8 rounded-lg border border-slate-200 bg-white px-2 text-xs text-slate-700"
+          defaultValue=""
+          onChange={e => {
+            const opt = SIZE_OPTIONS.find(s => s.id === e.target.value)
+            if (opt) run(el => applyEditorFontSize(el, opt.value))
+            e.target.value = ''
+          }}
+        >
+          <option value="" disabled>
+            크기
+          </option>
+          {SIZE_OPTIONS.map(s => (
+            <option key={s.id} value={s.id}>
+              {s.label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <div className="flex items-center gap-1 shrink-0" title="글자색">
+        {COLOR_PRESETS.map(color => (
+          <button
+            key={color}
+            type="button"
+            aria-label={`색상 ${color}`}
+            onClick={() => run(el => applyEditorColor(el, color))}
+            className="w-6 h-6 rounded-full border border-slate-200 hover:scale-110 transition-transform"
+            style={{ backgroundColor: color }}
+          />
+        ))}
+        <label className="relative w-8 h-8 rounded-lg border border-slate-200 overflow-hidden cursor-pointer">
+          <span className="sr-only">직접 색 선택</span>
+          <input
+            type="color"
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            defaultValue="#0f172a"
+            onChange={e => run(el => applyEditorColor(el, e.target.value))}
+          />
+          <span className="flex items-center justify-center w-full h-full text-[10px] text-slate-500 bg-white">
+            +
+          </span>
+        </label>
+      </div>
+      <span className="w-px h-6 bg-slate-200 shrink-0" aria-hidden />
+      <FormatToolBtn title="굵게" onClick={() => run(el => execEditorCommand(el, 'bold'))}>
+        <span className="font-bold">가</span>
+      </FormatToolBtn>
+      <FormatToolBtn title="기울임" onClick={() => run(el => execEditorCommand(el, 'italic'))}>
+        <span className="italic">가</span>
+      </FormatToolBtn>
+      <FormatToolBtn title="취소선" onClick={() => run(el => execEditorCommand(el, 'strikeThrough'))}>
+        <span className="line-through">가</span>
+      </FormatToolBtn>
+    </div>
+  )
+}
+
+/** @param {{ extras: object, onChange: (e: object) => void, editorRef?: import('react').RefObject<HTMLElement|null>, onEditorSync?: () => void }} props */
+export function WriteExtrasEditor({ extras, onChange, editorRef, onEditorSync }) {
   const normalized = normalizeExtras(extras)
   const [panel, setPanel] = useState(null)
   const [mediaError, setMediaError] = useState('')
-  const [youtubeInput, setYoutubeInput] = useState('')
-  const [youtubeError, setYoutubeError] = useState('')
-  const imageInputRef = useRef(null)
-  const videoInputRef = useRef(null)
+  const mediaInputRef = useRef(null)
 
   const setExtras = next => onChange(normalizeExtras(next))
 
-  const handleFiles = async (files, type) => {
+  const handleFiles = async files => {
     setMediaError('')
     const list = [...files]
     let media = [...normalized.media]
 
     for (const file of list) {
-      if (type === 'image') {
+      const isImage = file.type.startsWith('image/')
+      const isVideo = file.type.startsWith('video/')
+      if (!isImage && !isVideo) continue
+
+      if (isImage) {
         if (media.filter(m => m.type === 'image').length >= MAX_IMAGES) {
           setMediaError(`사진은 최대 ${MAX_IMAGES}장까지입니다.`)
           break
         }
-        if (!file.type.startsWith('image/')) continue
         if (file.size > MAX_IMAGE_BYTES) {
           setMediaError('사진은 1.5MB 이하만 첨부할 수 있습니다.')
           continue
@@ -71,7 +187,6 @@ export function WriteExtrasEditor({ extras, onChange }) {
           setMediaError(`동영상은 ${MAX_VIDEOS}개까지입니다.`)
           break
         }
-        if (!file.type.startsWith('video/')) continue
         if (file.size > MAX_VIDEO_BYTES) {
           setMediaError('동영상은 8MB 이하만 첨부할 수 있습니다.')
           continue
@@ -86,7 +201,6 @@ export function WriteExtrasEditor({ extras, onChange }) {
       }
     }
     setExtras({ ...normalized, media })
-    setPanel('media')
   }
 
   const removeMedia = id => {
@@ -114,28 +228,14 @@ export function WriteExtrasEditor({ extras, onChange }) {
     updatePoll({ options: poll.options.filter((_, i) => i !== idx) })
   }
 
-  const addYoutube = () => {
-    const parsed = parseYoutubeUrl(youtubeInput)
-    if (!parsed) {
-      setYoutubeError('YouTube URL을 확인해 주세요.')
-      return
-    }
-    setYoutubeError('')
-    setExtras({ ...normalized, youtube: parsed })
-    setYoutubeInput('')
-    setPanel('youtube')
-  }
-
-  const removeYoutube = () => {
-    setExtras({ ...normalized, youtube: null })
-  }
+  const showMediaPreview = normalized.media.length > 0 || mediaError
 
   return (
     <div className="border-b border-slate-100 bg-slate-50">
       <div className="flex flex-wrap gap-2 px-3 py-2">
         <ToolbarChip
-          active={panel === 'media'}
-          onClick={() => setPanel(panel === 'media' ? null : 'media')}
+          active={normalized.media.length > 0}
+          onClick={() => mediaInputRef.current?.click()}
         >
           사진·동영상
           {normalized.media.length > 0 && ` (${normalized.media.length})`}
@@ -149,53 +249,28 @@ export function WriteExtrasEditor({ extras, onChange }) {
         >
           투표{normalized.poll?.question ? ' ✓' : ''}
         </ToolbarChip>
-        <ToolbarChip
-          active={panel === 'youtube'}
-          onClick={() => setPanel(panel === 'youtube' ? null : 'youtube')}
-        >
-          YouTube{normalized.youtube ? ' ✓' : ''}
-        </ToolbarChip>
         <input
-          ref={imageInputRef}
+          ref={mediaInputRef}
           type="file"
-          accept="image/*"
+          accept="image/*,video/*"
           multiple
           className="hidden"
           onChange={e => {
-            handleFiles(e.target.files, 'image')
-            e.target.value = ''
-          }}
-        />
-        <input
-          ref={videoInputRef}
-          type="file"
-          accept="video/*"
-          className="hidden"
-          onChange={e => {
-            handleFiles(e.target.files, 'video')
+            handleFiles(e.target.files)
             e.target.value = ''
           }}
         />
       </div>
 
-      {panel === 'media' && (
+      {editorRef && onEditorSync && (
+        <>
+          <div className="border-t border-slate-200" role="separator" />
+          <WriteFormatToolbar editorRef={editorRef} onSync={onEditorSync} />
+        </>
+      )}
+
+      {showMediaPreview && (
         <div className="px-3 pb-3 space-y-2">
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => imageInputRef.current?.click()}
-              className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:border-lime-400"
-            >
-              사진 추가
-            </button>
-            <button
-              type="button"
-              onClick={() => videoInputRef.current?.click()}
-              className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:border-lime-400"
-            >
-              동영상 추가
-            </button>
-          </div>
           {mediaError && <p className="text-xs text-red-600">{mediaError}</p>}
           {normalized.media.length > 0 && (
             <div className="flex flex-wrap gap-2">
@@ -274,49 +349,6 @@ export function WriteExtrasEditor({ extras, onChange }) {
         </div>
       )}
 
-      {panel === 'youtube' && (
-        <div className="px-3 pb-3 space-y-2">
-          <div className="flex gap-2">
-            <input
-              type="url"
-              value={youtubeInput}
-              onChange={e => {
-                setYoutubeInput(e.target.value)
-                setYoutubeError('')
-              }}
-              placeholder="https://www.youtube.com/watch?v=..."
-              className="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm"
-            />
-            <button
-              type="button"
-              onClick={addYoutube}
-              className="shrink-0 px-4 py-2 rounded-lg bg-lime-400 text-sm font-semibold text-slate-900"
-            >
-              추가
-            </button>
-          </div>
-          {youtubeError && <p className="text-xs text-red-600">{youtubeError}</p>}
-          {normalized.youtube && (
-            <div className="flex items-center gap-3 p-2 rounded-lg bg-white border border-slate-200">
-              <img
-                src={`https://img.youtube.com/vi/${normalized.youtube.videoId}/mqdefault.jpg`}
-                alt=""
-                className="w-24 h-14 object-cover rounded"
-              />
-              <div className="flex-1 min-w-0 text-xs text-slate-600 truncate">
-                {normalized.youtube.url}
-              </div>
-              <button
-                type="button"
-                onClick={removeYoutube}
-                className="text-xs text-red-500 font-semibold"
-              >
-                삭제
-              </button>
-            </div>
-          )}
-        </div>
-      )}
     </div>
   )
 }

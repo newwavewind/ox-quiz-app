@@ -11,12 +11,14 @@ import {
   summarizePastExamResults,
 } from '../data/pastExamGrade'
 import { getRandomExamCount, isRandomStudyMode } from '../data/randomExamSet'
+import { gradeOxStudyQuestion } from '../data/loadExam'
 import { clearStudyResume, loadStudyResume, saveStudyResume } from '../data/studyResume'
 import { registerScrollToTop } from '../utils/scrollToTop'
 import AuthBar from './AuthBar'
 import PastExamQuestionBlock from './PastExamQuestionBlock'
 import PastExamScrollArrows from './PastExamScrollArrows'
 import PastExamTenRoundBar from './PastExamTenRoundBar'
+import StudySessionSummary from './StudySessionSummary'
 import { PastExamScoreSheet, QuestionNumberPrefix } from './StudyModeShared'
 import {
   loadPastExamRounds,
@@ -55,6 +57,7 @@ export default function StudyMode({
   isPastExamRetry = false,
   pastExamRetryRound = null,
   pastExamRetryKind = null,
+  onRetryWrongOnly,
   exitLabel = '홈으로',
   studyVisible = true,
   resumeStorageKey = 'default',
@@ -69,6 +72,8 @@ export default function StudyMode({
   const [collapsedItemKeys, setCollapsedItemKeys] = useState(() => new Set())
   const [showFilter, setShowFilter] = useState(false)
   const [sessionStats, setSessionStats] = useState({ correct: 0, wrong: 0 })
+  const [sessionLog, setSessionLog] = useState([])
+  const [showSessionSummary, setShowSessionSummary] = useState(false)
   const [pastExamFinalChoice, setPastExamFinalChoice] = useState(null)
   const [pastExamResults, setPastExamResults] = useState({})
   const [showPastExamScore, setShowPastExamScore] = useState(false)
@@ -84,6 +89,7 @@ export default function StudyMode({
   const pastExamEndRef = useRef(null)
   const pastExamHapticIndexRef = useRef(null)
   const scrollStudyToTopRef = useRef(() => {})
+  const sessionRecordedRef = useRef(new Set())
 
   const getStudyScrollTop = () =>
     scrollContainerRef.current?.scrollTop ?? studyScrollRef.current?.scrollTop ?? 0
@@ -155,6 +161,9 @@ export default function StudyMode({
       resetQuestionState()
     }
     // exams 참조는 progress 갱신마다 바뀌므로 의존성에서 제외 (OX 확인 직후 상태가 초기화되는 버그 방지)
+    sessionRecordedRef.current = new Set()
+    setSessionLog([])
+    setSessionStats({ correct: 0, wrong: 0 })
   }, [filter, examListKey, startExamId])
 
   useEffect(() => {
@@ -305,6 +314,56 @@ export default function StudyMode({
     setPastExamFinalChoice(null)
   }
 
+  const recordOxExamProgress = (targetExam, answers) => {
+    if (!targetExam || isPastExam || usePastExamSolveUI || !onUpdateProgress) return
+    if (sessionRecordedRef.current.has(targetExam.id)) return
+    sessionRecordedRef.current.add(targetExam.id)
+    const result = gradeOxStudyQuestion(targetExam, answers)
+    onUpdateProgress(targetExam.id, result)
+    setSessionLog(prev => [
+      ...prev,
+      {
+        examId: targetExam.id,
+        questionNo: targetExam.question_no,
+        correct: result.correct,
+      },
+    ])
+    setSessionStats(prev => ({
+      correct: prev.correct + (result.correct ? 1 : 0),
+      wrong: prev.wrong + (result.correct ? 0 : 1),
+    }))
+  }
+
+  const maybeRecordWhenAllItemsRevealed = (targetExam, nextRevealed, answers) => {
+    if (!targetExam || isPastExam || usePastExamSolveUI) return
+    const allRevealed = targetExam.items.every(item => nextRevealed.has(item.key))
+    if (allRevealed) recordOxExamProgress(targetExam, answers)
+  }
+
+  const requestExit = () => {
+    if (!usePastExamSolveUI && sessionLog.length > 0) {
+      setShowSessionSummary(true)
+      return
+    }
+    onBack()
+  }
+
+  const confirmSessionExit = () => {
+    setShowSessionSummary(false)
+    onBack()
+  }
+
+  const sessionSummary = useMemo(() => {
+    const wrongNumbers = sessionLog.filter(e => !e.correct).map(e => e.questionNo)
+    return {
+      total: sessionLog.length,
+      correct: sessionLog.filter(e => e.correct).length,
+      wrong: sessionLog.filter(e => !e.correct).length,
+      wrongNumbers,
+      wrongExamIds: sessionLog.filter(e => !e.correct).map(e => e.examId),
+    }
+  }, [sessionLog])
+
   const toggleItemDetail = (key) => {
     setCollapsedItemKeys(prev => {
       const next = new Set(prev)
@@ -337,7 +396,11 @@ export default function StudyMode({
         })
       }
     }
-    setRevealedItems(prev => new Set([...prev, key]))
+    setRevealedItems(prev => {
+      const next = new Set([...prev, key])
+      maybeRecordWhenAllItemsRevealed(exam, next, { ...userAnswers, [key]: userAnswers[key] })
+      return next
+    })
     setCollapsedItemKeys(prev => {
       if (!prev.has(key)) return prev
       const next = new Set(prev)
@@ -358,6 +421,9 @@ export default function StudyMode({
       return
     }
     setQuestionRevealed(true)
+    if (!isPastExam) {
+      recordOxExamProgress(exam, userAnswers)
+    }
   }
 
   const handleHideQuestionAnswer = () => {
@@ -385,7 +451,7 @@ export default function StudyMode({
       setShowPastExamScore(true)
       return
     }
-    onBack()
+    requestExit()
   }
 
   const handlePrev = () => {
@@ -933,7 +999,7 @@ export default function StudyMode({
                     : null)
                 || '전체 학습'
         }
-        onBack={onBack}
+        onBack={requestExit}
         onFilter={() => setShowFilter(true)}
         actionLabel={isRandomExam ? '다시뽑기' : '필터'}
         actionVariant={isRandomExam ? 'regenerate' : 'filter'}
@@ -1550,6 +1616,24 @@ export default function StudyMode({
                   )
               : undefined
           }
+        />
+      )}
+
+      {showSessionSummary && (
+        <StudySessionSummary
+          summary={sessionSummary}
+          onContinue={() => {
+            setShowSessionSummary(false)
+          }}
+          onRetryWrong={
+            onRetryWrongOnly && sessionSummary.wrongExamIds.length > 0
+              ? () => {
+                  setShowSessionSummary(false)
+                  onRetryWrongOnly(sessionSummary.wrongExamIds)
+                }
+              : undefined
+          }
+          onExit={confirmSessionExit}
         />
       )}
     </div>

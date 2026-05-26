@@ -259,4 +259,52 @@
     content-visibility: auto;
     contain-intrinsic-size: auto 600px;
   }
+
+  .community-post-body {
+    word-break: break-word;
+  }
+
+  .community-post-body img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0.75rem 0;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgb(15 23 42 / 0.08);
+  }
+
+  .community-post-body .guide-shot-caption {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    margin: 1rem 0 0.35rem;
+  }
+
+  .community-post-body strong,
+  .community-post-body b {
+    font-weight: 700;
+  }
+
+  .community-post-body em,
+  .community-post-body i {
+    font-style: italic;
+  }
+
+  .community-post-body del,
+  .community-post-body s,
+  .community-post-body strike {
+    text-decoration: line-through;
+  }
+
+  .community-rich-editor:empty::before {
+    content: attr(data-placeholder);
+    color: #94a3b8;
+    pointer-events: none;
+  }
+
+  .community-rich-editor:focus {
+    outline: none;
+  }
 }

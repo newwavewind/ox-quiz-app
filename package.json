@@ -15,7 +15,8 @@
     "pipeline:reextract": "python scripts/run_pipeline.py extract ox app",
     "import:md": "python scripts/import_md_year.py",
     "polish:2016": "python scripts/polish_2016_md.py",
-    "build:exam": "python scripts/merge_explain_chunks.py && python scripts/restore_2016_md.py && python scripts/build_exam_questions.py 2016"
+    "build:exam": "python scripts/merge_explain_chunks.py && python scripts/restore_2016_md.py && python scripts/build_exam_questions.py 2016",
+    "screenshots:guide": "node scripts/capture_guide_screenshots.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.106.2",
@@ -28,6 +29,7 @@
     "postcss": "^8.4.24",
     "tailwindcss": "^3.3.2",
     "vite": "^4.4.0",
-    "vite-plugin-pwa": "^0.17.5"
+    "vite-plugin-pwa": "^0.17.5",
+    "playwright": "^1.52.0"
   }
 }

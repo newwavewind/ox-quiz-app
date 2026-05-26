@@ -6,7 +6,7 @@ export async function loadUserState(userId) {
 
   const { data, error } = await sb
     .from('ox_user_state')
-    .select('progress, notes')
+    .select('progress, notes, past_exam_rounds')
     .eq('user_id', userId)
     .maybeSingle()
 
@@ -17,16 +17,21 @@ export async function loadUserState(userId) {
   return data
 }
 
-export async function saveUserState(userId, { progress, notes }) {
+export async function saveUserState(userId, { progress, notes, pastExamRounds }) {
   const sb = getSupabase()
   if (!sb) return false
 
-  const { error } = await sb.from('ox_user_state').upsert({
+  const payload = {
     user_id: userId,
     progress: progress ?? {},
     notes: notes ?? {},
     updated_at: new Date().toISOString(),
-  })
+  }
+  if (pastExamRounds !== undefined) {
+    payload.past_exam_rounds = pastExamRounds ?? {}
+  }
+
+  const { error } = await sb.from('ox_user_state').upsert(payload)
 
   if (error) {
     console.error('[ox] saveUserState', error)

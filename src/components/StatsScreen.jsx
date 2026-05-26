@@ -18,7 +18,7 @@ function pct(count, total) {
   return total > 0 ? Math.round((count / total) * 100) : 0
 }
 
-export default function StatsScreen({ exams, onStartStudy }) {
+export default function StatsScreen({ exams, onStartStudy, onBack }) {
   const stats = useMemo(() => buildExamStats(exams), [exams])
   const [expandedCategory, setExpandedCategory] = useState(null)
 
@@ -32,10 +32,19 @@ export default function StatsScreen({ exams, onStartStudy }) {
 
   return (
     <div className="min-h-screen bg-slate-50 pb-24">
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 py-4">
-          <h1 className="text-lg font-bold text-slate-800">기출 출제 통계</h1>
-          <p className="text-xs text-slate-500 mt-0.5">단원·소분류별 출제 빈도 · 탭하여 학습</p>
+      <div className="bg-white border-b border-slate-200 sticky top-0 z-10 pt-[env(safe-area-inset-top,0px)]">
+        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
+          {onBack && (
+            <button type="button" onClick={onBack} className="text-slate-500 hover:text-slate-800 p-1 shrink-0">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+          )}
+          <div className="flex-1 min-w-0">
+            <h1 className="text-lg font-bold text-slate-800">기출 출제 통계</h1>
+            <p className="text-xs text-slate-500 mt-0.5">단원·소분류별 출제 빈도 · 탭하여 학습</p>
+          </div>
         </div>
       </div>
 

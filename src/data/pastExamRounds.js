@@ -1,7 +1,61 @@
 const STORAGE_PREFIX = 'past_exam_rounds_v1_'
 
+/** @type {((data: Record<string, Record<number, unknown>>) => void) | null} */
+let cloudSyncCallback = null
+
+export function setPastExamRoundsSyncCallback(fn) {
+  cloudSyncCallback = fn
+}
+
 function storageKey(year) {
   return `${STORAGE_PREFIX}${year}`
+}
+
+function notifyCloudSync() {
+  if (cloudSyncCallback) cloudSyncCallback(exportAllPastExamRounds())
+}
+
+/** @param {number[] | null} years */
+export function exportAllPastExamRounds(years = null) {
+  const out = {}
+  if (years?.length) {
+    for (const year of years) {
+      const rounds = loadPastExamRounds(year)
+      if (Object.keys(rounds).length > 0) out[String(year)] = rounds
+    }
+    return out
+  }
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)
+    if (!key?.startsWith(STORAGE_PREFIX)) continue
+    const year = key.slice(STORAGE_PREFIX.length)
+    const rounds = loadPastExamRounds(Number(year))
+    if (Object.keys(rounds).length > 0) out[year] = rounds
+  }
+  return out
+}
+
+/** @param {Record<string, Record<number, unknown>> | null | undefined} cloudData */
+export function mergeCloudPastExamRounds(cloudData, years = []) {
+  if (!cloudData || typeof cloudData !== 'object') return
+  for (const year of years) {
+    const key = String(year)
+    const remote = cloudData[key]
+    if (!remote || typeof remote !== 'object') continue
+    const local = loadPastExamRounds(year)
+    const merged = { ...local }
+    for (const [roundNo, rec] of Object.entries(remote)) {
+      const n = Number(roundNo)
+      if (!rec || typeof rec !== 'object') continue
+      const localRec = merged[n]
+      const remoteAt = rec.completedAt ?? 0
+      const localAt = localRec?.completedAt ?? 0
+      if (!localRec?.completed || remoteAt >= localAt) {
+        merged[n] = rec
+      }
+    }
+    localStorage.setItem(storageKey(year), JSON.stringify({ rounds: merged }))
+  }
 }
 
 /** @returns {Record<number, { completed: boolean, questionCorrect: number, questionTotal: number, wrongCount: number, completedAt: number }>} */
@@ -35,6 +89,7 @@ export function savePastExamRoundResult(
     results,
   }
   localStorage.setItem(storageKey(year), JSON.stringify({ rounds }))
+  notifyCloudSync()
   return rounds
 }
 
@@ -42,6 +97,7 @@ export function clearPastExamRound(year, roundNo) {
   const rounds = loadPastExamRounds(year)
   delete rounds[roundNo]
   localStorage.setItem(storageKey(year), JSON.stringify({ rounds }))
+  notifyCloudSync()
   return rounds
 }
 

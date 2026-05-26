@@ -43,3 +43,20 @@ export function isExamCorrect(progress, examId) {
   const p = progress[examId]
   return Boolean(p?.answered && p?.correct)
 }
+
+/** @param {ExamQuestion} exam */
+export function gradeOxStudyQuestion(exam, userAnswers) {
+  if (!exam?.items?.length) return { answered: true, correct: false }
+  let allPicked = true
+  let allCorrect = true
+  for (const item of exam.items) {
+    const pick = userAnswers[item.key]
+    if (pick == null) {
+      allPicked = false
+      allCorrect = false
+    } else if (pick !== item.answer) {
+      allCorrect = false
+    }
+  }
+  return { answered: true, correct: allPicked && allCorrect }
+}

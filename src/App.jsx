@@ -7,6 +7,7 @@ import CommunityScreen from './components/CommunityScreen'
 import AuthBar from './components/AuthBar'
 import { useAuth } from './contexts/AuthContext'
 import { loadCommunityPosts, pickMetaFields, saveCommunityPosts } from './data/communityPosts'
+import { ensureAppGuideNotice } from './data/seedAppGuideNotice'
 import { enrichPost, removePostMeta, savePostMeta } from './data/communityPostMeta'
 import {
   deleteCommunityPost as deleteCloudPost,
@@ -17,6 +18,7 @@ import {
 import { useCloudSync } from './hooks/useCloudSync'
 import StudyMode from './components/StudyMode'
 import WrongNotes from './components/WrongNotes'
+import StatsScreen from './components/StatsScreen'
 import BottomNav from './components/BottomNav'
 import { allExams, sortExams, isExamComplete, isExamCorrect } from './data/loadExam'
 import {
@@ -58,10 +60,14 @@ function emptyStudySlot(returnScreen = 'home') {
     pastExamRound: null,
     pastExamRetryKind: null,
     startExamId: null,
+    customExams: null,
   }
 }
 
 function studySessionKey(slot) {
+  if (slot.customExams?.length) {
+    return `custom-${slot.customExams.map(e => e.id).join(',')}`
+  }
   if (slot.filter.mode === 'pastExam') {
     return `past-${slot.pastExamExams?.map(e => e.id).join(',') ?? `y${slot.filter.year}`}`
   }
@@ -72,6 +78,9 @@ function studySessionKey(slot) {
 }
 
 function buildExamsForSlot(slot, allExams, progress) {
+  if (slot.customExams?.length) {
+    return slot.customExams
+  }
   if (isRandomStudyMode(slot.filter) && slot.randomExams?.length) {
     return slot.randomExams
   }
@@ -121,9 +130,16 @@ function App() {
     }
   })
 
-  const [communityPosts, setCommunityPosts] = useState(() => loadCommunityPosts())
+  const [communityPosts, setCommunityPosts] = useState(() =>
+    ensureAppGuideNotice(loadCommunityPosts()),
+  )
 
   const [appearance, setAppearance] = useState(() => loadAppearanceSettings())
+
+  const examYears = useMemo(
+    () => [...new Set(allExams.map(e => e.year))].sort((a, b) => b - a),
+    []
+  )
 
   useCloudSync({
     user,
@@ -131,6 +147,7 @@ function App() {
     progress,
     notes,
     appearance,
+    examYears,
     setProgress,
     setNotes,
     setAppearance,
@@ -140,7 +157,7 @@ function App() {
     if (!user || !isConfigured) return undefined
     let cancelled = false
     fetchCommunityPosts().then(posts => {
-      if (!cancelled && posts) setCommunityPosts(posts)
+      if (!cancelled && posts) setCommunityPosts(ensureAppGuideNotice(posts))
     })
     return () => {
       cancelled = true
@@ -313,6 +330,7 @@ function App() {
         next.mode === 'pastExam' ? slotOverrides.pastExamExams ?? prev.pastExamExams : null
       const pastExamRound =
         next.mode === 'pastExam' ? slotOverrides.pastExamRound ?? prev.pastExamRound : null
+      const customExams = slotOverrides.customExams ?? null
       const nextSlot = {
         active: true,
         returnScreen: returnTo,
@@ -321,6 +339,7 @@ function App() {
         randomExams,
         pastExamExams,
         pastExamRound,
+        customExams,
       }
       clearStudyResume(`${slotId}:${studySessionKey(nextSlot)}`)
       return nextSlot
@@ -329,6 +348,13 @@ function App() {
     setVisibleStudySlot(slotId)
     setScreen('study')
     setTab(slotId === 'exam' ? 'exam' : 'home')
+  }
+
+  const openStudyWithExams = (examList, returnTo = 'home') => {
+    if (!examList?.length) return
+    openStudy({ ...DEFAULT_FILTER, status: 'all', sort: 'number' }, returnTo, {
+      customExams: sortExams(examList, 'number'),
+    })
   }
 
   const openRandomStudy = (count = 40) => {
@@ -479,6 +505,10 @@ function App() {
           onRegenerateRandom={
             slotId === 'exam' && isRandomStudyMode(slot.filter) ? regenerateRandomStudy : undefined
           }
+          onRetryWrongOnly={examIds => openStudyWithExams(
+            allExams.filter(e => examIds.includes(e.id)),
+            slot.returnScreen
+          )}
           exitLabel={slot.returnScreen === 'exam' ? '시험으로' : '홈으로'}
           appearance={appearance}
           onAppearanceChange={setAppearance}
@@ -489,21 +519,39 @@ function App() {
 
   if (screen === 'wrongnotes') {
     return (
-      <WrongNotes
-        exams={wrongExams}
-        progress={progress}
-        onUpdateProgress={updateProgress}
-        onBack={() => {
-          setScreen('home')
-          setTab('home')
-        }}
-      />
+      <>
+        <WrongNotes
+          exams={wrongExams}
+          allExams={allExams}
+          progress={progress}
+          onUpdateProgress={updateProgress}
+          onLogItemAttempt={logItemAttempt}
+          onClearItemAttempts={clearItemAttempts}
+          onRemoveItemAttempt={removeItemAttempt}
+          savedNotes={notes}
+          onToggleNote={toggleStudyNote}
+          onBack={() => {
+            setScreen('home')
+            setTab('home')
+          }}
+          appearance={appearance}
+          onAppearanceChange={setAppearance}
+        />
+        <BottomNav
+          active={tab}
+          onHome={() => goTab('home')}
+          onExam={() => goTab('exam')}
+          onIndex={() => goTab('index')}
+          onNotes={() => goTab('notes')}
+          onCommunity={() => goTab('community')}
+        />
+      </>
     )
   }
 
   return (
     <>
-      {!(screen === 'study' && visibleStudySlot) && (
+      {!(screen === 'study' && visibleStudySlot) && screen !== 'stats' && (
         <AuthBar appearance={appearance} onAppearanceChange={setAppearance} />
       )}
       {renderStudySlot('home')}
@@ -513,6 +561,21 @@ function App() {
           exams={allExams}
           onStartPastExam={openPastExamStudy}
           onStartRandom={openRandomStudy}
+          onOpenStats={() => {
+            setScreen('stats')
+            setTab('exam')
+          }}
+        />
+      ) : screen === 'stats' ? (
+        <StatsScreen
+          exams={allExams}
+          onBack={() => {
+            setScreen('home')
+            setTab('home')
+          }}
+          onStartStudy={({ category, subcategory }) => {
+            openStudy({ category, subcategory, year: null, examId: null }, 'home')
+          }}
         />
       ) : screen === 'index' ? (
         <IndexScreen exams={allExams} savedNotes={notes} onToggleNote={toggleStudyNote} />
@@ -535,11 +598,21 @@ function App() {
         <HomeScreen
           exams={allExams}
           progress={progress}
+          notes={notes}
+          wrongCount={wrongExams.length}
           onStartStudy={({ category, subcategory }) => {
             openStudy({ category, subcategory, year: null, examId: null }, 'home')
           }}
-          onStartStudyByYear={(year) => {
+          onStartStudyByYear={year => {
             openStudy({ category: null, year, examId: null }, 'home')
+          }}
+          onOpenWrongNotes={() => {
+            setScreen('wrongnotes')
+            setTab('home')
+          }}
+          onOpenStats={() => {
+            setScreen('stats')
+            setTab('home')
           }}
         />
       ) : null}
