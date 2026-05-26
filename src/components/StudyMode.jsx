@@ -78,6 +78,7 @@ export default function StudyMode({
   const scrollContainerRef = useRef(null)
   const studyScrollRef = useRef(null)
   const sectionRefs = useRef([])
+  const pastExamEndRef = useRef(null)
   const pastExamHapticIndexRef = useRef(null)
 
   const getStudyScrollTop = () =>
@@ -247,7 +248,10 @@ export default function StudyMode({
     const id = requestAnimationFrame(() => {
       const root = scrollContainerRef.current
       const el = sectionRefs.current[currentIndex]
-      if (root && el) root.scrollTo({ top: el.offsetTop, behavior: 'auto' })
+      if (root && el) {
+        const top = scrollOffsetInContainer(root, el)
+        root.scrollTo({ top, behavior: 'auto' })
+      }
     })
     return () => cancelAnimationFrame(id)
   }, [examListKey, isRandomExam, isPastExamYear, pastExamRound, isPastExamRetry])
@@ -375,10 +379,60 @@ export default function StudyMode({
     }
   }
 
-  const scrollPastExamContainerTo = top => {
+  const scrollOffsetInContainer = (root, el) => {
+    if (!root || !el) return 0
+    return root.scrollTop + el.getBoundingClientRect().top - root.getBoundingClientRect().top
+  }
+
+  const isPastExamScrollContainerActive = root =>
+    Boolean(root && root.scrollHeight > root.clientHeight + 2)
+
+  const scrollPastExamToTarget = (el, behavior = 'auto') => {
+    if (!el) return
     const root = scrollContainerRef.current
-    if (!root) return
-    root.scrollTo({ top, behavior: 'smooth' })
+    if (!root || !isPastExamScrollContainerActive(root)) {
+      el.scrollIntoView({ behavior, block: 'start' })
+      return
+    }
+
+    const prevSnap = root.style.scrollSnapType
+    root.style.scrollSnapType = 'none'
+    const scrollTop = Math.max(
+      0,
+      Math.min(scrollOffsetInContainer(root, el), root.scrollHeight - root.clientHeight)
+    )
+    root.scrollTo({ top: scrollTop, behavior })
+    root.scrollTop = scrollTop
+    window.setTimeout(() => {
+      root.style.scrollSnapType = prevSnap || ''
+    }, 450)
+  }
+
+  const scrollPastExamContainerTo = (top, snapTarget = null) => {
+    const root = scrollContainerRef.current
+    if (!root) return false
+    if (snapTarget) {
+      scrollPastExamToTarget(snapTarget, 'auto')
+      return true
+    }
+
+    const run = () => {
+      const prevSnap = root.style.scrollSnapType
+      root.style.scrollSnapType = 'none'
+      const scrollTop = Math.max(0, Math.min(top, root.scrollHeight - root.clientHeight))
+      if (!isPastExamScrollContainerActive(root)) {
+        root.style.scrollSnapType = prevSnap || ''
+        return
+      }
+      root.scrollTo({ top: scrollTop, behavior: 'auto' })
+      root.scrollTop = scrollTop
+      window.setTimeout(() => {
+        root.style.scrollSnapType = prevSnap || ''
+      }, 450)
+    }
+
+    requestAnimationFrame(run)
+    return true
   }
 
   const scrollPastExamSection = idx => {
@@ -388,23 +442,29 @@ export default function StudyMode({
     if (!root || !el) return
     setCurrentIndex(idx)
     pastExamHapticIndexRef.current = idx
-    scrollPastExamContainerTo(el.offsetTop)
+    scrollPastExamContainerTo(0, el)
   }
 
   const goPastExamTop = () => {
     if (exams.length === 0) return
+    const el = sectionRefs.current[0]
     setCurrentIndex(0)
     pastExamHapticIndexRef.current = 0
-    scrollPastExamContainerTo(0)
+    scrollPastExamToTarget(el, 'auto')
   }
 
   const goPastExamBottom = () => {
     const root = scrollContainerRef.current
     if (!root || exams.length === 0) return
     const lastIdx = exams.length - 1
+    const endEl = pastExamEndRef.current ?? sectionRefs.current[lastIdx]
     setCurrentIndex(lastIdx)
     pastExamHapticIndexRef.current = lastIdx
-    scrollPastExamContainerTo(root.scrollHeight)
+    if (endEl) {
+      scrollPastExamToTarget(endEl, 'auto')
+    } else {
+      scrollPastExamContainerTo(root.scrollHeight)
+    }
   }
 
   const jumpToQuestion = (questionNo) => {
@@ -592,7 +652,7 @@ export default function StudyMode({
     const roundLabel = isPastExamRetry ? pastExamRetryRound : pastExamRound
 
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col pb-bottom-nav">
+      <div className="h-[100dvh] max-h-[100dvh] min-h-0 overflow-hidden bg-slate-50 flex flex-col pb-bottom-nav">
         <TopBar
           title={pastTitle}
           onBack={() => {
@@ -638,9 +698,10 @@ export default function StudyMode({
           </div>
         ) : (
         <>
+        <div className="flex flex-1 min-h-0 justify-center overflow-hidden">
         <div
           ref={scrollContainerRef}
-          className="flex-1 min-h-0 overflow-y-auto overscroll-y-contain snap-y snap-proximity scroll-smooth"
+          className="h-full w-full max-w-2xl shrink-0 px-3 overflow-y-auto overscroll-y-contain snap-y snap-proximity scroll-smooth"
         >
           {exams.map((e, idx) => {
             const draft = pastExamDrafts[e.id] ?? { userAnswers: {}, finalChoice: null }
@@ -653,7 +714,7 @@ export default function StudyMode({
                 }}
                 className="snap-start snap-always min-h-[calc(100dvh-10.5rem)] flex flex-col justify-start"
               >
-                <div className="max-w-2xl mx-auto px-4 py-5 w-full">
+                <div className="px-2 py-5">
                   <PastExamQuestionBlock
                     exam={e}
                     finalChoice={draft.finalChoice}
@@ -669,8 +730,11 @@ export default function StudyMode({
             )
           })}
 
-          <section className="snap-start snap-always min-h-[50vh] flex items-start">
-            <div className="max-w-2xl mx-auto px-4 py-8 pb-16 w-full space-y-3">
+          <section
+            ref={pastExamEndRef}
+            className="snap-start snap-always min-h-[50vh] flex flex-col justify-start"
+          >
+            <div className="space-y-3 px-2 py-8 pb-16">
               {!pastExamAllRevealed ? (
                 <>
                   <button
@@ -681,7 +745,7 @@ export default function StudyMode({
                     정답 확인
                   </button>
                   <p className="text-center text-xs text-slate-500">
-                    스크롤하거나 오른쪽 화살표(맨 위·맨 아래)로 이동한 뒤, 「정답 확인」을 누르세요.
+                    스크롤하거나 오른쪽 아래 화살표로 이동한 뒤, 「정답 확인」을 누르세요.
                   </p>
                 </>
               ) : (
@@ -705,17 +769,12 @@ export default function StudyMode({
             </div>
           </section>
         </div>
+        </div>
         <PastExamScrollArrows
           canGoTop={exams.length > 0}
           canGoBottom={exams.length > 0}
-          rangeLabel={
-            exams.length > 0
-              ? `${exams[0].question_no}↕${exams[exams.length - 1].question_no}`
-              : null
-          }
           onGoTop={goPastExamTop}
           onGoBottom={goPastExamBottom}
-          withRoundBar={isPastExamYear && !isPastExamRetry}
         />
         </>
         )}
@@ -1530,7 +1589,7 @@ function TopBar({ title, onBack, onFilter, actionLabel = '필터', actionVariant
 
   return (
     <div className="bg-white border-b border-slate-100 sticky top-0 z-10">
-      <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
+      <div className="max-w-2xl mx-auto px-3 py-3 flex items-center gap-3">
         <button onClick={onBack} className="text-slate-500 hover:text-slate-800 p-1">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
