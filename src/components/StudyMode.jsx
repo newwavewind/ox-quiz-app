@@ -236,7 +236,39 @@ export default function StudyMode({
 
   const examListKey = useMemo(() => exams.map(e => e.id).join('|'), [exams])
 
+  const studyFilterKey = useMemo(
+    () =>
+      [
+        filter.mode,
+        filter.chapterId,
+        filter.category,
+        filter.subcategory,
+        filter.year,
+        filter.status,
+        filter.sort,
+        filter.randomCount,
+        filter.highlightTerm,
+      ].join('\0'),
+    [
+      filter.mode,
+      filter.chapterId,
+      filter.category,
+      filter.subcategory,
+      filter.year,
+      filter.status,
+      filter.sort,
+      filter.randomCount,
+      filter.highlightTerm,
+    ],
+  )
+
+  const studyInitKeyRef = useRef(null)
+
   useEffect(() => {
+    const initKey = `${resumeStorageKey}|${examListKey}|${studyFilterKey}|${startExamId ?? ''}`
+    if (studyInitKeyRef.current === initKey) return
+    studyInitKeyRef.current = initKey
+
     const saved = loadStudyResume(resumeStorageKey, examListKey)
     const isResume = saved != null && saved.currentIndex >= 0
     const useResume = isResume && !startExamId
@@ -281,7 +313,17 @@ export default function StudyMode({
     sessionAttemptRef.current = new Map()
     setSessionLog([])
     setSessionStats({ correct: 0, wrong: 0 })
-  }, [filter, examListKey, startExamId])
+  }, [
+    resumeStorageKey,
+    examListKey,
+    studyFilterKey,
+    startExamId,
+    usePastExamSolveUI,
+    isPastExamYear,
+    isPastExamRetry,
+    pastExamRetryRound,
+    filter.year,
+  ])
 
   useEffect(() => {
     if (!isPastExamRetry || !isPastExamYear || !isValidPastExamRound(pastExamRetryRound)) return
@@ -1838,13 +1880,15 @@ export default function StudyMode({
           )}
 
           {!questionRevealed ? (
-            <button
-              type="button"
-              onClick={handleRevealQuestion}
-              className="w-full bg-slate-800 text-white rounded-xl py-2.5 font-semibold text-sm hover:bg-slate-700"
-            >
-              정답 확인
-            </button>
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={handleRevealQuestion}
+                className="px-4 py-2 rounded-lg text-xs font-semibold border border-indigo-300 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors"
+              >
+                정답 확인
+              </button>
+            </div>
           ) : (
             <button
               type="button"
