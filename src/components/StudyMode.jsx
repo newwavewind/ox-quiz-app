@@ -268,7 +268,7 @@ export default function StudyMode({
                 </span>
               )}
               {isRandom40 && (
-                <span className="shrink-0 text-[11px] text-slate-500 dark:text-slate-400 whitespace-nowrap ml-3 sm:ml-5">
+                <span className="shrink-0 text-[11px] text-slate-500 dark:text-slate-400 whitespace-nowrap ml-8 sm:ml-14">
                   출제 빈도(소분류) 반영 · {exams.length}문항 랜덤 세트
                 </span>
               )}
