@@ -255,11 +255,6 @@ export default function StudyMode({
                 isRandom40 ? 'flex-nowrap overflow-x-auto overscroll-x-contain py-0.5' : 'flex-wrap'
               }`}
             >
-              {isRandom40 && (
-                <span className="shrink-0 text-[11px] text-slate-500 dark:text-slate-400 whitespace-nowrap">
-                  출제 빈도(소분류) 반영 · {exams.length}문항 랜덤 세트
-                </span>
-              )}
               <span className="shrink-0 text-xs bg-slate-200 text-slate-600 rounded-full px-3 py-1 font-medium">
                 {exam.category}
               </span>
@@ -270,6 +265,11 @@ export default function StudyMode({
                   ) : (
                     exam.subcategory
                   )}
+                </span>
+              )}
+              {isRandom40 && (
+                <span className="shrink-0 text-[11px] text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                  출제 빈도(소분류) 반영 · {exams.length}문항 랜덤 세트
                 </span>
               )}
             </div>
