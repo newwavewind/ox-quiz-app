@@ -461,6 +461,21 @@ export default function StudyMode({
     }
   }
 
+  const scrollStudyToTop = () => {
+    const inSolve =
+      isRandomExam || (isPastExamYear && (isPastExamRetry || pastExamRound != null))
+    if (inSolve && exams.length > 0) {
+      goPastExamTop()
+      return
+    }
+    const root = scrollContainerRef.current ?? studyScrollRef.current
+    if (root && root.scrollHeight > root.clientHeight + 2) {
+      root.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   const jumpToQuestion = (questionNo) => {
     const idx = indexByQuestionNo.get(questionNo)
     if (idx == null) return
@@ -607,6 +622,7 @@ export default function StudyMode({
           onFilter={() => setShowFilter(true)}
           actionLabel={isRandomExam ? '다시뽑기' : '필터'}
           actionVariant={isRandomExam ? 'regenerate' : 'filter'}
+          onScrollToTop={scrollStudyToTop}
         />
         <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
           <div className="text-5xl mb-4">🎉</div>
@@ -863,7 +879,7 @@ export default function StudyMode({
         onFilter={() => setShowFilter(true)}
         actionLabel={isRandomExam ? '다시뽑기' : '필터'}
         actionVariant={isRandomExam ? 'regenerate' : 'filter'}
-        sessionStats={sessionStats}
+        onScrollToTop={scrollStudyToTop}
       />
 
       <div className="bg-white px-4 pb-3 border-b border-slate-100 dark:bg-slate-800 dark:border-slate-700">
@@ -1575,22 +1591,48 @@ function QuestionJumpBar({ exams, currentQuestionNo, progress, pastExamResults, 
   )
 }
 
-function TopBar({ title, onBack, onFilter, actionLabel = '필터', actionVariant = 'filter' }) {
+function TopBar({
+  title,
+  onBack,
+  onFilter,
+  actionLabel = '필터',
+  actionVariant = 'filter',
+  onScrollToTop,
+}) {
   const actionClass =
     actionVariant === 'regenerate'
       ? 'top-bar-regenerate-btn'
       : 'text-xs bg-slate-100 text-slate-600 rounded-lg px-3 py-1.5 font-medium hover:bg-slate-200 border border-transparent'
 
   return (
-    <div className="bg-white border-b border-slate-100 sticky top-0 z-10">
-      <div className="max-w-2xl mx-auto px-3 py-3 flex items-center gap-3">
-        <button onClick={onBack} className="text-slate-500 hover:text-slate-800 p-1">
+    <div className="relative bg-white border-b border-slate-100 sticky top-0 z-10 pt-[env(safe-area-inset-top,0px)]">
+      {onScrollToTop ? (
+        <button
+          type="button"
+          aria-label="맨 위로"
+          onClick={onScrollToTop}
+          className="absolute inset-x-0 top-0 h-[env(safe-area-inset-top,0px)] min-h-0 z-[1]"
+        />
+      ) : null}
+      <div className="relative z-[2] max-w-2xl mx-auto px-3 py-3 flex items-center gap-3">
+        <button type="button" onClick={onBack} className="text-slate-500 hover:text-slate-800 p-1 shrink-0">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h1 className="flex-1 font-bold text-slate-800 truncate text-sm">{title}</h1>
-        <button type="button" onClick={onFilter} className={actionClass}>
+        {onScrollToTop ? (
+          <button
+            type="button"
+            onClick={onScrollToTop}
+            className="flex-1 min-w-0 text-left py-1 -my-1 touch-manipulation"
+            aria-label="맨 위로"
+          >
+            <span className="block font-bold text-slate-800 truncate text-sm">{title}</span>
+          </button>
+        ) : (
+          <h1 className="flex-1 font-bold text-slate-800 truncate text-sm">{title}</h1>
+        )}
+        <button type="button" onClick={onFilter} className={`shrink-0 ${actionClass}`}>
           {actionLabel}
         </button>
       </div>

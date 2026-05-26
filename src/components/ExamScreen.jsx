@@ -17,11 +17,16 @@ export default function ExamScreen({ exams, onStartPastExam, onStartRandom }) {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pb-bottom-nav">
-      <div className="bg-white border-b border-slate-200 dark:bg-slate-800 dark:border-slate-700 sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 py-4">
+      <div className="bg-white border-b border-slate-200 dark:bg-slate-800 dark:border-slate-700 sticky top-0 z-10 pt-[env(safe-area-inset-top,0px)]">
+        <button
+          type="button"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="block w-full max-w-2xl mx-auto px-4 py-4 text-left touch-manipulation"
+          aria-label="맨 위로"
+        >
           <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100">시험 모드</h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">회차별 기출 · 랜덤 세트</p>
-        </div>
+        </button>
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-5">
