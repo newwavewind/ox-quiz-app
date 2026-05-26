@@ -53,18 +53,14 @@ export function PastExamGradeMark({ correct }) {
   )
 }
 
-/** 지문 앞 문항 번호 — 채점 도장이 있을 때만 여백 확보 */
+/** 지문 앞 문항 번호 — 채점 도장은 번호 위에 겹쳐 표시(줄 높이 유지) */
 export function QuestionNumberPrefix({ questionNo, gradeCorrect = null }) {
-  const showMark = gradeCorrect != null
-  if (showMark) {
-    return (
-      <span className="relative inline-flex shrink-0 items-center justify-center min-w-[2.75rem] min-h-[2.25rem] mr-1 align-baseline">
-        <PastExamGradeMark correct={gradeCorrect} />
-        <span className="relative z-[1] font-bold text-slate-800 leading-none">{questionNo}.</span>
-      </span>
-    )
-  }
-  return <span className="font-bold text-slate-800">{questionNo}. </span>
+  return (
+    <span className="relative inline align-baseline font-bold text-slate-800">
+      {gradeCorrect != null && <PastExamGradeMark correct={gradeCorrect} />}
+      <span className="relative z-[1]">{questionNo}. </span>
+    </span>
+  )
 }
 
 export function PastExamScoreSheet({
