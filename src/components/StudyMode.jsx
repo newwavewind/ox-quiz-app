@@ -589,7 +589,7 @@ export default function StudyMode({
         <>
         <div
           ref={scrollContainerRef}
-          className="flex-1 min-h-0 overflow-y-auto overscroll-y-contain snap-y snap-proximity scroll-smooth pr-9 sm:pr-10"
+          className="flex-1 min-h-0 overflow-y-auto overscroll-y-contain snap-y snap-proximity scroll-smooth"
         >
           {exams.map((e, idx) => {
             const draft = pastExamDrafts[e.id] ?? { userAnswers: {}, finalChoice: null }
