@@ -48,17 +48,60 @@ const DEFAULT_FILTER = {
   randomCount: null,
 }
 
+function emptyStudySlot(returnScreen = 'home') {
+  return {
+    active: false,
+    returnScreen,
+    filter: { ...DEFAULT_FILTER },
+    randomExams: null,
+    pastExamExams: null,
+    pastExamRound: null,
+    startExamId: null,
+  }
+}
+
+function studySessionKey(slot) {
+  if (slot.filter.mode === 'pastExam') {
+    return `past-${slot.pastExamExams?.map(e => e.id).join(',') ?? `y${slot.filter.year}`}`
+  }
+  if (isRandomStudyMode(slot.filter)) {
+    return `random-${slot.filter.randomCount ?? 40}-${slot.randomExams?.map(e => e.id).join(',') ?? 'new'}`
+  }
+  return `study-${slot.filter.year ?? 'all'}-${slot.filter.category ?? ''}-${slot.filter.subcategory ?? ''}`
+}
+
+function buildExamsForSlot(slot, allExams, progress) {
+  if (isRandomStudyMode(slot.filter) && slot.randomExams?.length) {
+    return slot.randomExams
+  }
+  if (slot.filter.mode === 'pastExam' && slot.pastExamExams?.length) {
+    return slot.pastExamExams
+  }
+  let filtered = [...allExams]
+  if (slot.filter.category) {
+    filtered = filtered.filter(q => q.category === slot.filter.category)
+  }
+  if (slot.filter.subcategory) {
+    filtered = filtered.filter(q => q.subcategory === slot.filter.subcategory)
+  }
+  if (slot.filter.year) {
+    filtered = filtered.filter(q => q.year === parseInt(slot.filter.year, 10))
+  }
+  if (slot.filter.status === 'unanswered') {
+    filtered = filtered.filter(q => !isExamComplete(progress, q.id))
+  } else if (slot.filter.status === 'wrong') {
+    filtered = filtered.filter(q => isExamComplete(progress, q.id) && !isExamCorrect(progress, q.id))
+  }
+  return sortExams(filtered, slot.filter.sort)
+}
+
 function App() {
   const { user, isConfigured } = useAuth()
   const [tab, setTab] = useState('home')
   const [screen, setScreen] = useState('home')
-  const [studyReturnScreen, setStudyReturnScreen] = useState('home')
-  const [studyFilter, setStudyFilter] = useState({ ...DEFAULT_FILTER })
-  const [studyRandomExams, setStudyRandomExams] = useState(null)
-  const [studyPastExamExams, setStudyPastExamExams] = useState(null)
-  const [studyPastExamRound, setStudyPastExamRound] = useState(null)
-  const [studyStartExamId, setStudyStartExamId] = useState(null)
-  const [hasActiveStudySession, setHasActiveStudySession] = useState(false)
+  const [homeStudy, setHomeStudy] = useState(() => emptyStudySlot('home'))
+  const [examStudy, setExamStudy] = useState(() => emptyStudySlot('exam'))
+  const [visibleStudySlot, setVisibleStudySlot] = useState(null)
   const [progress, setProgress] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
@@ -242,31 +285,6 @@ function App() {
     })
   }
 
-  const getStudyExams = useMemo(() => {
-    if (isRandomStudyMode(studyFilter) && studyRandomExams?.length) {
-      return studyRandomExams
-    }
-    if (studyFilter.mode === 'pastExam' && studyPastExamExams?.length) {
-      return studyPastExamExams
-    }
-    let filtered = [...allExams]
-    if (studyFilter.category) {
-      filtered = filtered.filter(q => q.category === studyFilter.category)
-    }
-    if (studyFilter.subcategory) {
-      filtered = filtered.filter(q => q.subcategory === studyFilter.subcategory)
-    }
-    if (studyFilter.year) {
-      filtered = filtered.filter(q => q.year === parseInt(studyFilter.year, 10))
-    }
-    if (studyFilter.status === 'unanswered') {
-      filtered = filtered.filter(q => !isExamComplete(progress, q.id))
-    } else if (studyFilter.status === 'wrong') {
-      filtered = filtered.filter(q => isExamComplete(progress, q.id) && !isExamCorrect(progress, q.id))
-    }
-    return sortExams(filtered, studyFilter.sort)
-  }, [studyFilter, studyRandomExams, studyPastExamExams, progress])
-
   const wrongExams = useMemo(
     () =>
       sortExams(
@@ -276,23 +294,40 @@ function App() {
     [progress]
   )
 
-  const openStudy = (filter, returnTo = 'home') => {
+  const openStudy = (filter, returnTo = 'home', slotOverrides = {}) => {
+    const slotId = returnTo === 'exam' ? 'exam' : 'home'
+    const setSlot = slotId === 'exam' ? setExamStudy : setHomeStudy
     const { examId: startId, ...rest } = filter
     const next = { ...DEFAULT_FILTER, ...rest }
-    if (!isRandomStudyMode(next)) {
-      setStudyRandomExams(null)
-    }
     if (startId && !next.year) {
       const target = allExams.find(e => e.id === startId)
       if (target) next.year = target.year
     }
-    clearStudyResume()
-    setHasActiveStudySession(true)
-    setStudyStartExamId(startId ?? null)
-    setStudyFilter(next)
-    setStudyReturnScreen(returnTo)
+
+    setSlot(prev => {
+      const randomExams = isRandomStudyMode(next)
+        ? slotOverrides.randomExams ?? prev.randomExams
+        : null
+      const pastExamExams =
+        next.mode === 'pastExam' ? slotOverrides.pastExamExams ?? prev.pastExamExams : null
+      const pastExamRound =
+        next.mode === 'pastExam' ? slotOverrides.pastExamRound ?? prev.pastExamRound : null
+      const nextSlot = {
+        active: true,
+        returnScreen: returnTo,
+        filter: next,
+        startExamId: startId ?? null,
+        randomExams,
+        pastExamExams,
+        pastExamRound,
+      }
+      clearStudyResume(`${slotId}:${studySessionKey(nextSlot)}`)
+      return nextSlot
+    })
+
+    setVisibleStudySlot(slotId)
     setScreen('study')
-    setTab('home')
+    setTab(slotId === 'exam' ? 'exam' : 'home')
   }
 
   const openRandomStudy = (count = 40) => {
@@ -303,7 +338,6 @@ function App() {
       maxPerYear: maxPerYearForRandomCount(total),
     })
     if (set.length === 0) return
-    setStudyRandomExams(set)
     openStudy(
       {
         mode: 'random',
@@ -314,13 +348,12 @@ function App() {
         examId: null,
         status: 'all',
       },
-      'exam'
+      'exam',
+      { randomExams: set }
     )
   }
 
   const openPastExamStudy = year => {
-    setStudyPastExamExams(null)
-    setStudyPastExamRound(null)
     openStudy(
       {
         mode: 'pastExam',
@@ -331,7 +364,8 @@ function App() {
         status: 'all',
         sort: 'number',
       },
-      'exam'
+      'exam',
+      { pastExamExams: null, pastExamRound: null }
     )
   }
 
@@ -341,66 +375,121 @@ function App() {
       'number'
     )
     if (subset.length === 0) return
-    setStudyPastExamExams(subset)
-    setStudyPastExamRound(roundNo ?? null)
-    setStudyStartExamId(null)
-    setStudyFilter({
-      ...DEFAULT_FILTER,
-      mode: 'pastExam',
-      category: null,
-      subcategory: null,
-      year,
-      examId: null,
-      status: 'all',
-      sort: 'number',
-    })
-    setStudyReturnScreen('exam')
-    clearStudyResume()
-    setHasActiveStudySession(true)
+    const slot = {
+      ...emptyStudySlot('exam'),
+      active: true,
+      returnScreen: 'exam',
+      filter: {
+        ...DEFAULT_FILTER,
+        mode: 'pastExam',
+        category: null,
+        subcategory: null,
+        year,
+        examId: null,
+        status: 'all',
+        sort: 'number',
+      },
+      pastExamExams: subset,
+      pastExamRound: roundNo ?? null,
+      startExamId: null,
+    }
+    clearStudyResume(`exam:${studySessionKey(slot)}`)
+    setExamStudy(slot)
+    setVisibleStudySlot('exam')
     setScreen('study')
-    setTab('home')
+    setTab('exam')
   }
 
   const regenerateRandomStudy = () => {
-    const count = getRandomExamCount(studyFilter)
-    const total = Math.min(count, allExams.length)
-    const set = buildWeightedRandomExamSet(allExams, {
-      total,
-      maxPerYear: maxPerYearForRandomCount(total),
+    setExamStudy(prev => {
+      const count = getRandomExamCount(prev.filter)
+      const total = Math.min(count, allExams.length)
+      const set = buildWeightedRandomExamSet(allExams, {
+        total,
+        maxPerYear: maxPerYearForRandomCount(total),
+      })
+      if (set.length === 0) return prev
+      return { ...prev, randomExams: set, startExamId: null }
     })
-    if (set.length === 0) return
-    setStudyRandomExams(set)
-    setStudyStartExamId(null)
   }
 
-  const goTab = (next) => {
-    if (next === 'home' && hasActiveStudySession && studyReturnScreen !== 'exam') {
+  const exitStudy = slotId => {
+    const slot = slotId === 'exam' ? examStudy : homeStudy
+    clearStudyResume(`${slotId}:${studySessionKey(slot)}`)
+    const clearSlot = slotId === 'exam' ? setExamStudy : setHomeStudy
+    clearSlot(emptyStudySlot(slot.returnScreen))
+
+    const otherActive = slotId === 'exam' ? homeStudy.active : examStudy.active
+    if (otherActive) {
+      const otherId = slotId === 'exam' ? 'home' : 'exam'
+      setVisibleStudySlot(otherId)
+      setScreen('study')
+      setTab(otherId === 'exam' ? 'exam' : 'home')
+      return
+    }
+    setVisibleStudySlot(null)
+    setScreen(slot.returnScreen)
+    setTab(slot.returnScreen)
+  }
+
+  const goTab = next => {
+    if (next === 'home' && homeStudy.active) {
       setTab('home')
+      setVisibleStudySlot('home')
       setScreen('study')
       return
     }
-    if (next === 'exam' && hasActiveStudySession && studyReturnScreen === 'exam') {
+    if (next === 'exam' && examStudy.active) {
       setTab('exam')
+      setVisibleStudySlot('exam')
       setScreen('study')
       return
     }
+    setVisibleStudySlot(null)
     setTab(next)
     setScreen(next)
   }
 
-  const exitStudy = () => {
-    clearStudyResume()
-    setHasActiveStudySession(false)
-    setStudyStartExamId(null)
-    setStudyRandomExams(null)
-    setStudyPastExamExams(null)
-    setStudyPastExamRound(null)
-    setScreen(studyReturnScreen)
-    setTab(studyReturnScreen)
-  }
+  const renderStudySlot = slotId => {
+    const slot = slotId === 'exam' ? examStudy : homeStudy
+    if (!slot.active) return null
+    const exams = buildExamsForSlot(slot, allExams, progress)
+    const resumeKey = `${slotId}:${studySessionKey(slot)}`
+    const visible = screen === 'study' && visibleStudySlot === slotId
 
-  const keepStudyMounted = hasActiveStudySession
-  const studyVisible = screen === 'study'
+    return (
+      <div key={slotId} className={visible ? undefined : 'hidden'} aria-hidden={!visible}>
+        <StudyMode
+          studyVisible={visible}
+          resumeStorageKey={resumeKey}
+          key={resumeKey}
+          exams={exams}
+          startExamId={slot.startExamId}
+          isPastExamRetry={Boolean(slot.pastExamExams?.length)}
+          progress={progress}
+          filter={slot.filter}
+          allExams={allExams}
+          onUpdateProgress={updateProgress}
+          onLogItemAttempt={logItemAttempt}
+          onClearItemAttempts={clearItemAttempts}
+          onRemoveItemAttempt={removeItemAttempt}
+          savedNotes={notes}
+          onToggleNote={toggleStudyNote}
+          onBack={() => exitStudy(slotId)}
+          onRetryPastExamWrong={retryPastExamWrong}
+          pastExamRetryRound={slot.pastExamRound}
+          onFilterChange={next => {
+            const setSlot = slotId === 'exam' ? setExamStudy : setHomeStudy
+            setSlot(prev => ({ ...prev, filter: { ...DEFAULT_FILTER, ...next } }))
+          }}
+          onRegenerateRandom={
+            slotId === 'exam' && isRandomStudyMode(slot.filter) ? regenerateRandomStudy : undefined
+          }
+          exitLabel={slot.returnScreen === 'exam' ? '시험으로' : '홈으로'}
+        />
+      </div>
+    )
+  }
 
   if (screen === 'wrongnotes') {
     return (
@@ -419,38 +508,8 @@ function App() {
   return (
     <>
       <AuthBar appearance={appearance} onAppearanceChange={setAppearance} />
-      {keepStudyMounted && (
-        <div className={studyVisible ? undefined : 'hidden'} aria-hidden={!studyVisible}>
-          <StudyMode
-            studyVisible={studyVisible}
-            key={
-              studyFilter.mode === 'pastExam'
-                ? `past-${studyPastExamExams?.map(e => e.id).join(',') ?? `y${studyFilter.year}`}`
-                : isRandomStudyMode(studyFilter)
-                  ? `random-${studyFilter.randomCount ?? 40}-${studyRandomExams?.map(e => e.id).join(',') ?? 'new'}`
-                  : 'study'
-            }
-            exams={getStudyExams}
-            startExamId={studyStartExamId}
-            isPastExamRetry={Boolean(studyPastExamExams?.length)}
-            progress={progress}
-            filter={studyFilter}
-            allExams={allExams}
-            onUpdateProgress={updateProgress}
-            onLogItemAttempt={logItemAttempt}
-            onClearItemAttempts={clearItemAttempts}
-            onRemoveItemAttempt={removeItemAttempt}
-            savedNotes={notes}
-            onToggleNote={toggleStudyNote}
-            onBack={exitStudy}
-            onRetryPastExamWrong={retryPastExamWrong}
-            pastExamRetryRound={studyPastExamRound}
-            onFilterChange={setStudyFilter}
-            onRegenerateRandom={isRandomStudyMode(studyFilter) ? regenerateRandomStudy : undefined}
-            exitLabel={studyReturnScreen === 'exam' ? '시험으로' : '홈으로'}
-          />
-        </div>
-      )}
+      {renderStudySlot('home')}
+      {renderStudySlot('exam')}
       {screen === 'exam' ? (
         <ExamScreen
           exams={allExams}
@@ -458,12 +517,7 @@ function App() {
           onStartRandom={openRandomStudy}
         />
       ) : screen === 'index' ? (
-        <IndexScreen
-          exams={allExams}
-          onOpenQuestion={(exam, term) => {
-            openStudy({ examId: exam.id, highlightTerm: term ?? null }, 'index')
-          }}
-        />
+        <IndexScreen exams={allExams} savedNotes={notes} onToggleNote={toggleStudyNote} />
       ) : screen === 'notes' ? (
         <NotesScreen
           notes={notes}
@@ -492,7 +546,9 @@ function App() {
         />
       ) : null}
       <BottomNav
-        active={screen === 'study' ? (studyReturnScreen === 'exam' ? 'exam' : 'home') : tab}
+        active={
+          screen === 'study' && visibleStudySlot ? (visibleStudySlot === 'exam' ? 'exam' : 'home') : tab
+        }
         onHome={() => goTab('home')}
         onExam={() => goTab('exam')}
         onIndex={() => goTab('index')}

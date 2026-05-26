@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { CHOSUNG_NAV, getTermChosungKey } from '../utils/koreanChosung'
 import AiLinkButtons from './AiLinkButtons'
+import GlossaryExamModal from './GlossaryExamModal'
 import HighlightText from './HighlightText'
 import { buildGlossaryTermAiPrompt } from '../utils/aiLinks'
 import {
@@ -9,9 +10,10 @@ import {
   getTermMatchInfo,
 } from '../data/glossaryIndex'
 
-export default function IndexScreen({ exams, onOpenQuestion }) {
+export default function IndexScreen({ exams, savedNotes = {}, onToggleNote }) {
   const [query, setQuery] = useState('')
   const [selectedTerm, setSelectedTerm] = useState(null)
+  const [preview, setPreview] = useState(null)
 
   const glossary = useMemo(() => buildGlossaryIndex(exams), [exams])
 
@@ -188,7 +190,7 @@ export default function IndexScreen({ exams, onOpenQuestion }) {
                     <li key={exam.id}>
                       <button
                         type="button"
-                        onClick={() => onOpenQuestion(exam, selectedEntry.term)}
+                        onClick={() => setPreview({ exam, term: selectedEntry.term })}
                         className="w-full text-left rounded-xl border border-slate-200 bg-white p-3 hover:border-slate-400 hover:shadow-sm transition-all active:scale-[0.99]"
                       >
                         <div className="flex items-center justify-between gap-2 mb-1">
@@ -219,6 +221,16 @@ export default function IndexScreen({ exams, onOpenQuestion }) {
           </div>
         </main>
       </div>
+
+      {preview && (
+        <GlossaryExamModal
+          exam={preview.exam}
+          highlightTerm={preview.term}
+          savedNotes={savedNotes}
+          onToggleNote={onToggleNote}
+          onClose={() => setPreview(null)}
+        />
+      )}
     </div>
   )
 }

@@ -1,10 +1,10 @@
-const STORAGE_KEY = 'ox_study_resume_v1'
+const STORAGE_PREFIX = 'ox_study_resume_'
 
-export function saveStudyResume({ examListKey, currentIndex, scrollTop = 0 }) {
-  if (!examListKey) return
+export function saveStudyResume({ storageKey = 'default', examListKey, currentIndex, scrollTop = 0 }) {
+  if (!storageKey || !examListKey) return
   try {
     sessionStorage.setItem(
-      STORAGE_KEY,
+      `${STORAGE_PREFIX}${storageKey}`,
       JSON.stringify({
         examListKey,
         currentIndex,
@@ -17,10 +17,10 @@ export function saveStudyResume({ examListKey, currentIndex, scrollTop = 0 }) {
   }
 }
 
-export function loadStudyResume(examListKey) {
-  if (!examListKey) return null
+export function loadStudyResume(storageKey = 'default', examListKey) {
+  if (!storageKey || !examListKey) return null
   try {
-    const raw = sessionStorage.getItem(STORAGE_KEY)
+    const raw = sessionStorage.getItem(`${STORAGE_PREFIX}${storageKey}`)
     if (!raw) return null
     const data = JSON.parse(raw)
     if (data.examListKey !== examListKey) return null
@@ -30,9 +30,9 @@ export function loadStudyResume(examListKey) {
   }
 }
 
-export function clearStudyResume() {
+export function clearStudyResume(storageKey = 'default') {
   try {
-    sessionStorage.removeItem(STORAGE_KEY)
+    sessionStorage.removeItem(`${STORAGE_PREFIX}${storageKey}`)
   } catch {
     /* ignore */
   }

@@ -53,6 +53,7 @@ export default function StudyMode({
   pastExamRetryRound = null,
   exitLabel = '홈으로',
   studyVisible = true,
+  resumeStorageKey = 'default',
 }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [userAnswers, setUserAnswers] = useState({})
@@ -108,7 +109,7 @@ export default function StudyMode({
   const examListKey = useMemo(() => exams.map(e => e.id).join('|'), [exams])
 
   useEffect(() => {
-    const saved = loadStudyResume(examListKey)
+    const saved = loadStudyResume(resumeStorageKey, examListKey)
     const isResume = saved != null && saved.currentIndex >= 0
 
     let startIdx = 0
@@ -150,27 +151,29 @@ export default function StudyMode({
   useEffect(() => {
     if (!examListKey || exams.length === 0) return
     saveStudyResume({
+      storageKey: resumeStorageKey,
       examListKey,
       currentIndex,
       scrollTop: getStudyScrollTop(),
     })
-  }, [examListKey, currentIndex])
+  }, [resumeStorageKey, examListKey, currentIndex])
 
   useEffect(() => {
     if (studyVisible || !examListKey) return
     saveStudyResume({
+      storageKey: resumeStorageKey,
       examListKey,
       currentIndex,
       scrollTop: getStudyScrollTop(),
     })
-  }, [studyVisible, examListKey, currentIndex])
+  }, [studyVisible, resumeStorageKey, examListKey, currentIndex])
 
   useEffect(() => {
     if (!studyVisible || !examListKey) return undefined
-    const saved = loadStudyResume(examListKey)
+    const saved = loadStudyResume(resumeStorageKey, examListKey)
     if (saved) restoreStudyScroll(saved.scrollTop ?? 0, currentIndex)
     return undefined
-  }, [studyVisible, examListKey])
+  }, [studyVisible, resumeStorageKey, examListKey])
 
   useEffect(() => {
     const inSolve =
