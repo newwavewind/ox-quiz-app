@@ -12,6 +12,7 @@ import {
 } from '../data/pastExamGrade'
 import { getRandomExamCount, isRandomStudyMode } from '../data/randomExamSet'
 import { clearStudyResume, loadStudyResume, saveStudyResume } from '../data/studyResume'
+import { hapticTap } from '../utils/haptic'
 import PastExamQuestionBlock from './PastExamQuestionBlock'
 import PastExamScrollRail from './PastExamScrollRail'
 import PastExamTenRoundBar from './PastExamTenRoundBar'
@@ -77,6 +78,7 @@ export default function StudyMode({
   const scrollContainerRef = useRef(null)
   const studyScrollRef = useRef(null)
   const sectionRefs = useRef([])
+  const pastExamHapticIndexRef = useRef(null)
 
   const getStudyScrollTop = () =>
     scrollContainerRef.current?.scrollTop ?? studyScrollRef.current?.scrollTop ?? 0
@@ -211,7 +213,11 @@ export default function StudyMode({
         }
         if (best?.target) {
           const idx = Number(best.target.dataset.index)
-          if (!Number.isNaN(idx)) setCurrentIndex(idx)
+          if (!Number.isNaN(idx) && pastExamHapticIndexRef.current !== idx) {
+            if (pastExamHapticIndexRef.current != null) hapticTap('light')
+            pastExamHapticIndexRef.current = idx
+            setCurrentIndex(idx)
+          }
         }
       },
       { root, threshold: [0.25, 0.4, 0.55, 0.7] }
@@ -229,6 +235,10 @@ export default function StudyMode({
     pastExamRound,
     isPastExamRetry,
   ])
+
+  useEffect(() => {
+    pastExamHapticIndexRef.current = null
+  }, [examListKey])
 
   useEffect(() => {
     const inSolve =
@@ -367,6 +377,9 @@ export default function StudyMode({
     const idx = indexByQuestionNo.get(questionNo)
     if (idx == null) return
     setCurrentIndex(idx)
+    if (usePastExamSolveUI && pastExamHapticIndexRef.current !== idx) {
+      pastExamHapticIndexRef.current = idx
+    }
     if (isPastExam) {
       sectionRefs.current[idx]?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       return
