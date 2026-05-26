@@ -1057,6 +1057,7 @@ export default function StudyMode({
           {showQuestionJump && (
             <QuestionJumpBar
               exams={exams}
+              currentIndex={currentIndex}
               currentQuestionNo={exam.question_no}
               progress={progress}
               pastExamResults={isPastExam ? pastExamResults : null}
@@ -1655,15 +1656,25 @@ export default function StudyMode({
   )
 }
 
-function QuestionJumpBar({ exams, currentQuestionNo, progress, pastExamResults, onJump }) {
+function QuestionJumpBar({
+  exams,
+  currentIndex,
+  currentQuestionNo,
+  progress,
+  pastExamResults,
+  onJump,
+}) {
   const [open, setOpen] = useState(false)
   const currentBtnRef = useRef(null)
   const yearLabel =
     new Set(exams.map(e => e.year)).size === 1 ? `${exams[0].year}년 ` : ''
 
-  const answeredCount = pastExamResults
+  const gradedCount = pastExamResults
     ? exams.filter(e => pastExamResults[e.id]).length
-    : exams.filter(e => progress[e.id]?.answered).length
+    : 0
+  const positionNo = Math.min(Math.max(currentIndex, 0) + 1, exams.length)
+  const progressLabel = pastExamResults ? '채점' : '진행'
+  const progressNumerator = pastExamResults ? gradedCount : positionNo
 
   useEffect(() => {
     if (!open || !currentBtnRef.current) return
@@ -1682,7 +1693,7 @@ function QuestionJumpBar({ exams, currentQuestionNo, progress, pastExamResults, 
           {yearLabel}문항
         </span>
         <span className="text-[11px] text-slate-400 truncate flex-1">
-          {currentQuestionNo}번 · {answeredCount}/{exams.length}{pastExamResults ? ' 채점' : ' 풀이'}
+          {currentQuestionNo}번 · {progressNumerator}/{exams.length} {progressLabel}
         </span>
         <svg className="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
