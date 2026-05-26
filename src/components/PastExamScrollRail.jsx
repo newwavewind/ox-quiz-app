@@ -6,6 +6,7 @@ export default function PastExamScrollRail({
   pastExamResults,
   pastExamDrafts,
   onJump,
+  withRoundBar = false,
 }) {
   const activeRef = useRef(null)
 
@@ -15,12 +16,16 @@ export default function PastExamScrollRail({
 
   if (exams.length < 2) return null
 
+  const topClass = withRoundBar
+    ? 'top-[calc(env(safe-area-inset-top,0px)+16rem)]'
+    : 'top-[calc(env(safe-area-inset-top,0px)+10.5rem)]'
+
   return (
     <nav
       aria-label="문항 빠른 이동"
-      className="absolute right-0 top-1/2 z-30 -translate-y-1/2 flex max-h-[min(72dvh,calc(100%-9rem))] flex-col items-stretch py-1 pr-0.5 pointer-events-none"
+      className={`fixed right-0 z-30 flex flex-col items-stretch py-1 pr-0.5 pointer-events-none ${topClass} bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))]`}
     >
-      <div className="pointer-events-auto max-h-full overflow-y-auto overscroll-y-contain rounded-l-xl border border-r-0 border-slate-200/90 bg-white/90 py-1 pl-0.5 pr-0.5 shadow-md shadow-slate-900/5 backdrop-blur-sm dark:border-slate-600/80 dark:bg-slate-800/90">
+      <div className="pointer-events-auto min-h-0 flex-1 overflow-y-auto overscroll-y-contain rounded-l-xl border border-r-0 border-slate-200/90 bg-white/90 py-1 pl-0.5 pr-0.5 shadow-md shadow-slate-900/5 backdrop-blur-sm dark:border-slate-600/80 dark:bg-slate-800/90">
         <ul className="flex flex-col items-center gap-px">
           {exams.map((e, idx) => {
             const isCurrent = idx === currentIndex

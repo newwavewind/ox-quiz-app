@@ -586,10 +586,10 @@ export default function StudyMode({
             </p>
           </div>
         ) : (
-        <div className="relative flex-1 min-h-0">
+        <>
         <div
           ref={scrollContainerRef}
-          className="h-full overflow-y-auto overscroll-y-contain snap-y snap-proximity scroll-smooth pr-9 sm:pr-10"
+          className="flex-1 min-h-0 overflow-y-auto overscroll-y-contain snap-y snap-proximity scroll-smooth pr-9 sm:pr-10"
         >
           {exams.map((e, idx) => {
             const draft = pastExamDrafts[e.id] ?? { userAnswers: {}, finalChoice: null }
@@ -660,8 +660,9 @@ export default function StudyMode({
           pastExamResults={pastExamResults}
           pastExamDrafts={pastExamDrafts}
           onJump={jumpToQuestion}
+          withRoundBar={isPastExamYear && !isPastExamRetry}
         />
-        </div>
+        </>
         )}
 
         {showFilter && (
