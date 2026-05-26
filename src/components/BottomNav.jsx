@@ -5,6 +5,11 @@ const TABS = [
     Icon: IconStudy,
   },
   {
+    id: 'exam',
+    label: '시험',
+    Icon: IconExam,
+  },
+  {
     id: 'notes',
     label: '암기노트',
     Icon: IconNotes,
@@ -34,6 +39,18 @@ function IconStudy({ className }) {
         strokeLinecap="round"
         strokeLinejoin="round"
         d="M17.25 8.25l1.125 1.125-5.625 5.625-.5625 1.6875 1.6875-.5625 5.625-5.625Z"
+      />
+    </svg>
+  )
+}
+
+function IconExam({ className }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M9 5.25H7.5A2.25 2.25 0 0 0 5.25 7.5v11.25A2.25 2.25 0 0 0 7.5 21h9a2.25 2.25 0 0 0 2.25-2.25V7.5A2.25 2.25 0 0 0 16.5 5.25H15M9 5.25V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5v.75M9 12h6M9 15.75h4.5"
       />
     </svg>
   )
@@ -87,16 +104,17 @@ function NavTab({ id, label, Icon, active, onClick }) {
       }`}
     >
       <Icon className={`w-6 h-6 shrink-0 ${isActive ? 'stroke-[2]' : ''}`} />
-      <span className={`text-[10px] sm:text-[11px] leading-tight ${isActive ? 'font-bold' : 'font-semibold'}`}>
+      <span className={`text-[9px] sm:text-[10px] leading-tight ${isActive ? 'font-bold' : 'font-semibold'}`}>
         {label}
       </span>
     </button>
   )
 }
 
-export default function BottomNav({ active, onHome, onIndex, onNotes, onCommunity }) {
+export default function BottomNav({ active, onHome, onExam, onIndex, onNotes, onCommunity }) {
   const handlers = {
     home: onHome,
+    exam: onExam,
     notes: onNotes,
     index: onIndex,
     community: onCommunity,

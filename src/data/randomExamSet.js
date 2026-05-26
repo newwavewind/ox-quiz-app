@@ -102,8 +102,25 @@ function enforceYearCap(selected, allExams, maxPerYear) {
   return result
 }
 
+export const RANDOM_EXAM_COUNTS = [5, 10, 20, 30, 40]
+
+export function isRandomStudyMode(filter) {
+  return filter?.mode === 'random' || filter?.mode === 'random40'
+}
+
+export function getRandomExamCount(filter) {
+  if (filter?.mode === 'random40') return 40
+  return filter?.randomCount ?? 40
+}
+
+export function maxPerYearForRandomCount(count) {
+  return Math.max(1, Math.round((count / 40) * 6))
+}
+
 export function buildWeightedRandomExamSet(allExams, options = {}) {
-  const { total = 40, maxPerYear = 6, weightKey = 'subcategory' } = options
+  const total = options.total ?? 40
+  const maxPerYear = options.maxPerYear ?? maxPerYearForRandomCount(total)
+  const { weightKey = 'subcategory' } = options
   const pool = allExams.filter(Boolean)
   if (pool.length === 0) return []
 

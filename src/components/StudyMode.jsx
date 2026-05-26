@@ -4,6 +4,22 @@ import HighlightText from './HighlightText'
 import { getTermMatchInfo } from '../data/glossaryIndex'
 import { formatStudyTime, getItemAttempts } from '../data/studyHistory'
 import { makeNoteId } from '../data/studyNotes'
+import {
+  evaluatePastExamScore,
+  gradePastExamQuestion,
+  itemKeyToChoiceNo,
+  summarizePastExamResults,
+} from '../data/pastExamGrade'
+import { getRandomExamCount, isRandomStudyMode } from '../data/randomExamSet'
+import PastExamQuestionBlock from './PastExamQuestionBlock'
+import PastExamTenRoundBar from './PastExamTenRoundBar'
+import { PastExamGradeMark, PastExamScoreSheet } from './StudyModeShared'
+import {
+  loadPastExamRounds,
+  savePastExamRoundResult,
+  isValidPastExamRound,
+  getPastExamRoundBlockMessage,
+} from '../data/pastExamRounds'
 
 const CHOICE_MARKERS = ['①', '②', '③', '④', '⑤']
 
@@ -31,6 +47,10 @@ export default function StudyMode({
   onBack,
   onFilterChange,
   onRegenerateRandom,
+  onRetryPastExamWrong,
+  isPastExamRetry = false,
+  pastExamRetryRound = null,
+  exitLabel = '홈으로',
 }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [userAnswers, setUserAnswers] = useState({})
@@ -40,6 +60,23 @@ export default function StudyMode({
   const [collapsedItemKeys, setCollapsedItemKeys] = useState(() => new Set())
   const [showFilter, setShowFilter] = useState(false)
   const [sessionStats, setSessionStats] = useState({ correct: 0, wrong: 0 })
+  const [pastExamFinalChoice, setPastExamFinalChoice] = useState(null)
+  const [pastExamResults, setPastExamResults] = useState({})
+  const [showPastExamScore, setShowPastExamScore] = useState(false)
+  const [pastExamDrafts, setPastExamDrafts] = useState({})
+  const [pastExamAllRevealed, setPastExamAllRevealed] = useState(false)
+  const [pastExamRound, setPastExamRound] = useState(null)
+  const [pastExamScoreRoundNo, setPastExamScoreRoundNo] = useState(null)
+  const [pastExamRoundsData, setPastExamRoundsData] = useState({})
+  const [pastExamRoundHint, setPastExamRoundHint] = useState(null)
+  const scrollContainerRef = useRef(null)
+  const sectionRefs = useRef([])
+
+  const isRandomExam = isRandomStudyMode(filter)
+  const randomExamCount = isRandomExam ? getRandomExamCount(filter) : null
+  const isPastExamYear = filter.mode === 'pastExam'
+  const usePastExamSolveUI = isPastExamYear || isRandomExam
+  const isPastExam = isPastExamYear
 
   const years = useMemo(
     () => [...new Set(allExams.map(q => q.year))].sort((a, b) => b - a),
@@ -60,9 +97,78 @@ export default function StudyMode({
       if (idx >= 0) startIdx = idx
     }
     setCurrentIndex(startIdx)
-    resetQuestionState()
+    if (usePastExamSolveUI) {
+      setPastExamDrafts({})
+      setPastExamAllRevealed(false)
+      setPastExamResults({})
+      setShowPastExamScore(false)
+      setPastExamScoreRoundNo(null)
+      if (isPastExamYear) {
+        setPastExamRound(
+          isPastExamRetry && isValidPastExamRound(pastExamRetryRound) ? pastExamRetryRound : null
+        )
+        setPastExamRoundsData(loadPastExamRounds(filter.year))
+      } else {
+        setPastExamRound(null)
+        setPastExamRoundsData({})
+      }
+      sectionRefs.current = []
+    } else {
+      resetQuestionState()
+    }
     // exams 참조는 progress 갱신마다 바뀌므로 의존성에서 제외 (OX 확인 직후 상태가 초기화되는 버그 방지)
   }, [filter, examListKey, startExamId])
+
+  useEffect(() => {
+    const inSolve =
+      isRandomExam || (isPastExamYear && (isPastExamRetry || pastExamRound != null))
+    if (!inSolve) return undefined
+    const root = scrollContainerRef.current
+    if (!root) return undefined
+
+    const observer = new IntersectionObserver(
+      entries => {
+        let best = null
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue
+          if (!best || entry.intersectionRatio > best.intersectionRatio) best = entry
+        }
+        if (best?.target) {
+          const idx = Number(best.target.dataset.index)
+          if (!Number.isNaN(idx)) setCurrentIndex(idx)
+        }
+      },
+      { root, threshold: [0.25, 0.4, 0.55, 0.7] }
+    )
+
+    sectionRefs.current.forEach(el => {
+      if (el) observer.observe(el)
+    })
+    return () => observer.disconnect()
+  }, [
+    isRandomExam,
+    isPastExamYear,
+    examListKey,
+    pastExamAllRevealed,
+    pastExamRound,
+    isPastExamRetry,
+  ])
+
+  useEffect(() => {
+    const inSolve =
+      isRandomExam || (isPastExamYear && (isPastExamRetry || pastExamRound != null))
+    if (!inSolve) return undefined
+    const id = requestAnimationFrame(() => {
+      sectionRefs.current[currentIndex]?.scrollIntoView({ behavior: 'auto', block: 'start' })
+    })
+    return () => cancelAnimationFrame(id)
+  }, [examListKey, isRandomExam, isPastExamYear, pastExamRound, isPastExamRetry])
+
+  useEffect(() => {
+    if (!pastExamRoundHint) return undefined
+    const t = window.setTimeout(() => setPastExamRoundHint(null), 2800)
+    return () => window.clearTimeout(t)
+  }, [pastExamRoundHint])
 
   const indexByQuestionNo = useMemo(() => {
     const map = new Map()
@@ -71,9 +177,16 @@ export default function StudyMode({
   }, [exams])
 
   const showQuestionJump = exams.length > 1
-  const isRandom40 = filter.mode === 'random40'
+  const pastExamSummary = useMemo(
+    () => (usePastExamSolveUI ? summarizePastExamResults(exams, pastExamResults) : null),
+    [usePastExamSolveUI, exams, pastExamResults]
+  )
 
   const exam = exams[currentIndex]
+  const isPastExamComposite = isPastExam && exam?.question_type === 'composite'
+  const isPastExamPickOne =
+    isPastExam && (exam?.question_type === 'wrong' || exam?.question_type === 'correct')
+  const currentPastResult = exam ? pastExamResults[exam.id] : null
 
   function resetQuestionState() {
     setUserAnswers({})
@@ -81,6 +194,7 @@ export default function StudyMode({
     setQuestionRevealed(false)
     setHistoryOpenKey(null)
     setCollapsedItemKeys(new Set())
+    setPastExamFinalChoice(null)
   }
 
   const toggleItemDetail = (key) => {
@@ -93,18 +207,27 @@ export default function StudyMode({
   }
 
   const handlePick = (key, choice) => {
-    if (questionRevealed || revealedItems.has(key)) return
+    if (questionRevealed || isPastExam) return
+    if (revealedItems.has(key)) return
     setUserAnswers(prev => ({ ...prev, [key]: choice }))
   }
 
+  const handlePastExamFinalPick = (no) => {
+    if (questionRevealed || no == null) return
+    setPastExamFinalChoice(no)
+  }
+
   const handleRevealItem = (key) => {
-    if (questionRevealed || !userAnswers[key] || revealedItems.has(key)) return
-    const item = exam?.items.find(i => i.key === key)
-    if (item && onLogItemAttempt) {
-      onLogItemAttempt(exam.id, key, {
-        pick: userAnswers[key],
-        correct: userAnswers[key] === item.answer,
-      })
+    if (questionRevealed || revealedItems.has(key)) return
+    if (!isPastExam && !userAnswers[key]) return
+    if (!isPastExam) {
+      const item = exam?.items.find(i => i.key === key)
+      if (item && onLogItemAttempt) {
+        onLogItemAttempt(exam.id, key, {
+          pick: userAnswers[key],
+          correct: userAnswers[key] === item.answer,
+        })
+      }
     }
     setRevealedItems(prev => new Set([...prev, key]))
     setCollapsedItemKeys(prev => {
@@ -117,6 +240,15 @@ export default function StudyMode({
 
   const handleRevealQuestion = () => {
     if (!exam || questionRevealed) return
+    if (isPastExam) {
+      setQuestionRevealed(true)
+      setCollapsedItemKeys(new Set())
+      setPastExamResults(prev => ({
+        ...prev,
+        [exam.id]: gradePastExamQuestion(exam, userAnswers, pastExamFinalChoice),
+      }))
+      return
+    }
     setQuestionRevealed(true)
   }
 
@@ -124,13 +256,28 @@ export default function StudyMode({
     setQuestionRevealed(false)
     setRevealedItems(new Set())
     setCollapsedItemKeys(new Set())
+    if (isPastExam && exam) {
+      setPastExamFinalChoice(null)
+      setUserAnswers({})
+      setPastExamResults(prev => {
+        const next = { ...prev }
+        delete next[exam.id]
+        return next
+      })
+    }
   }
 
   const handleNext = () => {
     if (currentIndex < exams.length - 1) {
       setCurrentIndex(i => i + 1)
       resetQuestionState()
+      return
     }
+    if (isPastExam && pastExamSummary?.allGraded) {
+      setShowPastExamScore(true)
+      return
+    }
+    onBack()
   }
 
   const handlePrev = () => {
@@ -142,15 +289,143 @@ export default function StudyMode({
 
   const jumpToQuestion = (questionNo) => {
     const idx = indexByQuestionNo.get(questionNo)
-    if (idx == null || idx === currentIndex) return
+    if (idx == null) return
     setCurrentIndex(idx)
+    if (isPastExam) {
+      sectionRefs.current[idx]?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      return
+    }
+    if (idx === currentIndex) return
     resetQuestionState()
+  }
+
+  const setPastExamDraftFinal = (examId, no) => {
+    if (pastExamAllRevealed || no == null) return
+    setPastExamDrafts(prev => ({
+      ...prev,
+      [examId]: {
+        userAnswers: {},
+        ...(prev[examId] ?? {}),
+        finalChoice: no,
+      },
+    }))
+  }
+
+  const handleRevealAllPastExam = () => {
+    if (pastExamAllRevealed) return
+    const graded = {}
+    exams.forEach(e => {
+      const draft = pastExamDrafts[e.id] ?? { userAnswers: {}, finalChoice: null }
+      graded[e.id] = gradePastExamQuestion(e, draft.userAnswers, draft.finalChoice)
+    })
+
+    if (isRandomExam) {
+      setPastExamResults(graded)
+      setPastExamAllRevealed(true)
+      setPastExamScoreRoundNo(null)
+      setShowPastExamScore(true)
+      return
+    }
+
+    const roundToSave = isPastExamRetry ? pastExamRetryRound : pastExamRound
+    if (!isValidPastExamRound(roundToSave)) return
+
+    const yearExams = allExams.filter(e => e.year === parseInt(filter.year, 10))
+    const resultsToSave = isPastExamRetry
+      ? { ...(pastExamRoundsData[roundToSave]?.results ?? {}), ...graded }
+      : graded
+
+    setPastExamResults(resultsToSave)
+    setPastExamAllRevealed(true)
+    const summary = summarizePastExamResults(yearExams, resultsToSave)
+    const scoreEval = evaluatePastExamScore(summary.questionCorrect, summary.questionTotal)
+    const rounds = savePastExamRoundResult(filter.year, roundToSave, {
+      questionCorrect: summary.questionCorrect,
+      questionTotal: summary.questionTotal,
+      results: resultsToSave,
+      score: scoreEval.score,
+      passed: scoreEval.passed,
+      hasGwakjak: scoreEval.hasGwakjak,
+    })
+    setPastExamRoundsData(rounds)
+    setPastExamScoreRoundNo(roundToSave)
+    setShowPastExamScore(true)
+  }
+
+  const startPastExamRound = roundNo => {
+    if (!isValidPastExamRound(roundNo)) return
+    const existing = pastExamRoundsData[roundNo]
+    if (existing?.completed) return
+    const blockMsg = getPastExamRoundBlockMessage(roundNo, pastExamRoundsData)
+    if (blockMsg) {
+      setPastExamRoundHint(blockMsg)
+      return
+    }
+    setPastExamRound(roundNo)
+    setPastExamDrafts({})
+    setPastExamResults({})
+    setPastExamAllRevealed(false)
+    setShowPastExamScore(false)
+    setCurrentIndex(0)
+    sectionRefs.current = []
+    requestAnimationFrame(() => {
+      scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'auto' })
+    })
+  }
+
+  const viewPastExamRoundResult = roundNo => {
+    const rec = pastExamRoundsData[roundNo]
+    if (!rec?.results) return
+    setPastExamResults(rec.results)
+    setPastExamAllRevealed(true)
+    setPastExamScoreRoundNo(roundNo)
+    setShowPastExamScore(true)
+  }
+
+  const getPastExamWrongIds = (resultsById, roundNo) => {
+    const fromState = exams
+      .filter(e => resultsById[e.id] && !resultsById[e.id].questionCorrect)
+      .map(e => e.id)
+    if (fromState.length > 0) return fromState
+    const rec = pastExamRoundsData[roundNo]
+    if (!rec?.results) return []
+    return exams.filter(e => rec.results[e.id] && !rec.results[e.id].questionCorrect).map(e => e.id)
+  }
+
+  const startPastExamWrongRetry = roundNo => {
+    if (!onRetryPastExamWrong || !isValidPastExamRound(roundNo)) return
+    const resultsById =
+      Object.keys(pastExamResults).length > 0
+        ? pastExamResults
+        : pastExamRoundsData[roundNo]?.results ?? {}
+    const wrongIds = getPastExamWrongIds(resultsById, roundNo)
+    if (wrongIds.length === 0) return
+    setShowPastExamScore(false)
+    setPastExamScoreRoundNo(null)
+    onRetryPastExamWrong(wrongIds, filter.year, roundNo)
+  }
+
+  const retryPastExamRoundWrong = roundNo => startPastExamWrongRetry(roundNo)
+
+  const exitPastExamSolve = () => {
+    setPastExamRound(null)
+    setPastExamScoreRoundNo(null)
+    setPastExamDrafts({})
+    setPastExamAllRevealed(false)
+    setPastExamResults({})
+    setShowPastExamScore(false)
   }
 
   if (exams.length === 0) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col pb-bottom-nav">
-        <TopBar title="학습 모드" onBack={onBack} onFilter={() => setShowFilter(true)} />
+        <TopBar
+          title="학습 모드"
+          onBack={onBack}
+          onFilter={() => setShowFilter(true)}
+          actionLabel={isRandomExam ? '다시뽑기' : '필터'}
+          actionVariant={isRandomExam ? 'regenerate' : 'filter'}
+        />
         <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
           <div className="text-5xl mb-4">🎉</div>
           <h2 className="text-xl font-bold text-slate-800 mb-2">해당 문제가 없습니다</h2>
@@ -171,19 +446,199 @@ export default function StudyMode({
     )
   }
 
+  const highlightTerm = filter.highlightTerm
+
+  if (usePastExamSolveUI) {
+    const pastTitle = isRandomExam
+      ? `랜덤 ${randomExamCount}문제`
+      : isPastExamRetry
+        ? `오답 다시풀기 · ${filter.year}년 ${pastExamRetryRound}회독`
+        : pastExamRound != null
+          ? `${filter.year}년 · ${pastExamRound}회독`
+          : exams[0]?.round != null
+            ? `${filter.year}년 제${exams[0].round}회`
+            : `${filter.year}년 기출`
+    const inPastExamSolve = isRandomExam || isPastExamRetry || pastExamRound != null
+    const roundLabel = isPastExamRetry ? pastExamRetryRound : pastExamRound
+
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col pb-bottom-nav">
+        <TopBar
+          title={pastTitle}
+          onBack={() => {
+            if (isPastExamRetry) onBack()
+            else if (inPastExamSolve && isPastExamYear) exitPastExamSolve()
+            else onBack()
+          }}
+          onFilter={() => setShowFilter(true)}
+          actionLabel={isRandomExam ? '다시뽑기' : '필터'}
+          actionVariant={isRandomExam ? 'regenerate' : 'filter'}
+        />
+
+        {isPastExamYear && !isPastExamRetry && (
+          <PastExamTenRoundBar
+            roundsData={pastExamRoundsData}
+            activeRound={pastExamRound}
+            onStartRound={startPastExamRound}
+            onViewResult={viewPastExamRoundResult}
+            onRetryWrong={retryPastExamRoundWrong}
+          />
+        )}
+
+        {isPastExamYear && pastExamRoundHint && (
+          <div
+            role="status"
+            aria-live="polite"
+            className="fixed left-1/2 -translate-x-1/2 bottom-24 z-40 px-4 py-2.5 rounded-xl bg-slate-800/95 text-white text-sm font-semibold shadow-lg pointer-events-none"
+          >
+            {pastExamRoundHint}
+          </div>
+        )}
+
+        {isPastExamYear && !inPastExamSolve ? (
+          <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 text-center max-w-2xl mx-auto">
+            <p className="text-slate-600 text-sm leading-relaxed">
+              <span className="font-bold text-slate-800">1~5회독</span> 중 하나를 선택하면 40문항을
+              스크롤하며 풀 수 있습니다.
+            </p>
+            <p className="text-slate-500 text-xs mt-3">
+              각 회독마다 채점 결과와 오답 다시 풀기가 저장됩니다. 완료한 회독은 다시 풀 수 없습니다.
+            </p>
+          </div>
+        ) : (
+        <div
+          ref={scrollContainerRef}
+          className="flex-1 overflow-y-auto overscroll-y-contain snap-y snap-mandatory scroll-smooth"
+        >
+          {exams.map((e, idx) => {
+            const draft = pastExamDrafts[e.id] ?? { userAnswers: {}, finalChoice: null }
+            return (
+              <section
+                key={e.id}
+                data-index={idx}
+                ref={el => {
+                  sectionRefs.current[idx] = el
+                }}
+                className="snap-start snap-always min-h-[calc(100dvh-10.5rem)] flex flex-col justify-start"
+              >
+                <div className="max-w-2xl mx-auto px-4 py-5 w-full">
+                  <PastExamQuestionBlock
+                    exam={e}
+                    finalChoice={draft.finalChoice}
+                    revealed={pastExamAllRevealed}
+                    result={pastExamResults[e.id]}
+                    onFinalPick={no => setPastExamDraftFinal(e.id, no)}
+                    highlightTerm={highlightTerm}
+                  />
+                </div>
+              </section>
+            )
+          })}
+
+          <section className="snap-start snap-always min-h-[50vh] flex items-start">
+            <div className="max-w-2xl mx-auto px-4 py-8 pb-16 w-full space-y-3">
+              {!pastExamAllRevealed ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleRevealAllPastExam}
+                    className="w-full bg-slate-800 text-white rounded-xl py-4 font-bold text-base hover:bg-slate-700"
+                  >
+                    정답 확인
+                  </button>
+                  <p className="text-center text-xs text-slate-500">
+                    위·아래로 스크롤하며 풀이한 뒤, 모든 문항을 확인하고 눌러주세요.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setShowPastExamScore(true)}
+                    className="w-full bg-violet-600 text-white rounded-xl py-4 font-bold text-base hover:bg-violet-700"
+                  >
+                    채점 결과 보기
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onBack}
+                    className="w-full bg-slate-100 text-slate-700 rounded-xl py-3 font-semibold hover:bg-slate-200"
+                  >
+                    {exitLabel}
+                  </button>
+                </>
+              )}
+            </div>
+          </section>
+        </div>
+        )}
+
+        {showFilter && (
+          <FilterSheet
+            filter={filter}
+            years={years}
+            categories={categories}
+            onFilterChange={onFilterChange}
+            onClose={() => setShowFilter(false)}
+            onRegenerateRandom={isRandomExam ? onRegenerateRandom : undefined}
+          />
+        )}
+
+        {showPastExamScore && pastExamSummary && (
+          <PastExamScoreSheet
+            exams={exams}
+            results={pastExamResults}
+            summary={pastExamSummary}
+            showPassCriteria={isPastExamYear}
+            onClose={() => {
+              setShowPastExamScore(false)
+              if (
+                isPastExamYear &&
+                !isPastExamRetry &&
+                roundLabel != null &&
+                pastExamRoundsData[roundLabel]?.completed
+              ) {
+                exitPastExamSolve()
+              }
+            }}
+            onExit={() => {
+              setShowPastExamScore(false)
+              if (isPastExamRetry) onBack()
+              else if (isPastExamYear) {
+                exitPastExamSolve()
+                onBack()
+              } else {
+                onBack()
+              }
+            }}
+            onRetryWrong={
+              isPastExamYear && onRetryPastExamWrong
+                ? () => {
+                    const roundNo =
+                      pastExamScoreRoundNo ??
+                      (isPastExamRetry ? pastExamRetryRound : pastExamRound)
+                    startPastExamWrongRetry(roundNo)
+                  }
+                : undefined
+            }
+          />
+        )}
+      </div>
+    )
+  }
+
   const progressPct = ((currentIndex + 1) / exams.length) * 100
   const correctMark = exam.correct_choice
     ? CHOICE_MARKERS[exam.correct_choice - 1]
     : null
-  const highlightTerm = filter.highlightTerm
   const termMatch = highlightTerm ? getTermMatchInfo(exam, highlightTerm) : null
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col pb-bottom-nav">
       <TopBar
         title={
-          isRandom40
-            ? '랜덤 40문제'
+          isRandomExam
+            ? `랜덤 ${randomExamCount}문제`
             : filter.subcategory
               ? `${filter.category} · ${filter.subcategory}`
               : filter.category
@@ -196,6 +651,8 @@ export default function StudyMode({
         }
         onBack={onBack}
         onFilter={() => setShowFilter(true)}
+        actionLabel={isRandomExam ? '다시뽑기' : '필터'}
+        actionVariant={isRandomExam ? 'regenerate' : 'filter'}
         sessionStats={sessionStats}
       />
 
@@ -203,9 +660,14 @@ export default function StudyMode({
         <div className="flex justify-between text-xs text-slate-400 mb-1.5">
           <span>{currentIndex + 1} / {exams.length}문항</span>
           <span className="text-green-600 font-medium">
-            {sessionStats.correct > 0 || sessionStats.wrong > 0
-              ? `이번 세션 ${sessionStats.correct}정 ${sessionStats.wrong}오`
-              : ''}
+            {isPastExam && pastExamSummary
+              ? `채점 ${pastExamSummary.questionGraded}/${pastExamSummary.questionTotal}`
+                + (pastExamSummary.questionGraded > 0
+                  ? ` · ${pastExamSummary.questionCorrect}정답`
+                  : '')
+              : sessionStats.correct > 0 || sessionStats.wrong > 0
+                ? `이번 세션 ${sessionStats.correct}정 ${sessionStats.wrong}오`
+                : ''}
           </span>
         </div>
         <div className="w-full bg-slate-100 rounded-full h-1.5">
@@ -214,6 +676,15 @@ export default function StudyMode({
             style={{ width: `${progressPct}%` }}
           />
         </div>
+        {isPastExam && pastExamSummary?.allGraded && (
+          <button
+            type="button"
+            onClick={() => setShowPastExamScore(true)}
+            className="mt-2 w-full text-xs font-semibold text-violet-700 hover:text-violet-900"
+          >
+            전체 채점 결과 보기 ({pastExamSummary.questionCorrect}/{pastExamSummary.questionTotal})
+          </button>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto">
@@ -223,6 +694,7 @@ export default function StudyMode({
               exams={exams}
               currentQuestionNo={exam.question_no}
               progress={progress}
+              pastExamResults={isPastExam ? pastExamResults : null}
               onJump={jumpToQuestion}
             />
           )}
@@ -238,21 +710,27 @@ export default function StudyMode({
             </button>
             <button
               type="button"
-              onClick={currentIndex >= exams.length - 1 ? onBack : handleNext}
+              onClick={handleNext}
               className={`flex-1 rounded-xl py-2.5 font-semibold text-sm ${
                 currentIndex >= exams.length - 1
-                  ? 'bg-green-600 text-white hover:bg-green-700'
+                  ? isPastExam && pastExamSummary?.allGraded
+                    ? 'bg-violet-600 text-white hover:bg-violet-700'
+                    : 'bg-green-600 text-white hover:bg-green-700'
                   : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
               }`}
             >
-              {currentIndex >= exams.length - 1 ? '홈으로' : '다음'}
+              {currentIndex >= exams.length - 1
+                ? isPastExam && pastExamSummary?.allGraded
+                  ? '채점 결과'
+                  : exitLabel
+                : '다음'}
             </button>
           </div>
 
           <div className="flex w-full items-center gap-2 min-w-0">
             <div
               className={`flex items-center gap-2 min-w-0 flex-1 ${
-                isRandom40 ? 'flex-nowrap overflow-x-auto overscroll-x-contain py-0.5' : 'flex-wrap'
+                isRandomExam ? 'flex-nowrap overflow-x-auto overscroll-x-contain py-0.5' : 'flex-wrap'
               }`}
             >
               <span className="shrink-0 text-xs bg-slate-200 text-slate-600 rounded-full px-3 py-1 font-medium">
@@ -267,7 +745,7 @@ export default function StudyMode({
                   )}
                 </span>
               )}
-              {isRandom40 && (
+              {isRandomExam && (
                 <span className="shrink-0 text-[11px] text-slate-500 dark:text-slate-400 whitespace-nowrap ml-8 sm:ml-14">
                   출제 빈도(소분류) 반영 · {exams.length}문항 랜덤 세트
                 </span>
@@ -295,15 +773,30 @@ export default function StudyMode({
             </p>
           )}
 
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3">
+          <div className="relative bg-white border border-slate-200 rounded-2xl p-5 space-y-3">
             <p className="text-xs font-semibold text-slate-400 mb-2">지문</p>
             <p className="text-slate-800 leading-relaxed text-base font-medium whitespace-pre-wrap">
-              <span className="font-bold text-slate-800 mr-1">{exam.question_no}.</span>
+              <span className="relative inline-flex shrink-0 items-center justify-center min-w-[2.75rem] min-h-[2.25rem] mr-1 align-top -mt-0.5">
+                {isPastExam && questionRevealed && currentPastResult && (
+                  <PastExamGradeMark correct={currentPastResult.questionCorrect} />
+                )}
+                <span className="relative z-[1] font-bold text-slate-800 leading-none">
+                  {exam.question_no}.
+                </span>
+              </span>
               <HighlightText text={exam.stem} term={highlightTerm} />
             </p>
             {exam.question_type === 'composite' && exam.combo_choices?.length > 0 && (
               <p className="text-xs text-slate-500 border-t border-slate-100 pt-3">
-                아래에서 ㄱ·ㄴ·ㄷ 등 각 보기 문장의 O/X를 고른 뒤, 맨 아래 기출 선택지와 대조하세요.
+                {isPastExam
+                  ? '아래에서 기출 선택지를 고른 뒤, 맨 아래 「정답 확인」을 누르세요.'
+                  : '아래에서 ㄱ·ㄴ·ㄷ 등 각 보기 문장의 O/X를 고른 뒤, 맨 아래 기출 선택지와 대조하세요.'}
+              </p>
+            )}
+            {isPastExamPickOne && (
+              <p className="text-xs text-slate-500 border-t border-slate-100 pt-3">
+                {exam.question_type === 'wrong' ? '틀린' : '옳은'} 보기를 하나 고른 뒤, 맨 아래 「정답 확인」을
+                누르세요.
               </p>
             )}
           </div>
@@ -312,13 +805,16 @@ export default function StudyMode({
             {exam.items.map(item => {
               const picked = userAnswers[item.key]
               const oxChecked = revealedItems.has(item.key)
-              const showOxFeedback = oxChecked && !questionRevealed
-              const showAnswerKey = questionRevealed || oxChecked
+              const showOxFeedback = !isPastExam && oxChecked && !questionRevealed
+              const showAnswerKey = isPastExam ? questionRevealed : questionRevealed || oxChecked
               const isRight = showOxFeedback && picked === item.answer
               const isWrong = showOxFeedback && picked != null && picked !== item.answer
-              const canReveal = picked != null && !oxChecked && !questionRevealed
-              const controlsLocked = oxChecked || questionRevealed
-              const pickPending = picked != null && !oxChecked && !questionRevealed
+              const canReveal = !isPastExam && picked != null && !oxChecked && !questionRevealed
+              const controlsLocked = isPastExam
+                ? questionRevealed
+                : oxChecked || questionRevealed
+              const pickPending =
+                !isPastExam && picked != null && !oxChecked && !questionRevealed
               const showOHighlight =
                 (pickPending && picked === 'O')
                 || (showOxFeedback && picked === 'O')
@@ -332,6 +828,107 @@ export default function StudyMode({
               const historyOpen = historyOpenKey === item.key
               const noteSaved = Boolean(savedNotes[makeNoteId(exam.id, item.key)])
               const hasHistory = itemAttempts.length > 0
+
+              if (isPastExamPickOne) {
+                const choiceNo = itemKeyToChoiceNo(item)
+                if (choiceNo == null) return null
+                const isSelected = pastExamFinalChoice === choiceNo
+                const isExamAnswer = questionRevealed && choiceNo === exam.correct_choice
+                const pickRight = questionRevealed && isSelected && currentPastResult?.finalCorrect
+                const pickWrong = questionRevealed && isSelected && !currentPastResult?.finalCorrect
+
+                return (
+                  <button
+                    key={item.key}
+                    type="button"
+                    disabled={questionRevealed}
+                    onClick={() => handlePastExamFinalPick(choiceNo)}
+                    className={`w-full rounded-2xl border-2 p-4 text-left transition-colors ${
+                      pickRight
+                        ? 'border-green-400 bg-green-50'
+                        : pickWrong
+                          ? 'border-red-400 bg-red-50'
+                          : isExamAnswer
+                            ? 'border-slate-800 bg-slate-50'
+                            : isSelected
+                              ? 'border-2 border-indigo-500 bg-indigo-100 shadow-md ring-2 ring-indigo-200/80'
+                              : 'border-slate-200 bg-white hover:border-indigo-300 hover:bg-indigo-50/50'
+                    }`}
+                  >
+                    <div className="flex gap-2 min-w-0">
+                      <span className="flex-none text-sm font-bold text-slate-500 w-6 pt-0.5">
+                        {item.label}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-slate-800 text-sm leading-relaxed">
+                          <HighlightText text={item.text} term={highlightTerm} />
+                        </p>
+                        {!questionRevealed && isSelected && (
+                          <p className="text-xs font-bold text-indigo-700 mt-2">✓ 내가 고른 답</p>
+                        )}
+                        {questionRevealed && (
+                          <div className="mt-2 space-y-1">
+                            {isExamAnswer && (
+                              <p className="text-xs font-semibold text-slate-800">기출 정답</p>
+                            )}
+                            {isSelected && (
+                              <p
+                                className={`text-xs font-semibold ${
+                                  pickRight ? 'text-green-600' : 'text-red-600'
+                                }`}
+                              >
+                                {pickRight ? '✓ 맞았습니다' : '✗ 틀렸습니다'}
+                              </p>
+                            )}
+                            {itemExplanation && (
+                              <p className="text-xs text-slate-600 leading-relaxed pt-1">
+                                <HighlightText text={itemExplanation} term={highlightTerm} />
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                )
+              }
+
+              if (isPastExamComposite) {
+                return (
+                  <div
+                    key={item.key}
+                    className={`rounded-2xl border-2 p-4 transition-colors ${
+                      questionRevealed ? 'bg-slate-50 border-slate-200' : 'bg-white border-slate-200'
+                    }`}
+                  >
+                    <div className="flex gap-2 min-w-0">
+                      <span className="flex-none text-sm font-bold text-slate-500 w-6 pt-0.5">
+                        {item.label}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-slate-800 text-sm leading-relaxed">
+                          <HighlightText text={item.text} term={highlightTerm} />
+                        </p>
+                        {questionRevealed && (
+                          <div className="mt-2 pt-2 border-t border-slate-200/80 space-y-1">
+                            <p className="text-xs font-semibold">
+                              <span className={item.answer === 'O' ? 'text-blue-600' : 'text-red-600'}>
+                                정답 {item.answer}
+                              </span>
+                            </p>
+                            {itemExplanation && (
+                              <p className="text-xs text-slate-600 leading-relaxed">
+                                <HighlightText text={itemExplanation} term={highlightTerm} />
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )
+              }
+
               return (
                 <div
                   key={item.key}
@@ -355,47 +952,51 @@ export default function StudyMode({
                       </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-1 pl-8 sm:pl-0 sm:flex-none sm:shrink-0 sm:justify-end">
-                      <button
-                        type="button"
-                        disabled={controlsLocked}
-                        onClick={() => handlePick(item.key, 'O')}
-                        className={`ox-btn ox-btn-o ${showOHighlight ? 'ox-btn-o-active' : ''}`}
-                      >
-                        O
-                      </button>
-                      <button
-                        type="button"
-                        disabled={controlsLocked}
-                        onClick={() => handlePick(item.key, 'X')}
-                        className={`ox-btn ox-btn-x ${showXHighlight ? 'ox-btn-x-active' : ''}`}
-                      >
-                        X
-                      </button>
-                      <button
-                        type="button"
-                        disabled={!canReveal}
-                        onClick={() => handleRevealItem(item.key)}
-                        className="ox-btn-check"
-                      >
-                        OX 확인
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setHistoryOpenKey(historyOpen ? null : item.key)}
-                        className={`h-8 min-w-[2.25rem] px-1.5 rounded-md text-[10px] font-bold border transition-colors ${
-                          historyOpen
-                            ? 'border-slate-700 bg-slate-700 text-white'
-                            : hasHistory
-                              ? 'border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
-                              : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
-                        }`}
-                        title="학습 기록"
-                      >
-                        {hasHistory ? `${itemAttempts.length}회` : '기록'}
-                      </button>
+                      {!isPastExam ? (
+                        <>
+                          <button
+                            type="button"
+                            disabled={controlsLocked}
+                            onClick={() => handlePick(item.key, 'O')}
+                            className={`ox-btn ox-btn-o ${showOHighlight ? 'ox-btn-o-active' : ''}`}
+                          >
+                            O
+                          </button>
+                          <button
+                            type="button"
+                            disabled={controlsLocked}
+                            onClick={() => handlePick(item.key, 'X')}
+                            className={`ox-btn ox-btn-x ${showXHighlight ? 'ox-btn-x-active' : ''}`}
+                          >
+                            X
+                          </button>
+                          <button
+                            type="button"
+                            disabled={!canReveal}
+                            onClick={() => handleRevealItem(item.key)}
+                            className="ox-btn-check"
+                          >
+                            OX 확인
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setHistoryOpenKey(historyOpen ? null : item.key)}
+                            className={`h-8 min-w-[2.25rem] px-1.5 rounded-md text-[10px] font-bold border transition-colors ${
+                              historyOpen
+                                ? 'border-slate-700 bg-slate-700 text-white'
+                                : hasHistory
+                                  ? 'border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
+                                  : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
+                            }`}
+                            title="학습 기록"
+                          >
+                            {hasHistory ? `${itemAttempts.length}회` : '기록'}
+                          </button>
+                        </>
+                      ) : null}
                     </div>
                   </div>
-                  {historyOpen && (
+                  {!isPastExam && historyOpen && (
                     <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
                       <div className="flex items-center justify-between gap-3 mb-2">
                         <p className="text-xs font-semibold text-slate-700 shrink-0">학습 기록</p>
@@ -532,26 +1133,81 @@ export default function StudyMode({
 
           {exam.combo_choices?.length > 0 && (
             <div className="bg-slate-100 rounded-2xl p-4">
-              <p className="text-xs font-semibold text-slate-500 mb-2">정답 조합 (기출 선택지)</p>
+              <p className="text-xs font-semibold text-slate-500 mb-2">
+                {isPastExam ? '기출 선택지 (내 답 고르기)' : '정답 조합 (기출 선택지)'}
+              </p>
               <div className="flex flex-wrap gap-2">
-                {exam.combo_choices.map(c => (
-                  <span
-                    key={c.no}
-                    className={`text-sm px-3 py-1.5 rounded-lg border ${
-                      questionRevealed && c.is_correct
-                        ? 'bg-slate-800 text-white border-slate-800 font-semibold'
+                {exam.combo_choices.map(c => {
+                  const isSelected = isPastExam && pastExamFinalChoice === c.no
+                  const showComboFeedback = isPastExam && questionRevealed
+                  const comboRight = showComboFeedback && isSelected && c.is_correct
+                  const comboWrong = showComboFeedback && isSelected && !c.is_correct
+                  const comboClass = showComboFeedback
+                    ? c.is_correct
+                      ? 'bg-slate-800 text-white border-slate-800 font-semibold'
+                      : comboWrong
+                        ? 'bg-red-50 text-red-700 border-red-300'
                         : 'bg-white text-slate-600 border-slate-200'
-                    }`}
-                  >
-                    {c.label} {c.text}
-                  </span>
-                ))}
+                    : isSelected
+                      ? 'bg-indigo-100 text-indigo-900 border-2 border-indigo-500 font-bold shadow-md ring-2 ring-indigo-200/80 scale-[1.02]'
+                      : 'bg-white text-slate-600 border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/50'
+
+                  if (isPastExam) {
+                    return (
+                      <button
+                        key={c.no}
+                        type="button"
+                        disabled={questionRevealed}
+                        onClick={() => handlePastExamFinalPick(c.no)}
+                        aria-pressed={isSelected}
+                        className={`text-sm px-3 py-1.5 rounded-lg transition-all duration-150 ${comboClass} ${
+                          comboRight ? 'ring-2 ring-green-400' : ''
+                        } ${isSelected && !showComboFeedback ? 'z-[1]' : ''}`}
+                      >
+                        {c.label} {c.text}
+                        {comboRight && <span className="ml-1 text-green-200">✓</span>}
+                        {comboWrong && <span className="ml-1">✗</span>}
+                      </button>
+                    )
+                  }
+
+                  return (
+                    <span
+                      key={c.no}
+                      className={`text-sm px-3 py-1.5 rounded-lg border ${
+                        questionRevealed && c.is_correct
+                          ? 'bg-slate-800 text-white border-slate-800 font-semibold'
+                          : 'bg-white text-slate-600 border-slate-200'
+                      }`}
+                    >
+                      {c.label} {c.text}
+                    </span>
+                  )
+                })}
               </div>
             </div>
           )}
 
+          {questionRevealed && isPastExam && currentPastResult && (
+            <p
+              className={`text-center text-sm font-semibold rounded-xl py-2 ${
+                currentPastResult.questionCorrect
+                  ? 'bg-green-50 text-green-700'
+                  : 'bg-red-50 text-red-700'
+              }`}
+            >
+              {currentPastResult.questionCorrect ? '이 문항 정답' : '이 문항 오답'}
+              {exam.correct_choice != null && (
+                <span className="text-slate-600 font-normal ml-1">
+                  · 기출 정답 {CHOICE_MARKERS[exam.correct_choice - 1]}
+                </span>
+              )}
+            </p>
+          )}
+
           {!questionRevealed ? (
             <button
+              type="button"
               onClick={handleRevealQuestion}
               className="w-full bg-slate-800 text-white rounded-xl py-4 font-bold text-base hover:bg-slate-700"
             >
@@ -584,17 +1240,34 @@ export default function StudyMode({
           onRegenerateRandom={onRegenerateRandom}
         />
       )}
+
+      {showPastExamScore && pastExamSummary && (
+        <PastExamScoreSheet
+          exams={exams}
+          results={pastExamResults}
+          summary={pastExamSummary}
+          onClose={() => setShowPastExamScore(false)}
+          onExit={onBack}
+          onRetryWrong={
+            onRetryPastExamWrong
+              ? () => startPastExamWrongRetry(pastExamScoreRoundNo ?? pastExamRetryRound ?? pastExamRound)
+              : undefined
+          }
+        />
+      )}
     </div>
   )
 }
 
-function QuestionJumpBar({ exams, currentQuestionNo, progress, onJump }) {
+function QuestionJumpBar({ exams, currentQuestionNo, progress, pastExamResults, onJump }) {
   const [open, setOpen] = useState(false)
   const currentBtnRef = useRef(null)
   const yearLabel =
     new Set(exams.map(e => e.year)).size === 1 ? `${exams[0].year}년 ` : ''
 
-  const answeredCount = exams.filter(e => progress[e.id]?.answered).length
+  const answeredCount = pastExamResults
+    ? exams.filter(e => pastExamResults[e.id]).length
+    : exams.filter(e => progress[e.id]?.answered).length
 
   useEffect(() => {
     if (!open || !currentBtnRef.current) return
@@ -613,7 +1286,7 @@ function QuestionJumpBar({ exams, currentQuestionNo, progress, onJump }) {
           {yearLabel}문항
         </span>
         <span className="text-[11px] text-slate-400 truncate flex-1">
-          {currentQuestionNo}번 · {answeredCount}/{exams.length} 풀이
+          {currentQuestionNo}번 · {answeredCount}/{exams.length}{pastExamResults ? ' 채점' : ' 풀이'}
         </span>
         <svg className="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -642,9 +1315,14 @@ function QuestionJumpBar({ exams, currentQuestionNo, progress, onJump }) {
       >
         {exams.map(e => {
           const isCurrent = e.question_no === currentQuestionNo
+          const pastRec = pastExamResults?.[e.id]
           const rec = progress[e.id]
           let statusClass = 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-          if (rec?.answered) {
+          if (pastRec) {
+            statusClass = pastRec.questionCorrect
+              ? 'bg-green-50 text-green-700 border-green-200'
+              : 'bg-red-50 text-red-700 border-red-200'
+          } else if (rec?.answered) {
             statusClass = rec.correct
               ? 'bg-green-50 text-green-700 border-green-200'
               : 'bg-red-50 text-red-700 border-red-200'
@@ -674,7 +1352,12 @@ function QuestionJumpBar({ exams, currentQuestionNo, progress, onJump }) {
   )
 }
 
-function TopBar({ title, onBack, onFilter, sessionStats }) {
+function TopBar({ title, onBack, onFilter, actionLabel = '필터', actionVariant = 'filter' }) {
+  const actionClass =
+    actionVariant === 'regenerate'
+      ? 'top-bar-regenerate-btn'
+      : 'text-xs bg-slate-100 text-slate-600 rounded-lg px-3 py-1.5 font-medium hover:bg-slate-200 border border-transparent'
+
   return (
     <div className="bg-white border-b border-slate-100 sticky top-0 z-10">
       <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
@@ -684,11 +1367,8 @@ function TopBar({ title, onBack, onFilter, sessionStats }) {
           </svg>
         </button>
         <h1 className="flex-1 font-bold text-slate-800 truncate text-sm">{title}</h1>
-        <button
-          onClick={onFilter}
-          className="text-xs bg-slate-100 text-slate-600 rounded-lg px-3 py-1.5 font-medium hover:bg-slate-200"
-        >
-          필터
+        <button type="button" onClick={onFilter} className={actionClass}>
+          {actionLabel}
         </button>
       </div>
     </div>
@@ -697,14 +1377,15 @@ function TopBar({ title, onBack, onFilter, sessionStats }) {
 
 function FilterSheet({ filter, years, categories, onFilterChange, onClose, onRegenerateRandom }) {
   const [localFilter, setLocalFilter] = useState(filter)
-  const isRandom40 = filter.mode === 'random40'
+  const isRandomExam = isRandomStudyMode(filter)
+  const randomExamCount = isRandomExam ? getRandomExamCount(filter) : null
 
   const handleApply = () => {
     onFilterChange(localFilter)
     onClose()
   }
 
-  if (isRandom40) {
+  if (isRandomExam) {
     return (
       <div className="fixed inset-0 z-50 flex flex-col justify-end">
         <div className="absolute inset-0 bg-black bg-opacity-40" onClick={onClose} />
@@ -714,7 +1395,8 @@ function FilterSheet({ filter, years, categories, onFilterChange, onClose, onReg
             <button type="button" onClick={onClose} className="text-slate-400">✕</button>
           </div>
           <p className="text-sm text-slate-600 dark:text-slate-300 mb-5">
-            출제 빈도(소분류)를 반영해 40문항을 뽑았습니다. 다시 뽑으면 다른 조합이 나옵니다.
+            출제 빈도(소분류)를 반영해 {getRandomExamCount(filter)}문항을 뽑았습니다. 다시 뽑으면 다른
+            조합이 나옵니다.
           </p>
           {onRegenerateRandom && (
             <button

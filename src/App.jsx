@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import HomeScreen from './components/HomeScreen'
+import ExamScreen from './components/ExamScreen'
 import IndexScreen from './components/IndexScreen'
 import NotesScreen from './components/NotesScreen'
 import CommunityScreen from './components/CommunityScreen'
@@ -18,7 +19,12 @@ import StudyMode from './components/StudyMode'
 import WrongNotes from './components/WrongNotes'
 import BottomNav from './components/BottomNav'
 import { allExams, sortExams, isExamComplete, isExamCorrect } from './data/loadExam'
-import { buildWeightedRandomExamSet } from './data/randomExamSet'
+import {
+  buildWeightedRandomExamSet,
+  getRandomExamCount,
+  isRandomStudyMode,
+  maxPerYearForRandomCount,
+} from './data/randomExamSet'
 import { buildStudyNote, makeNoteId } from './data/studyNotes'
 import {
   applyAppearanceSettings,
@@ -38,6 +44,7 @@ const DEFAULT_FILTER = {
   status: 'all',
   sort: 'number',
   highlightTerm: null,
+  randomCount: null,
 }
 
 function App() {
@@ -47,6 +54,8 @@ function App() {
   const [studyReturnScreen, setStudyReturnScreen] = useState('home')
   const [studyFilter, setStudyFilter] = useState({ ...DEFAULT_FILTER })
   const [studyRandomExams, setStudyRandomExams] = useState(null)
+  const [studyPastExamExams, setStudyPastExamExams] = useState(null)
+  const [studyPastExamRound, setStudyPastExamRound] = useState(null)
   const [studyStartExamId, setStudyStartExamId] = useState(null)
   const [progress, setProgress] = useState(() => {
     try {
@@ -232,8 +241,11 @@ function App() {
   }
 
   const getStudyExams = useMemo(() => {
-    if (studyFilter.mode === 'random40' && studyRandomExams?.length) {
+    if (isRandomStudyMode(studyFilter) && studyRandomExams?.length) {
       return studyRandomExams
+    }
+    if (studyFilter.mode === 'pastExam' && studyPastExamExams?.length) {
+      return studyPastExamExams
     }
     let filtered = [...allExams]
     if (studyFilter.category) {
@@ -251,7 +263,7 @@ function App() {
       filtered = filtered.filter(q => isExamComplete(progress, q.id) && !isExamCorrect(progress, q.id))
     }
     return sortExams(filtered, studyFilter.sort)
-  }, [studyFilter, studyRandomExams, progress])
+  }, [studyFilter, studyRandomExams, studyPastExamExams, progress])
 
   const wrongExams = useMemo(
     () =>
@@ -265,7 +277,7 @@ function App() {
   const openStudy = (filter, returnTo = 'home') => {
     const { examId: startId, ...rest } = filter
     const next = { ...DEFAULT_FILTER, ...rest }
-    if (next.mode !== 'random40') {
+    if (!isRandomStudyMode(next)) {
       setStudyRandomExams(null)
     }
     if (startId && !next.year) {
@@ -278,15 +290,76 @@ function App() {
     setScreen('study')
   }
 
-  const openRandomStudy = () => {
-    const set = buildWeightedRandomExamSet(allExams, { total: 40, maxPerYear: 6 })
+  const openRandomStudy = (count = 40) => {
+    const total = Math.min(count, allExams.length)
+    if (total < 1) return
+    const set = buildWeightedRandomExamSet(allExams, {
+      total,
+      maxPerYear: maxPerYearForRandomCount(total),
+    })
     if (set.length === 0) return
     setStudyRandomExams(set)
-    openStudy({ mode: 'random40', category: null, subcategory: null, year: null, examId: null, status: 'all' }, 'home')
+    openStudy(
+      {
+        mode: 'random',
+        randomCount: total,
+        category: null,
+        subcategory: null,
+        year: null,
+        examId: null,
+        status: 'all',
+      },
+      'exam'
+    )
+  }
+
+  const openPastExamStudy = year => {
+    setStudyPastExamExams(null)
+    setStudyPastExamRound(null)
+    openStudy(
+      {
+        mode: 'pastExam',
+        category: null,
+        subcategory: null,
+        year,
+        examId: null,
+        status: 'all',
+        sort: 'number',
+      },
+      'exam'
+    )
+  }
+
+  const retryPastExamWrong = (wrongExamIds, year, roundNo) => {
+    const subset = sortExams(
+      allExams.filter(e => wrongExamIds.includes(e.id)),
+      'number'
+    )
+    if (subset.length === 0) return
+    setStudyPastExamExams(subset)
+    setStudyPastExamRound(roundNo ?? null)
+    setStudyStartExamId(null)
+    setStudyFilter({
+      ...DEFAULT_FILTER,
+      mode: 'pastExam',
+      category: null,
+      subcategory: null,
+      year,
+      examId: null,
+      status: 'all',
+      sort: 'number',
+    })
+    setStudyReturnScreen('exam')
+    setScreen('study')
   }
 
   const regenerateRandomStudy = () => {
-    const set = buildWeightedRandomExamSet(allExams, { total: 40, maxPerYear: 6 })
+    const count = getRandomExamCount(studyFilter)
+    const total = Math.min(count, allExams.length)
+    const set = buildWeightedRandomExamSet(allExams, {
+      total,
+      maxPerYear: maxPerYearForRandomCount(total),
+    })
     if (set.length === 0) return
     setStudyRandomExams(set)
     setStudyStartExamId(null)
@@ -297,6 +370,8 @@ function App() {
     if (screen === 'study') {
       setStudyStartExamId(null)
       setStudyRandomExams(null)
+      setStudyPastExamExams(null)
+      setStudyPastExamRound(null)
     }
     setScreen(next)
   }
@@ -320,8 +395,16 @@ function App() {
       <AuthBar appearance={appearance} onAppearanceChange={setAppearance} />
       {screen === 'study' ? (
         <StudyMode
+          key={
+            studyFilter.mode === 'pastExam'
+              ? `past-${studyPastExamExams?.map(e => e.id).join(',') ?? `y${studyFilter.year}`}`
+              : isRandomStudyMode(studyFilter)
+                ? `random-${studyFilter.randomCount ?? 40}-${studyRandomExams?.map(e => e.id).join(',') ?? 'new'}`
+                : 'study'
+          }
           exams={getStudyExams}
           startExamId={studyStartExamId}
+          isPastExamRetry={Boolean(studyPastExamExams?.length)}
           progress={progress}
           filter={studyFilter}
           allExams={allExams}
@@ -334,10 +417,21 @@ function App() {
           onBack={() => {
             setStudyStartExamId(null)
             setStudyRandomExams(null)
+            setStudyPastExamExams(null)
+            setStudyPastExamRound(null)
             setScreen(studyReturnScreen)
           }}
+          onRetryPastExamWrong={retryPastExamWrong}
+          pastExamRetryRound={studyPastExamRound}
           onFilterChange={setStudyFilter}
-          onRegenerateRandom={studyFilter.mode === 'random40' ? regenerateRandomStudy : undefined}
+          onRegenerateRandom={isRandomStudyMode(studyFilter) ? regenerateRandomStudy : undefined}
+          exitLabel={studyReturnScreen === 'exam' ? '시험으로' : '홈으로'}
+        />
+      ) : screen === 'exam' ? (
+        <ExamScreen
+          exams={allExams}
+          onStartPastExam={openPastExamStudy}
+          onStartRandom={openRandomStudy}
         />
       ) : screen === 'index' ? (
         <IndexScreen
@@ -371,12 +465,12 @@ function App() {
           onStartStudyByYear={(year) => {
             openStudy({ category: null, year, examId: null }, 'home')
           }}
-          onStartRandom40={openRandomStudy}
         />
       )}
       <BottomNav
-        active={screen === 'study' ? 'home' : tab}
+        active={screen === 'study' ? studyReturnScreen : tab}
         onHome={() => goTab('home')}
+        onExam={() => goTab('exam')}
         onIndex={() => goTab('index')}
         onNotes={() => goTab('notes')}
         onCommunity={() => goTab('community')}

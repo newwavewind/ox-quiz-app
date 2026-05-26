@@ -154,6 +154,52 @@
       hover:bg-slate-800 hover:text-white hover:border-slate-800 transition-all duration-150
       disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-slate-50 disabled:hover:text-slate-700 disabled:hover:border-slate-300;
   }
+
+  /* 랜덤 40 — TopBar 「다시뽑기」 (기본·다크 + 테마별 오버라이드) */
+  .top-bar-regenerate-btn {
+    @apply text-xs rounded-lg px-3 py-1.5 font-semibold transition-colors touch-manipulation;
+    border: 1px solid rgb(196 181 253);
+    background-color: rgb(245 243 255);
+    color: rgb(91 33 182);
+  }
+  .top-bar-regenerate-btn:hover {
+    background-color: rgb(237 233 254);
+  }
+  html.dark #root .top-bar-regenerate-btn {
+    border-color: rgb(109 40 217);
+    background-color: rgba(76, 29, 149, 0.35);
+    color: rgb(221 214 254);
+  }
+  html.dark #root .top-bar-regenerate-btn:hover {
+    background-color: rgba(76, 29, 149, 0.5);
+  }
+
+  html[data-design-theme='theme2'] #root .top-bar-regenerate-btn {
+    background-color: var(--color-warm-mist) !important;
+    border-color: #c49a8a !important;
+    color: var(--color-terracotta) !important;
+  }
+  html[data-design-theme='theme2'] #root .top-bar-regenerate-btn:hover {
+    background-color: #f5d4c4 !important;
+  }
+
+  html[data-design-theme='theme3'] #root .top-bar-regenerate-btn {
+    background-color: rgba(65, 161, 207, 0.14) !important;
+    border-color: var(--color-action-azure) !important;
+    color: var(--color-cofounder-blue) !important;
+  }
+  html[data-design-theme='theme3'] #root .top-bar-regenerate-btn:hover {
+    background-color: rgba(65, 161, 207, 0.24) !important;
+  }
+
+  html[data-design-theme='theme4'] #root .top-bar-regenerate-btn {
+    background-color: rgba(12, 140, 94, 0.1) !important;
+    border-color: var(--color-sage-mark) !important;
+    color: var(--color-sage-mark) !important;
+  }
+  html[data-design-theme='theme4'] #root .top-bar-regenerate-btn:hover {
+    background-color: rgba(12, 140, 94, 0.18) !important;
+  }
   .ai-link-btn {
     @apply inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-semibold border transition-colors
       leading-none whitespace-nowrap;
