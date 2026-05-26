@@ -441,10 +441,16 @@ export default function StudyMode({
 
   const goPastExamTop = () => {
     if (exams.length === 0) return
-    const el = sectionRefs.current[0]
     setCurrentIndex(0)
     pastExamHapticIndexRef.current = 0
-    scrollPastExamToTarget(el, 'auto')
+    const root = scrollContainerRef.current
+    if (root) {
+      root.scrollTo({ top: 0, behavior: 'auto' })
+      root.scrollTop = 0
+      return
+    }
+    const el = sectionRefs.current[0]
+    if (el) scrollPastExamToTarget(el, 'auto')
   }
 
   const goPastExamBottom = () => {
@@ -673,6 +679,7 @@ export default function StudyMode({
           onFilter={() => setShowFilter(true)}
           actionLabel={isRandomExam ? '다시뽑기' : '필터'}
           actionVariant={isRandomExam ? 'regenerate' : 'filter'}
+          onScrollToTop={inPastExamSolve ? scrollStudyToTop : undefined}
         />
 
         {isPastExamYear && !isPastExamRetry && (
@@ -683,6 +690,7 @@ export default function StudyMode({
             onViewResult={viewPastExamRoundResult}
             onRetryWrong={retryPastExamRoundWrong}
             onRetryCorrect={retryPastExamRoundCorrect}
+            onScrollToTop={inPastExamSolve ? scrollStudyToTop : undefined}
           />
         )}
 

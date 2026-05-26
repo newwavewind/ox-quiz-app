@@ -127,15 +127,29 @@ export default function PastExamTenRoundBar({
   onViewResult,
   onRetryWrong,
   onRetryCorrect,
+  onScrollToTop,
 }) {
+  const roundBarTitle = onScrollToTop ? (
+    <button
+      type="button"
+      onClick={onScrollToTop}
+      className="text-[11px] font-bold tracking-widest text-slate-500 dark:text-slate-400 uppercase touch-manipulation"
+      aria-label="맨 위로"
+    >
+      5회독
+    </button>
+  ) : (
+    <p className="text-[11px] font-bold tracking-widest text-slate-500 dark:text-slate-400 uppercase">
+      5회독
+    </p>
+  )
+
   return (
     <div className="shrink-0 bg-white/90 dark:bg-slate-800/95 border-b border-slate-100 dark:border-slate-700 py-3.5 backdrop-blur-sm">
       <div className="max-w-2xl mx-auto px-3">
         <div className="flex items-center justify-center gap-2 mb-3">
           <span className="h-px flex-1 max-w-[4rem] bg-gradient-to-r from-transparent to-slate-200 dark:to-slate-600" />
-          <p className="text-[11px] font-bold tracking-widest text-slate-500 dark:text-slate-400 uppercase">
-            5회독
-          </p>
+          {roundBarTitle}
           <span className="h-px flex-1 max-w-[4rem] bg-gradient-to-l from-transparent to-slate-200 dark:to-slate-600" />
         </div>
 
