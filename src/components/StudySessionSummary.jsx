@@ -10,12 +10,12 @@ export default function StudySessionSummary({
     summary.total > 0 ? Math.round((summary.correct / summary.total) * 100) : 0
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col justify-end">
-      <div className="absolute inset-0 bg-black/40" onClick={onContinue} aria-hidden />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onClick={onContinue} aria-hidden />
       <div
         role="dialog"
         aria-labelledby="session-summary-title"
-        className="relative bg-white dark:bg-slate-800 rounded-t-3xl p-6 max-h-[85vh] overflow-y-auto"
+        className="relative w-full max-w-sm max-h-[85vh] overflow-y-auto rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-2xl border border-slate-200/80 dark:border-slate-600"
       >
         <h2 id="session-summary-title" className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">
           학습 요약

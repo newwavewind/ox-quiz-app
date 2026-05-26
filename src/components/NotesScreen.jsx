@@ -36,19 +36,19 @@ function NoteCard({ note, onToggleNote, onToggleImportant, onOpenQuestion }) {
     <article
       className={`rounded-2xl p-4 space-y-3 border-2 transition-colors ${
         important
-          ? 'bg-amber-50/60 border-amber-300'
-          : 'bg-white border-slate-200'
+          ? 'bg-amber-50/60 border-amber-300 dark:bg-slate-800 dark:border-amber-500/60'
+          : 'bg-white border-slate-200 dark:bg-slate-800 dark:border-slate-700'
       }`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <p className="text-sm font-bold text-indigo-700">{formatExamRef(note)}</p>
-            <span className="text-xs text-slate-400">
+            <p className="text-sm font-bold text-indigo-700 dark:text-indigo-300">{formatExamRef(note)}</p>
+            <span className="text-xs text-slate-400 dark:text-slate-500">
               · {formatStudyTime(note.savedAt)} 저장
             </span>
             {important && (
-              <span className="text-[10px] font-bold text-amber-700 bg-amber-100 border border-amber-200 rounded px-1.5 py-0.5">
+              <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-slate-700 border border-amber-200 dark:border-amber-500/50 rounded px-1.5 py-0.5">
                 중요
               </span>
             )}
@@ -70,8 +70,8 @@ function NoteCard({ note, onToggleNote, onToggleImportant, onOpenQuestion }) {
               onClick={() => onToggleImportant(note)}
               className={`w-7 h-7 rounded-md border text-sm leading-none transition-colors ${
                 important
-                  ? 'border-amber-400 bg-amber-100 text-amber-600'
-                  : 'border-slate-200 bg-white text-slate-300 hover:text-amber-500 hover:border-amber-300'
+                  ? 'border-amber-400 bg-amber-100 text-amber-600 dark:border-amber-500/60 dark:bg-slate-700 dark:text-amber-400'
+                  : 'border-slate-200 bg-white text-slate-300 hover:text-amber-500 hover:border-amber-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-500 dark:hover:text-amber-400 dark:hover:border-amber-600'
               }`}
               title={important ? '중요 표시 해제' : '중요 표시'}
               aria-pressed={important}
@@ -79,7 +79,7 @@ function NoteCard({ note, onToggleNote, onToggleImportant, onOpenQuestion }) {
               {important ? '★' : '☆'}
             </button>
           )}
-          <label className="flex items-center gap-1.5 cursor-pointer text-xs text-slate-600 px-1">
+          <label className="flex items-center gap-1.5 cursor-pointer text-xs text-slate-600 dark:text-slate-400 px-1">
             <input
               type="checkbox"
               checked
@@ -93,21 +93,21 @@ function NoteCard({ note, onToggleNote, onToggleImportant, onOpenQuestion }) {
 
 
 
-      <div className="rounded-xl bg-slate-50 border border-slate-100 p-3">
+      <div className="rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 p-3">
 
         <p className="text-[10px] font-semibold text-slate-400 mb-1">지문</p>
 
-        <p className="text-sm text-slate-800 leading-relaxed whitespace-pre-wrap">{note.stem}</p>
+        <p className="text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap">{note.stem}</p>
 
       </div>
 
 
 
-      <div className="rounded-xl border border-slate-100 p-3">
+      <div className="rounded-xl border border-slate-100 dark:border-slate-700 p-3">
 
         <div className="flex gap-3 items-start justify-between">
 
-          <p className="flex-1 text-sm text-slate-800 leading-relaxed min-w-0">
+          <p className="flex-1 text-sm text-slate-800 dark:text-slate-200 leading-relaxed min-w-0">
 
             <span className="font-bold text-slate-500 mr-1">{note.itemLabel}</span>
 
@@ -264,13 +264,13 @@ export default function NotesScreen({ notes, onToggleNote, onToggleImportant, on
 
   return (
 
-    <div className="min-h-screen bg-slate-50 pb-bottom-nav">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pb-bottom-nav">
 
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-10">
+      <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
 
         <div className="max-w-2xl mx-auto px-4 py-4">
 
-          <h1 className="text-lg font-bold text-slate-800">암기노트</h1>
+          <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100">암기노트</h1>
 
           <p className="text-xs text-slate-500 mt-0.5">
             학습 중 「암기노트저장」한 지문·보기·해설 ({Object.keys(notes).length}개

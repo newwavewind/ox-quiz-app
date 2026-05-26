@@ -31,6 +31,64 @@ import {
 
 const CHOICE_MARKERS = ['①', '②', '③', '④', '⑤']
 
+function StudyConfirmModal({ message, confirmLabel, onCancel, onConfirm }) {
+  useEffect(() => {
+    const onKey = e => {
+      if (e.key === 'Escape') onCancel()
+    }
+    document.addEventListener('keydown', onKey)
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prev
+    }
+  }, [onCancel])
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      aria-modal="true"
+      role="presentation"
+    >
+      <button
+        type="button"
+        className="absolute inset-0 bg-black/50"
+        aria-label="닫기"
+        onClick={onCancel}
+      />
+      <div
+        className="relative w-full max-w-sm rounded-2xl bg-white dark:bg-slate-800 p-5 shadow-xl border border-slate-200 dark:border-slate-700"
+        role="dialog"
+        aria-labelledby="study-confirm-title"
+      >
+        <p
+          id="study-confirm-title"
+          className="text-base font-bold text-center text-slate-800 dark:text-slate-100"
+        >
+          {message}
+        </p>
+        <div className="flex gap-2 mt-5">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+          >
+            취소
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            className="flex-1 py-2.5 rounded-xl bg-red-500 text-sm font-semibold text-white hover:bg-red-600 transition-colors"
+          >
+            {confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function cleanExplanation(text) {
   if (!text) return ''
   return text
@@ -65,6 +123,7 @@ export default function StudyMode({
   resumeStorageKey = 'default',
   appearance = null,
   onAppearanceChange,
+  onOpenRound5Cert,
 }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [userAnswers, setUserAnswers] = useState({})
@@ -85,13 +144,15 @@ export default function StudyMode({
   const [pastExamScoreRoundNo, setPastExamScoreRoundNo] = useState(null)
   const [pastExamRoundsData, setPastExamRoundsData] = useState({})
   const [pastExamRoundHint, setPastExamRoundHint] = useState(null)
+  const [historyConfirm, setHistoryConfirm] = useState(null)
   const scrollContainerRef = useRef(null)
   const studyScrollRef = useRef(null)
   const sectionRefs = useRef([])
   const pastExamEndRef = useRef(null)
   const pastExamHapticIndexRef = useRef(null)
   const scrollStudyToTopRef = useRef(() => {})
-  const sessionRecordedRef = useRef(new Set())
+  /** @type {React.MutableRefObject<Map<string, boolean>>} */
+  const sessionAttemptRef = useRef(new Map())
 
   const getStudyScrollTop = () =>
     scrollContainerRef.current?.scrollTop ?? studyScrollRef.current?.scrollTop ?? 0
@@ -167,7 +228,7 @@ export default function StudyMode({
       resetQuestionState()
     }
     // exams 참조는 progress 갱신마다 바뀌므로 의존성에서 제외 (OX 확인 직후 상태가 초기화되는 버그 방지)
-    sessionRecordedRef.current = new Set()
+    sessionAttemptRef.current = new Map()
     setSessionLog([])
     setSessionStats({ correct: 0, wrong: 0 })
   }, [filter, examListKey, startExamId])
@@ -344,22 +405,40 @@ export default function StudyMode({
 
   const recordOxExamProgress = (targetExam, answers) => {
     if (!targetExam || isPastExam || usePastExamSolveUI || !onUpdateProgress) return
-    if (sessionRecordedRef.current.has(targetExam.id)) return
-    sessionRecordedRef.current.add(targetExam.id)
     const result = gradeOxStudyQuestion(targetExam, answers)
+    const prevCorrect = sessionAttemptRef.current.get(targetExam.id)
+    const isRetry = prevCorrect !== undefined
+
     onUpdateProgress(targetExam.id, result)
-    setSessionLog(prev => [
-      ...prev,
-      {
+    sessionAttemptRef.current.set(targetExam.id, result.correct)
+
+    setSessionLog(prev => {
+      const idx = prev.findIndex(e => e.examId === targetExam.id)
+      const entry = {
         examId: targetExam.id,
         questionNo: targetExam.question_no,
         correct: result.correct,
-      },
-    ])
-    setSessionStats(prev => ({
-      correct: prev.correct + (result.correct ? 1 : 0),
-      wrong: prev.wrong + (result.correct ? 0 : 1),
-    }))
+      }
+      if (idx >= 0) {
+        const next = [...prev]
+        next[idx] = entry
+        return next
+      }
+      return [...prev, entry]
+    })
+
+    setSessionStats(prev => {
+      if (!isRetry) {
+        return {
+          correct: prev.correct + (result.correct ? 1 : 0),
+          wrong: prev.wrong + (result.correct ? 0 : 1),
+        }
+      }
+      return {
+        correct: prev.correct - (prevCorrect ? 1 : 0) + (result.correct ? 1 : 0),
+        wrong: prev.wrong - (prevCorrect ? 0 : 1) + (result.correct ? 0 : 1),
+      }
+    })
   }
 
   const maybeRecordWhenAllItemsRevealed = (targetExam, nextRevealed, answers) => {
@@ -727,6 +806,15 @@ export default function StudyMode({
   const retryPastExamRoundWrong = roundNo => startPastExamReview(roundNo, 'wrong')
   const retryPastExamRoundCorrect = roundNo => startPastExamReview(roundNo, 'correct')
 
+  const certifyRound5 = () => {
+    if (onOpenRound5Cert && filter.year) onOpenRound5Cert(filter.year)
+  }
+
+  const round5CertAction =
+    isPastExamYear && onOpenRound5Cert && pastExamRoundsData[5]?.completed
+      ? certifyRound5
+      : undefined
+
   const exitPastExamSolve = () => {
     setPastExamRound(null)
     setPastExamScoreRoundNo(null)
@@ -820,6 +908,7 @@ export default function StudyMode({
             onViewResult={viewPastExamRoundResult}
             onRetryWrong={retryPastExamRoundWrong}
             onRetryCorrect={retryPastExamRoundCorrect}
+            onCertifyRound5={round5CertAction}
           />
         )}
 
@@ -870,6 +959,7 @@ export default function StudyMode({
                 onRetryWrong={retryPastExamRoundWrong}
                 onRetryCorrect={retryPastExamRoundCorrect}
                 onScrollToTop={scrollStudyToTop}
+                onCertifyRound5={round5CertAction}
               />
             </div>
           )}
@@ -1007,6 +1097,9 @@ export default function StudyMode({
                   }
                 : undefined
             }
+            onCertifyRound5={
+              pastExamScoreRoundNo === 5 ? round5CertAction : undefined
+            }
           />
         )}
       </div>
@@ -1130,11 +1223,11 @@ export default function StudyMode({
                 isRandomExam ? 'flex-nowrap overflow-x-auto overscroll-x-contain py-0.5' : 'flex-wrap'
               }`}
             >
-              <span className="shrink-0 text-xs bg-slate-200 text-slate-600 rounded-full px-3 py-1 font-medium">
+              <span className="shrink-0 text-xs bg-slate-200 text-slate-700 dark:bg-slate-600 dark:text-slate-100 rounded-full px-3 py-1 font-medium">
                 {exam.category}
               </span>
               {exam.subcategory && (
-                <span className="shrink-0 text-xs bg-slate-100 text-slate-500 rounded-full px-3 py-1">
+                <span className="shrink-0 text-xs bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-200 rounded-full px-3 py-1">
                   {highlightTerm ? (
                     <HighlightText text={exam.subcategory} term={highlightTerm} />
                   ) : (
@@ -1171,7 +1264,6 @@ export default function StudyMode({
           )}
 
           <div className="relative bg-white border border-slate-200 rounded-2xl p-5 space-y-3">
-            <p className="text-xs font-semibold text-slate-400 mb-2">지문</p>
             <p className="text-slate-800 leading-relaxed text-base font-medium whitespace-pre-wrap">
               <QuestionNumberPrefix
                 questionNo={exam.question_no}
@@ -1380,10 +1472,10 @@ export default function StudyMode({
                             onClick={() => setHistoryOpenKey(historyOpen ? null : item.key)}
                             className={`h-8 min-w-[2.25rem] px-1.5 rounded-md text-[10px] font-bold border transition-colors ${
                               historyOpen
-                                ? 'border-slate-700 bg-slate-700 text-white'
+                                ? 'border-slate-700 bg-slate-700 text-white dark:border-slate-500 dark:bg-slate-600'
                                 : hasHistory
-                                  ? 'border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
-                                  : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
+                                  ? 'border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-950/70 dark:text-indigo-300 dark:hover:bg-indigo-900/80'
+                                  : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                             }`}
                             title="학습 기록"
                           >
@@ -1401,9 +1493,11 @@ export default function StudyMode({
                           <button
                             type="button"
                             onClick={() => {
-                              if (window.confirm('이 보기의 학습 기록을 모두 삭제할까요?')) {
-                                onClearItemAttempts(exam.id, item.key)
-                              }
+                              setHistoryConfirm({
+                                message: '정말 초기화 하시겠습니까?',
+                                confirmLabel: '초기화',
+                                onConfirm: () => onClearItemAttempts(exam.id, item.key),
+                              })
                             }}
                             className="text-[11px] font-semibold text-red-500 hover:text-red-700 shrink-0"
                           >
@@ -1433,7 +1527,14 @@ export default function StudyMode({
                               {onRemoveItemAttempt && (
                                 <button
                                   type="button"
-                                  onClick={() => onRemoveItemAttempt(exam.id, item.key, attempt.at)}
+                                  onClick={() => {
+                                    setHistoryConfirm({
+                                      message: '정말로 삭제 하겠습니까?',
+                                      confirmLabel: '삭제',
+                                      onConfirm: () =>
+                                        onRemoveItemAttempt(exam.id, item.key, attempt.at),
+                                    })
+                                  }}
                                   className="shrink-0 text-[11px] font-semibold text-slate-400 hover:text-red-600 px-1 whitespace-nowrap"
                                   aria-label={`${formatStudyTime(attempt.at)} 기록 삭제`}
                                 >
@@ -1606,7 +1707,7 @@ export default function StudyMode({
             <button
               type="button"
               onClick={handleRevealQuestion}
-              className="w-full bg-slate-800 text-white rounded-xl py-4 font-bold text-base hover:bg-slate-700"
+              className="w-full bg-slate-800 text-white rounded-xl py-2.5 font-semibold text-sm hover:bg-slate-700"
             >
               정답 확인
             </button>
@@ -1681,6 +1782,18 @@ export default function StudyMode({
               : undefined
           }
           onExit={confirmSessionExit}
+        />
+      )}
+
+      {historyConfirm && (
+        <StudyConfirmModal
+          message={historyConfirm.message}
+          confirmLabel={historyConfirm.confirmLabel}
+          onCancel={() => setHistoryConfirm(null)}
+          onConfirm={() => {
+            historyConfirm.onConfirm()
+            setHistoryConfirm(null)
+          }}
         />
       )}
     </div>

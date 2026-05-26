@@ -1,4 +1,4 @@
-/** @typedef {'general' | 'qa' | 'error_question' | 'error_explanation'} CommunityBoardId */
+/** @typedef {'general' | 'qa' | 'error_question' | 'error_explanation' | 'round5_cert'} CommunityBoardId */
 
 export const DEFAULT_BOARD = 'general'
 
@@ -22,6 +22,15 @@ export const COMMUNITY_BOARDS = [
     titlePlaceholder: '예: 집합건물 대표권 범위가 헷갈려요',
     contentHint: '회차·문항 번호와 함께 궁금한 점을 적어 주세요.',
     listBadgeClass: 'text-sky-700 bg-sky-50 border-sky-200',
+  },
+  {
+    id: 'round5_cert',
+    label: '5회독 인증',
+    shortLabel: '5회독',
+    description: '기출 5회독 완료 인증',
+    titlePlaceholder: '예: 2025년 5회독 완료 인증',
+    contentHint: '1~5회독 점수는 자동 입력됩니다. 구분선 아래에 소감 등을 자유롭게 작성하세요.',
+    listBadgeClass: 'text-emerald-700 bg-emerald-50 border-emerald-200',
   },
   {
     id: 'error_question',
@@ -77,6 +86,7 @@ export function isErrorBoard(boardId) {
 
 export function boardFromTab(tab) {
   if (tab === 'qa') return 'qa'
+  if (tab === 'round5_cert') return 'round5_cert'
   if (tab === 'error_report') return 'error_question'
   return DEFAULT_BOARD
 }

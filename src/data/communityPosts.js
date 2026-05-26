@@ -15,6 +15,7 @@ const STORAGE_KEY = 'ox_quiz_community_v1'
  * @property {boolean} [isNotice]
  * @property {boolean} [isConcept]
  * @property {import('./communityBoards').CommunityBoardId} [board]
+ * @property {number} [certYear]
  * @property {'public'|'members'|'private'} [visibility]
  * @property {number} [viewCount]
  * @property {number} [likeCount]
@@ -80,6 +81,7 @@ export function filterPostsByTab(posts, tab) {
   if (tab === 'notice') return posts.filter(p => p.isNotice)
   if (tab === 'recommended') return posts.filter(p => isRecommendedPost(p))
   if (tab === 'qa') return posts.filter(p => getPostBoard(p) === 'qa')
+  if (tab === 'round5_cert') return posts.filter(p => getPostBoard(p) === 'round5_cert')
   if (tab === 'error_report') return posts.filter(p => isErrorBoard(getPostBoard(p)))
   return posts
 }
@@ -115,6 +117,7 @@ export function buildPost(draft) {
     isNotice: Boolean(draft.isNotice),
     isConcept: false,
     board,
+    certYear: board === 'round5_cert' ? draft.certYear : undefined,
     visibility: draft.visibility ?? 'public',
     viewCount: draft.viewCount ?? 0,
     likeCount: draft.likeCount ?? 0,

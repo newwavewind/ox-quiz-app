@@ -108,13 +108,7 @@ export default function SettingsSheet({
           label="디자인 테마"
           options={DESIGN_THEME_OPTIONS.map(o => ({ value: o.value, label: o.label }))}
           value={local.designTheme || 'theme1'}
-          onChange={designTheme =>
-            setLocal(s => ({
-              ...s,
-              designTheme,
-              theme: ['theme2', 'theme3', 'theme4'].includes(designTheme) ? 'light' : s.theme,
-            }))
-          }
+          onChange={designTheme => setLocal(s => ({ ...s, designTheme }))}
         />
 
         <OptionGroup
@@ -123,11 +117,6 @@ export default function SettingsSheet({
           value={local.theme}
           onChange={theme => setLocal(s => ({ ...s, theme }))}
         />
-        {['theme2', 'theme3', 'theme4'].includes(local.designTheme || 'theme1') && (
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 -mt-3 mb-4">
-            테마2~4는 라이트 모드 기준입니다.
-          </p>
-        )}
         <OptionGroup
           label="글꼴"
           options={FONT_OPTIONS}

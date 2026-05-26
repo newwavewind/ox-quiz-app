@@ -71,6 +71,7 @@ export function PastExamScoreSheet({
   onExit,
   onRetryWrong,
   onRetryCorrect,
+  onCertifyRound5,
   showPassCriteria = true,
 }) {
   const wrongCount = exams.filter(e => results[e.id] && !results[e.id].questionCorrect).length
@@ -295,6 +296,18 @@ export function PastExamScoreSheet({
               )}
             </div>
           ) : null}
+          {onCertifyRound5 && (
+            <button
+              type="button"
+              onClick={() => {
+                onClose()
+                onCertifyRound5()
+              }}
+              className="w-full rounded-lg py-2.5 font-semibold text-sm bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors"
+            >
+              5회독 인증글 작성
+            </button>
+          )}
           <div className="grid grid-cols-2 gap-1.5">
             <button
               type="button"

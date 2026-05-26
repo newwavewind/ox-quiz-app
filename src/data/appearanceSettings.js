@@ -89,9 +89,5 @@ export function applyAppearanceSettings(settings) {
   root.dataset.font = font
   root.dataset.fontSize = fontSize
 
-  if (isCustomDesignTheme(designTheme)) {
-    root.classList.remove('dark')
-  } else {
-    root.classList.toggle('dark', theme === 'dark')
-  }
+  root.classList.toggle('dark', theme === 'dark')
 }

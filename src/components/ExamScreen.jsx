@@ -32,8 +32,11 @@ export default function ExamScreen({ exams, onStartPastExam, onStartRandom, onOp
             <button
               type="button"
               onClick={onOpenStats}
-              className="shrink-0 text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline mt-1"
+              className="shrink-0 inline-flex items-center gap-1.5 rounded-xl home-today-stats-btn px-2.5 py-1.5 text-[11px] font-bold shadow-sm active:scale-[0.98] transition-all"
             >
+              <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
               출제 통계
             </button>
           )}

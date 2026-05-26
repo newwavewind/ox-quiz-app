@@ -10,7 +10,6 @@ import {
   loadProfileNickname,
   saveCommunityNickname,
 } from '../data/supabaseUserState'
-import { isCustomDesignTheme } from '../data/appearanceSettings'
 import { requestScrollToTop } from '../utils/scrollToTop'
 import SettingsGearButton from './SettingsGearButton'
 import SettingsSheet from './SettingsSheet'
@@ -76,7 +75,6 @@ export default function AuthBar({ appearance, onAppearanceChange }) {
     onAppearanceChange({
       ...appearance,
       designTheme: next,
-      theme: isCustomDesignTheme(next) ? 'light' : appearance.theme,
     })
   }
 

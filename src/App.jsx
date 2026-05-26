@@ -43,6 +43,7 @@ import {
   loadAppearanceSettings,
   saveAppearanceSettings,
 } from './data/appearanceSettings'
+import { saveRound5CertWriteIntent } from './data/round5Cert'
 import { getChapterById, filterExamsByChapter } from './data/curriculum'
 
 const STORAGE_KEY = 'ox_quiz_progress_v2'
@@ -528,6 +529,13 @@ function App() {
     setTab(slot.returnScreen)
   }
 
+  const openRound5CertWrite = useCallback(year => {
+    saveRound5CertWriteIntent(year)
+    setVisibleStudySlot(null)
+    setTab('community')
+    setScreen('community')
+  }, [])
+
   const goTab = next => {
     if (next === 'home' && homeStudy.active) {
       setTab('home')
@@ -589,6 +597,7 @@ function App() {
           exitLabel={slot.returnScreen === 'exam' ? '시험으로' : '홈으로'}
           appearance={appearance}
           onAppearanceChange={setAppearance}
+          onOpenRound5Cert={openRound5CertWrite}
         />
       </div>
     )
@@ -684,6 +693,7 @@ function App() {
           posts={communityPosts}
           onAddPost={addCommunityPost}
           onDeletePost={deleteCommunityPost}
+          examYears={examYears}
         />
       ) : screen === 'home' ? (
         <HomeScreen

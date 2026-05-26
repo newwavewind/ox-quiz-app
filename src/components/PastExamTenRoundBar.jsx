@@ -135,6 +135,7 @@ export default function PastExamTenRoundBar({
   onRetryWrong,
   onRetryCorrect,
   onScrollToTop,
+  onCertifyRound5,
 }) {
   const roundBarTitle = onScrollToTop ? (
     <button
@@ -229,6 +230,15 @@ export default function PastExamTenRoundBar({
                     )}
                   </div>
                   </div>
+                  {n === 5 && onCertifyRound5 && (
+                    <button
+                      type="button"
+                      onClick={onCertifyRound5}
+                      className="w-full mt-1.5 py-2 rounded-xl bg-emerald-600 text-white text-[10px] font-bold hover:bg-emerald-700 transition-colors shadow-sm"
+                    >
+                      5회독 인증하기
+                    </button>
+                  )}
                 </div>
               )
             }

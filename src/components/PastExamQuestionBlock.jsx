@@ -56,11 +56,11 @@ function PastExamQuestionBlock({
   return (
     <div className="space-y-4">
       <div className="flex w-full items-center gap-2 min-w-0">
-        <span className="shrink-0 text-xs bg-slate-200 text-slate-600 rounded-full px-3 py-1 font-medium">
+        <span className="shrink-0 text-xs bg-slate-200 text-slate-700 dark:bg-slate-600 dark:text-slate-100 rounded-full px-3 py-1 font-medium">
           {exam.category}
         </span>
         {exam.subcategory && (
-          <span className="shrink-0 text-xs bg-slate-100 text-slate-500 rounded-full px-3 py-1">
+          <span className="shrink-0 text-xs bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-200 rounded-full px-3 py-1">
             {highlightTerm ? (
               <HighlightText text={exam.subcategory} term={highlightTerm} />
             ) : (
@@ -90,7 +90,6 @@ function PastExamQuestionBlock({
       )}
 
       <div className="relative bg-white border border-slate-200 rounded-2xl p-5 space-y-3">
-        <p className="text-xs font-semibold text-slate-400 mb-2">지문</p>
         <p className="text-slate-800 leading-relaxed text-base font-medium whitespace-pre-wrap">
           <QuestionNumberPrefix
             questionNo={exam.question_no}

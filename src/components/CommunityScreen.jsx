@@ -31,10 +31,19 @@ import {
 } from '../data/communityBoards'
 import { hasRichHtml, sanitizePostHtml } from '../utils/communityRichText'
 import { getBrokerExamDdayInfo } from '../data/examDday'
+import {
+  buildRound5CertDraft,
+  composeRound5CertContent,
+  consumeRound5CertWriteIntent,
+  getRound5CertEligibleYears,
+  isRound5Completed,
+  plainTextToEditorHtml,
+} from '../data/round5Cert'
 
 const TABS = [
   { id: 'all', label: '전체글' },
   { id: 'recommended', label: '추천글' },
+  { id: 'round5_cert', label: '5회독 인증' },
   { id: 'qa', label: 'Q&A' },
   { id: 'error_report', label: '오류신고' },
   { id: 'notice', label: '공지' },
@@ -151,19 +160,36 @@ function BoardBadge({ boardId, className = '' }) {
   )
 }
 
-function WriteForm({ authorLabel, defaultBoard = 'general', onSubmit, onCancel, canPostNotice = false }) {
-  const [title, setTitle] = useState('')
-  const [content, setContent] = useState('')
+function WriteForm({
+  authorLabel,
+  defaultBoard = 'general',
+  writePrefill = null,
+  round5CertYears = [],
+  onSubmit,
+  onCancel,
+  canPostNotice = false,
+}) {
+  const lockRound5Board = defaultBoard === 'round5_cert'
+  const [title, setTitle] = useState(writePrefill?.title ?? '')
+  const [content, setContent] = useState(
+    writePrefill?.content ? plainTextToEditorHtml(writePrefill.content) : '',
+  )
   const [extras, setExtras] = useState(EMPTY_EXTRAS)
   const [nickname, setNickname] = useState(authorLabel)
   const [editingNick, setEditingNick] = useState(false)
   const [visibility, setVisibility] = useState('public')
   const [board, setBoard] = useState(defaultBoard)
+  const [certYear, setCertYear] = useState(
+    writePrefill?.certYear ?? (lockRound5Board ? round5CertYears[0] ?? null : null),
+  )
   const [isNotice, setIsNotice] = useState(false)
   const [error, setError] = useState('')
   const editorRef = useRef(null)
 
   const boardConfig = getBoardConfig(board)
+  const writableBoards = COMMUNITY_BOARDS.filter(
+    b => b.id !== 'round5_cert' || round5CertYears.length > 0,
+  )
 
   const syncEditor = () => {
     const el = editorRef.current
@@ -172,10 +198,28 @@ function WriteForm({ authorLabel, defaultBoard = 'general', onSubmit, onCancel, 
     setContent(html === '<br>' ? '' : html)
   }
 
+  useEffect(() => {
+    if (board !== 'round5_cert' || !certYear) return
+    setContent(prev => {
+      const plain = getContentPlainText(prev)
+      const composed = composeRound5CertContent(certYear, plain)
+      return plainTextToEditorHtml(composed)
+    })
+    setTitle(prev => {
+      const expected = `${certYear}년 5회독 완료 인증`
+      const trimmed = prev.trim()
+      if (!trimmed || /^\d{4}년 5회독 완료 인증$/.test(trimmed)) return expected
+      return prev
+    })
+  }, [certYear, board])
+
   const handleSubmit = e => {
     e.preventDefault()
     const t = title.trim()
-    const c = getContentPlainText(content)
+    const c =
+      board === 'round5_cert' && certYear
+        ? composeRound5CertContent(certYear, getContentPlainText(content))
+        : getContentPlainText(content)
     const nick = nickname.trim() || '익명'
     const poll = extras.poll
     const pollValid =
@@ -194,6 +238,13 @@ function WriteForm({ authorLabel, defaultBoard = 'general', onSubmit, onCancel, 
       setError('투표는 질문과 항목 2개 이상을 입력하세요.')
       return
     }
+    const postBoard = isNotice ? 'general' : board
+    if (postBoard === 'round5_cert') {
+      if (!certYear || !isRound5Completed(certYear)) {
+        setError('기출 5회독을 완료한 연도만 인증할 수 있습니다.')
+        return
+      }
+    }
     saveNickname(nick)
     onSubmit(
       buildPost({
@@ -201,7 +252,8 @@ function WriteForm({ authorLabel, defaultBoard = 'general', onSubmit, onCancel, 
         content: c,
         nickname: nick,
         visibility,
-        board: isNotice ? 'general' : board,
+        board: postBoard,
+        certYear: postBoard === 'round5_cert' ? certYear : undefined,
         isNotice: canPostNotice && isNotice,
         extras: {
           ...extras,
@@ -257,20 +309,50 @@ function WriteForm({ authorLabel, defaultBoard = 'general', onSubmit, onCancel, 
 
         <div className="mb-5">
           <span className="block text-sm font-medium text-slate-600 mb-2">게시판</span>
-          <div className="flex flex-wrap gap-2">
-            {COMMUNITY_BOARDS.map(opt => (
-              <PillToggle
-                key={opt.id}
-                active={board === opt.id && !isNotice}
-                onClick={() => {
-                  setBoard(opt.id)
-                  setIsNotice(false)
-                }}
-              >
-                {opt.label}
-              </PillToggle>
-            ))}
-          </div>
+          {lockRound5Board ? (
+            <p className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm font-semibold text-emerald-800">
+              5회독 인증
+            </p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {writableBoards.map(opt => (
+                <PillToggle
+                  key={opt.id}
+                  active={board === opt.id && !isNotice}
+                  onClick={() => {
+                    setBoard(opt.id)
+                    setIsNotice(false)
+                    if (opt.id !== 'round5_cert') setCertYear(null)
+                    else if (!certYear && round5CertYears[0]) setCertYear(round5CertYears[0])
+                  }}
+                >
+                  {opt.label}
+                </PillToggle>
+              ))}
+            </div>
+          )}
+          {board === 'round5_cert' && (
+            <div className="mt-3">
+              <span className="block text-sm font-medium text-slate-600 mb-1.5">인증 연도</span>
+              {round5CertYears.length === 0 ? (
+                <p className="text-xs text-rose-600">5회독을 완료한 연도가 없습니다. 시험 탭에서 5회독을 먼저 완료하세요.</p>
+              ) : round5CertYears.length === 1 ? (
+                <p className="text-sm font-semibold text-emerald-800">{round5CertYears[0]}년</p>
+              ) : (
+                <select
+                  value={certYear ?? ''}
+                  onChange={e => setCertYear(Number(e.target.value))}
+                  className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800"
+                >
+                  {round5CertYears.map(y => (
+                    <option key={y} value={y}>
+                      {y}년
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          )}
           <p className="text-xs text-slate-500 mt-2">{boardConfig.description}</p>
           <p className="text-[11px] text-slate-400 mt-1">{boardConfig.contentHint}</p>
         </div>
@@ -420,7 +502,7 @@ function PostDetail({ post, user, onBack, onDelete, onLike, canDelete }) {
   )
 }
 
-export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
+export default function CommunityScreen({ posts, onAddPost, onDeletePost, examYears = [] }) {
   const { user } = useAuth()
   const [view, setView] = useState('list')
   const [selectedId, setSelectedId] = useState(null)
@@ -432,8 +514,12 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
   const [page, setPage] = useState(1)
   const [metaTick, setMetaTick] = useState(0)
   const [writeBoard, setWriteBoard] = useState('general')
+  const [writePrefill, setWritePrefill] = useState(null)
   const [nickname, setNickname] = useState(loadNickname)
   const [isCommunityAdmin, setIsCommunityAdmin] = useState(false)
+
+  const round5CertYears = useMemo(() => getRound5CertEligibleYears(examYears), [examYears])
+  const canWriteRound5Cert = round5CertYears.length > 0
 
   const enriched = useMemo(() => enrichPosts(posts), [posts, metaTick])
   const myNickname = nickname.trim() || '익명'
@@ -476,6 +562,16 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
   }, [page, totalPages])
 
   useEffect(() => {
+    const draft = consumeRound5CertWriteIntent()
+    if (!draft) return
+    setTab('round5_cert')
+    setWriteBoard('round5_cert')
+    setWritePrefill(draft)
+    setView('write')
+    setSelectedId(null)
+  }, [])
+
+  useEffect(() => {
     setPage(1)
   }, [tab, appliedQuery, pageSize, visiblePosts.length])
 
@@ -501,7 +597,19 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
   }
 
   const openWrite = () => {
-    setWriteBoard(boardFromTab(tab))
+    if (tab === 'round5_cert') {
+      if (!canWriteRound5Cert) {
+        window.alert('시험 탭에서 기출 5회독을 완료한 뒤에 인증글을 작성할 수 있습니다.')
+        return
+      }
+      setWriteBoard('round5_cert')
+      setWritePrefill(
+        round5CertYears[0] ? buildRound5CertDraft(round5CertYears[0]) : null,
+      )
+    } else {
+      setWriteBoard(boardFromTab(tab))
+      setWritePrefill(null)
+    }
     setView('write')
     setSelectedId(null)
   }
@@ -514,6 +622,7 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
   const backToList = () => {
     setView('list')
     setSelectedId(null)
+    setWritePrefill(null)
   }
 
   const handlePosted = async draft => {
@@ -542,9 +651,11 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
     return (
       <div className="min-h-screen bg-slate-50 pb-bottom-nav flex flex-col">
         <WriteForm
-          key={writeBoard}
+          key={`${writeBoard}-${writePrefill?.certYear ?? 'new'}`}
           authorLabel={myNickname}
           defaultBoard={writeBoard}
+          writePrefill={writePrefill}
+          round5CertYears={round5CertYears}
           onSubmit={handlePosted}
           onCancel={backToList}
           canPostNotice={isCommunityAdmin}
@@ -572,6 +683,10 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
   const tabBoardHint =
     tab === 'qa'
       ? getBoardConfig(boardFromTab(tab)).description
+        : tab === 'round5_cert'
+          ? canWriteRound5Cert
+            ? getBoardConfig('round5_cert').description
+            : '5회독 완료 후 인증글 작성 가능'
       : tab === 'error_report'
         ? '지문·정답·해설 오류 신고'
         : tab === 'recommended'
@@ -591,7 +706,13 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <ExamDdayChip />
-            <LimeButton onClick={openWrite} className="h-9 px-5 text-sm inline-flex items-center justify-center">
+            <LimeButton
+              onClick={openWrite}
+              disabled={tab === 'round5_cert' && !canWriteRound5Cert}
+              className={`h-9 px-5 text-sm inline-flex items-center justify-center ${
+                tab === 'round5_cert' && !canWriteRound5Cert ? 'opacity-45 cursor-not-allowed' : ''
+              }`}
+            >
               글쓰기
             </LimeButton>
           </div>
@@ -667,6 +788,10 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
                         <p className="text-xs mt-2">
                           {tab === 'recommended' &&
                             `추천 ${RECOMMENDED_LIKE_MIN}개 이상 받은 글이 여기에 표시됩니다.`}
+                          {tab === 'round5_cert' &&
+                            (canWriteRound5Cert
+                              ? '5회독을 완료했다면 인증글을 남겨 보세요.'
+                              : '시험 탭에서 5회독을 완료하면 인증글을 작성할 수 있습니다.')}
                           {tab === 'qa' && 'Q&A 탭에서 질문을 남겨 보세요.'}
                           {tab === 'error_report' && '문제·해설 오류를 신고해 주세요.'}
                           {(tab === 'all' || tab === 'notice') &&
