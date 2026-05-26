@@ -47,15 +47,15 @@ export default function PastExamScrollRail({
     let c =
       'min-w-[1.35rem] h-[1.15rem] rounded px-0.5 text-[9px] font-semibold leading-none tabular-nums transition-colors '
     if (isCurrent) {
-      c += 'bg-indigo-600/90 text-white shadow-sm'
+      c += 'bg-indigo-500/45 text-white/95 ring-1 ring-inset ring-indigo-400/30'
     } else if (result) {
       c += result.questionCorrect
-        ? 'bg-emerald-500/25 text-emerald-900 dark:text-emerald-100'
-        : 'bg-rose-500/25 text-rose-900 dark:text-rose-100'
+        ? 'bg-emerald-500/12 text-emerald-800/65 dark:text-emerald-200/70'
+        : 'bg-rose-500/12 text-rose-800/65 dark:text-rose-200/70'
     } else if (hasDraft) {
-      c += 'bg-indigo-500/20 text-indigo-800 dark:text-indigo-200'
+      c += 'bg-indigo-500/10 text-indigo-700/70 dark:text-indigo-200/65'
     } else {
-      c += 'text-slate-600/90 hover:bg-white/40 dark:text-slate-300 dark:hover:bg-white/10'
+      c += 'text-slate-500/55 hover:bg-white/25 dark:text-slate-400/55 dark:hover:bg-white/8'
     }
     return c
   }
@@ -65,12 +65,12 @@ export default function PastExamScrollRail({
       aria-label="문항 빠른 이동"
       className={`fixed right-0 z-30 flex flex-col items-center justify-center py-2 pr-0.5 pointer-events-none ${topClass} bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))]`}
     >
-      <div className="pointer-events-auto overflow-hidden rounded-l-lg border border-r-0 border-white/30 bg-white/40 py-1.5 pl-0.5 pr-0.5 shadow-sm backdrop-blur-md dark:border-slate-500/30 dark:bg-slate-900/40">
+      <div className="pointer-events-auto overflow-hidden rounded-l-lg border border-r-0 border-white/15 bg-white/18 py-1.5 pl-0.5 pr-0.5 shadow-none backdrop-blur-sm dark:border-slate-500/15 dark:bg-slate-900/22">
         <ul className="flex flex-col items-center gap-0.5">
           {railItems.map(item => {
             if (item.type === 'dot') {
               return (
-                <li key={item.key} aria-hidden className="text-[10px] leading-none text-slate-500/70 select-none">
+                <li key={item.key} aria-hidden className="text-[10px] leading-none text-slate-400/45 select-none">
                   ·
                 </li>
               )
