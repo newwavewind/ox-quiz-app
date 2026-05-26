@@ -199,13 +199,12 @@ export default function StudyMode({
         sessionStats={sessionStats}
       />
 
-      {isRandom40 && (
-        <p className="max-w-2xl mx-auto px-4 -mt-2 pb-2 text-[11px] text-slate-500 dark:text-slate-400">
-          소분류 출제 빈도를 반영해 뽑은 {exams.length}문항입니다.
-        </p>
-      )}
-
-      <div className="bg-white px-4 pb-3 border-b border-slate-100">
+      <div className="bg-white px-4 pb-3 border-b border-slate-100 dark:bg-slate-800 dark:border-slate-700">
+        {isRandom40 && (
+          <p className="max-w-2xl mx-auto text-[11px] leading-relaxed text-slate-500 dark:text-slate-400 pb-2 mb-2 border-b border-slate-100 dark:border-slate-700">
+            출제 빈도(소분류) 반영 · {exams.length}문항 랜덤 세트
+          </p>
+        )}
         <div className="flex justify-between text-xs text-slate-400 mb-1.5">
           <span>{currentIndex + 1} / {exams.length}문항</span>
           <span className="text-green-600 font-medium">
