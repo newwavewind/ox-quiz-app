@@ -684,23 +684,28 @@ export default function StudyMode({
 
     const showAuthBar = appearance && onAppearanceChange
 
+    const pastTopBar = (
+      <TopBar
+        title={pastTitle}
+        onBack={() => {
+          if (isPastExamRetry) onBack()
+          else if (inPastExamSolve && isPastExamYear) exitPastExamSolve()
+          else onBack()
+        }}
+        onFilter={() => setShowFilter(true)}
+        actionLabel={isRandomExam ? '다시뽑기' : '필터'}
+        actionVariant={isRandomExam ? 'regenerate' : 'filter'}
+        onScrollToTop={inPastExamSolve ? scrollStudyToTop : undefined}
+        inScroll={inPastExamSolve}
+      />
+    )
+
     return (
       <div className="h-[100dvh] max-h-[100dvh] min-h-0 overflow-hidden bg-slate-50 flex flex-col pb-bottom-nav">
         {showAuthBar && !inPastExamSolve && (
           <AuthBar appearance={appearance} onAppearanceChange={onAppearanceChange} />
         )}
-        <TopBar
-          title={pastTitle}
-          onBack={() => {
-            if (isPastExamRetry) onBack()
-            else if (inPastExamSolve && isPastExamYear) exitPastExamSolve()
-            else onBack()
-          }}
-          onFilter={() => setShowFilter(true)}
-          actionLabel={isRandomExam ? '다시뽑기' : '필터'}
-          actionVariant={isRandomExam ? 'regenerate' : 'filter'}
-          onScrollToTop={inPastExamSolve ? scrollStudyToTop : undefined}
-        />
+        {!inPastExamSolve && pastTopBar}
 
         {isPastExamYear && !isPastExamRetry && !inPastExamSolve && (
           <PastExamTenRoundBar
@@ -741,8 +746,13 @@ export default function StudyMode({
           className="past-exam-scroll h-full w-full max-w-2xl shrink-0 px-3 overflow-y-auto overscroll-y-contain"
         >
           {showAuthBar && inPastExamSolve && (
-            <div className="-mx-3 shrink-0">
+            <div className="-mx-3 shrink-0 pt-[env(safe-area-inset-top,0px)]">
               <AuthBar appearance={appearance} onAppearanceChange={onAppearanceChange} />
+            </div>
+          )}
+          {inPastExamSolve && (
+            <div className="sticky top-0 z-10 -mx-3 shrink-0 bg-white dark:bg-slate-800">
+              {pastTopBar}
             </div>
           )}
           {isPastExamYear && !isPastExamRetry && inPastExamSolve && (
@@ -1646,14 +1656,19 @@ function TopBar({
   actionLabel = '필터',
   actionVariant = 'filter',
   onScrollToTop,
+  inScroll = false,
 }) {
   const actionClass =
     actionVariant === 'regenerate'
       ? 'top-bar-regenerate-btn'
       : 'text-xs bg-slate-100 text-slate-600 rounded-lg px-3 py-1.5 font-medium hover:bg-slate-200 border border-transparent'
 
+  const outerClass = inScroll
+    ? 'relative bg-white border-b border-slate-100 dark:bg-slate-800 dark:border-slate-700'
+    : 'relative bg-white border-b border-slate-100 dark:bg-slate-800 dark:border-slate-700 sticky top-0 z-10 pt-[env(safe-area-inset-top,0px)]'
+
   return (
-    <div className="relative bg-white border-b border-slate-100 sticky top-0 z-10 pt-[env(safe-area-inset-top,0px)]">
+    <div className={outerClass}>
       {onScrollToTop ? (
         <button
           type="button"
