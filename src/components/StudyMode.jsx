@@ -1865,9 +1865,11 @@ function TopBar({
         ) : (
           <h1 className="flex-1 font-bold text-slate-800 truncate text-sm">{title}</h1>
         )}
-        <button type="button" onClick={onFilter} className={`shrink-0 ${actionClass}`}>
-          {actionLabel}
-        </button>
+        {onFilter && actionVariant !== 'filter' ? (
+          <button type="button" onClick={onFilter} className={`shrink-0 ${actionClass}`}>
+            {actionLabel}
+          </button>
+        ) : null}
       </div>
     </div>
   )

@@ -13,7 +13,15 @@ const ALLOWED_TAGS = new Set([
   'IMG',
 ])
 const GUIDE_IMG_PREFIX = '/guide/'
-const ALLOWED_STYLES = new Set(['color', 'font-size', 'font-family', 'font-weight', 'font-style', 'text-decoration'])
+const ALLOWED_STYLES = new Set([
+  'color',
+  'font-size',
+  'font-family',
+  'font-weight',
+  'font-style',
+  'text-decoration',
+  'background-color',
+])
 
 export const FONT_OPTIONS = [
   { id: 'default', label: '기본', value: 'inherit' },

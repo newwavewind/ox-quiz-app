@@ -81,14 +81,14 @@ function ExamDdayChip() {
 
   return (
     <div
-      className="inline-flex flex-col items-end rounded-xl border border-lime-300 bg-lime-50 px-3 py-1.5 shrink-0"
+      className="inline-flex h-9 flex-col items-end justify-center rounded-xl border border-lime-300 bg-lime-50 px-2.5 shrink-0"
       title={`${info.title} ${info.examDateLabel}`}
     >
       <span className="text-[10px] font-semibold text-lime-800/80 leading-none">
         {info.roundLabel} {info.title}
       </span>
       <div className="flex items-baseline gap-1.5 mt-0.5">
-        <span className="text-lg font-black text-slate-900 tabular-nums leading-tight">
+        <span className="text-sm font-bold text-slate-900 tabular-nums leading-none">
           {info.ddayLabel}
         </span>
         <span className="text-[10px] font-medium text-slate-500 tabular-nums leading-none">
@@ -589,9 +589,9 @@ export default function CommunityScreen({ posts, onAddPost, onDeletePost }) {
               {tabBoardHint ? ` · ${tabBoardHint}` : ''}
             </p>
           </div>
-          <div className="flex items-start gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             <ExamDdayChip />
-            <LimeButton onClick={openWrite} className="px-5 py-2 text-sm">
+            <LimeButton onClick={openWrite} className="h-9 px-5 text-sm inline-flex items-center justify-center">
               글쓰기
             </LimeButton>
           </div>

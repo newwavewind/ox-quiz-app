@@ -411,7 +411,7 @@ export default function HomeScreen({
                 className="w-full flex items-center justify-between gap-2 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-3.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
               >
                 <span className="text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 leading-tight">
-                  {kind === 'year' ? '오답노트' : `오답노트 · ${STUDY_VIEWS[kind].todayTitle}`}
+                  {`오답노트 · ${STUDY_VIEWS[kind].todayTitle}`}
                 </span>
                 <span className="shrink-0 text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-rose-600 dark:text-rose-400 rounded-full px-2 py-1 tabular-nums">
                   {wrongCounts[kind]}문항

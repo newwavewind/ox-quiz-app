@@ -22,8 +22,34 @@ function pct(count, total) {
   return total > 0 ? Math.round((count / total) * 100) : 0
 }
 
+function groupLegendByColor(chapterRows) {
+  const groups = []
+  let group = []
+  let prevHex = null
+
+  chapterRows.forEach((cat, index) => {
+    if (prevHex !== null && cat.hex !== prevHex) {
+      groups.push(group)
+      group = []
+    }
+    group.push({ cat, index })
+    prevHex = cat.hex
+  })
+
+  if (group.length) groups.push(group)
+  return groups
+}
+
 export default function StatsScreen({ exams, onStartStudy, onBack }) {
   const stats = useMemo(() => buildExamStats(exams), [exams])
+  const maxChapterCount = useMemo(
+    () => Math.max(1, ...stats.chapterRows.map(r => r.count)),
+    [stats.chapterRows],
+  )
+  const heatmapLegendGroups = useMemo(
+    () => groupLegendByColor(stats.chapterRows),
+    [stats.chapterRows],
+  )
   const [expandedChapter, setExpandedChapter] = useState(null)
 
   const openChapter = chapterId => {
@@ -113,7 +139,7 @@ export default function StatsScreen({ exams, onStartStudy, onBack }) {
 
         <section className="card">
           <h2 className="text-sm font-bold text-slate-800 mb-1">장별 출제</h2>
-          <p className="text-xs text-slate-400 mb-4">막대·장 이름 탭 → 해당 장 학습 · ▶ 소분류</p>
+          <p className="text-xs text-slate-400 mb-4">막대는 최다 출제 장 대비 상대 길이 · 장 이름 탭 → 학습 · ▶ 소분류</p>
           <ul className="space-y-3">
             {stats.chapterRows.map(row => {
               const subs = stats.subcategoryRows.filter(s => {
@@ -122,7 +148,8 @@ export default function StatsScreen({ exams, onStartStudy, onBack }) {
                 return ch?.id === row.id
               })
               const expanded = expandedChapter === row.id
-              const maxCount = stats.chapterRows[0]?.count ?? 1
+              const barWidth =
+                row.count > 0 ? Math.max(pct(row.count, maxChapterCount), 4) : 0
 
               return (
                 <li key={row.id}>
@@ -143,7 +170,7 @@ export default function StatsScreen({ exams, onStartStudy, onBack }) {
                       <div
                         className="h-full rounded-full transition-all"
                         style={{
-                          width: `${Math.max(pct(row.count, maxCount), 4)}%`,
+                          width: `${barWidth}%`,
                           backgroundColor: row.hex,
                         }}
                       />
@@ -184,22 +211,34 @@ export default function StatsScreen({ exams, onStartStudy, onBack }) {
 
         <section className="card">
           <h2 className="text-sm font-bold text-slate-800 mb-1">연도별 출제 히트맵</h2>
-          <p className="text-xs text-slate-400 mb-3">진할수록 해당 연도에 많이 출제 · 위에서 아래로 장 순</p>
-          <div className="flex flex-wrap gap-x-3 gap-y-1.5 mb-4 text-[11px] text-slate-600">
-            {stats.chapterRows.map(cat => (
-              <span key={cat.id} className="inline-flex items-center gap-1">
-                <span
-                  className="w-2 h-2 rounded-full shrink-0"
-                  style={{ backgroundColor: cat.hex }}
-                />
-                {cat.name}
-              </span>
+          <p className="text-xs text-slate-400 mb-3">번호·색으로 장 매칭 · 진할수록 해당 연도에 많이 출제</p>
+          <div className="space-y-2 mb-4">
+            {heatmapLegendGroups.map((group, groupIdx) => (
+              <div
+                key={groupIdx}
+                className="flex flex-wrap gap-x-3 gap-y-1.5 text-[11px] text-slate-600"
+              >
+                {group.map(({ cat, index }) => (
+                  <span key={cat.id} className="inline-flex items-center gap-1">
+                    <span className="w-3.5 text-[10px] font-bold text-slate-400 tabular-nums text-right shrink-0">
+                      {index + 1}
+                    </span>
+                    <span
+                      className="w-2 h-2 rounded-full shrink-0"
+                      style={{ backgroundColor: cat.hex }}
+                    />
+                    {cat.name}
+                  </span>
+                ))}
+              </div>
             ))}
           </div>
           <table className="w-full text-xs border-collapse table-fixed">
             <thead>
               <tr className="border-b border-slate-100">
-                <th className="w-8 py-2" aria-label="장" />
+                <th className="w-10 py-2 text-[10px] text-slate-400 font-semibold" aria-label="장 번호">
+                  #
+                </th>
                 {stats.yearMatrix.map(row => (
                   <th
                     key={row.year}
@@ -211,14 +250,22 @@ export default function StatsScreen({ exams, onStartStudy, onBack }) {
               </tr>
             </thead>
             <tbody>
-              {stats.chapterRows.map(cat => (
+              {stats.chapterRows.map((cat, i) => (
                 <tr key={cat.id} className="border-t border-slate-100">
                   <td className="py-1.5 pr-1 align-middle">
                     <span
-                      className="block w-2.5 h-2.5 rounded-full mx-auto shrink-0"
-                      style={{ backgroundColor: cat.hex }}
+                      className="flex items-center justify-center gap-1"
                       title={cat.name}
-                    />
+                    >
+                      <span className="text-[10px] font-bold text-slate-500 tabular-nums leading-none">
+                        {i + 1}
+                      </span>
+                      <span
+                        className="block w-2 h-2 rounded-full shrink-0"
+                        style={{ backgroundColor: cat.hex }}
+                        aria-hidden
+                      />
+                    </span>
                   </td>
                   {stats.yearMatrix.map(row => {
                     const n = row.byChapter[cat.id] ?? 0
@@ -244,6 +291,20 @@ export default function StatsScreen({ exams, onStartStudy, onBack }) {
                 </tr>
               ))}
             </tbody>
+            <tfoot>
+              <tr className="border-t-2 border-slate-200 bg-slate-50">
+                <td className="py-2 pr-1 align-middle text-center">
+                  <span className="text-[10px] font-bold text-slate-600">합계</span>
+                </td>
+                {stats.yearMatrix.map(row => (
+                  <td key={row.year} className="p-0.5 align-middle">
+                    <div className="rounded w-full max-w-[2.25rem] h-8 flex items-center justify-center tabular-nums font-bold mx-auto text-[11px] bg-slate-200 text-slate-800">
+                      {row.total}
+                    </div>
+                  </td>
+                ))}
+              </tr>
+            </tfoot>
           </table>
         </section>
 
