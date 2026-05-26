@@ -200,16 +200,18 @@ export default function StudyMode({
   }, [resumeStorageKey, examListKey, currentIndex])
 
   useEffect(() => {
-    if (usePastExamSolveUI || !exam || exams.length === 0) return
+    if (usePastExamSolveUI || exams.length === 0) return
+    const currentExam = exams[currentIndex]
+    if (!currentExam) return
     saveTodayStudySpot({
       filter,
-      exam,
+      exam: currentExam,
       position: currentIndex + 1,
       total: exams.length,
     })
   }, [
     usePastExamSolveUI,
-    exam?.id,
+    examListKey,
     currentIndex,
     exams.length,
     filter.year,
