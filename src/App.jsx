@@ -36,11 +36,11 @@ import StatsScreen from './components/StatsScreen'
 import BottomNav from './components/BottomNav'
 import {
   allExams,
-  filterWrongExamsByKind,
   sortWrongExamsByRecent,
   sortExams,
   isExamComplete,
   isExamCorrect,
+  isWrongNoteExam,
   findProgressAwareStudyExamId,
 } from './data/loadExam'
 import { getWrongNoteKind } from './data/todayStudySpot'
@@ -159,7 +159,6 @@ function App() {
   const { user, isConfigured } = useAuth()
   const [tab, setTab] = useState('home')
   const [screen, setScreen] = useState('home')
-  const [wrongNotesKind, setWrongNotesKind] = useState('year')
   const [homeStudy, setHomeStudy] = useState(() => emptyStudySlot('home'))
   const [examStudy, setExamStudy] = useState(() => emptyStudySlot('exam'))
   const [visibleStudySlot, setVisibleStudySlot] = useState(null)
@@ -468,17 +467,11 @@ function App() {
     })
   }
 
-  const wrongExamsByKind = useMemo(
-    () => ({
-      year: sortWrongExamsByRecent(
-        filterWrongExamsByKind(allExams, progress, 'year'),
-        progress
-      ),
-      category: sortWrongExamsByRecent(
-        filterWrongExamsByKind(allExams, progress, 'category'),
-        progress
-      ),
-    }),
+  const wrongExamsAll = useMemo(
+    () => sortWrongExamsByRecent(
+      allExams.filter(q => isWrongNoteExam(progress, q.id)),
+      progress
+    ),
     [progress]
   )
 
@@ -778,16 +771,11 @@ function App() {
     return (
       <>
         <WrongNotes
-          kind={wrongNotesKind}
-          exams={wrongExamsByKind[wrongNotesKind]}
+          exams={wrongExamsAll}
           allExams={allExams}
           progress={progress}
           onUpdateProgress={(examId, result) =>
-            updateProgress(
-              examId,
-              result,
-              wrongNotesKind === 'year' ? { year: 2020 } : { chapterId: 'review' }
-            )
+            updateProgress(examId, result, DEFAULT_FILTER)
           }
           onLogItemAttempt={logItemAttempt}
           onClearItemAttempts={clearItemAttempts}
@@ -880,10 +868,7 @@ function App() {
           exams={allExams}
           progress={progress}
           notes={notes}
-          wrongCounts={{
-            year: wrongExamsByKind.year.length,
-            category: wrongExamsByKind.category.length,
-          }}
+          wrongCount={wrongExamsAll.length}
           onStartStudy={({ chapterId, category, subcategory }) => {
             openStudy({
               chapterId: chapterId ?? null,
@@ -900,8 +885,7 @@ function App() {
             if (!spot?.filter || !spot.examId) return
             openStudy({ ...spot.filter, examId: spot.examId }, 'home')
           }}
-          onOpenWrongNotes={kind => {
-            setWrongNotesKind(kind)
+          onOpenWrongNotes={() => {
             setScreen('wrongnotes')
             setTab('home')
           }}

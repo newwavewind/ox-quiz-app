@@ -424,35 +424,65 @@
   }
 
   .home-year-pct-idle {
-    @apply text-slate-400 dark:text-slate-500;
+    color: rgb(148 163 184);
+  }
+
+  .home-year-pct-idle:is(.dark *) {
+    color: rgb(100 116 139);
   }
 
   .home-year-pct-active {
-    @apply text-indigo-600 dark:text-indigo-400;
+    color: rgb(79 70 229);
+  }
+
+  .home-year-pct-active:is(.dark *) {
+    color: rgb(129 140 248);
   }
 
   .home-year-pct-done {
-    @apply text-emerald-600 dark:text-emerald-400;
+    color: rgb(5 150 105);
+  }
+
+  .home-year-pct-done:is(.dark *) {
+    color: rgb(52 211 153);
   }
 
   .home-year-bar-wrap {
-    @apply h-1 bg-slate-200 dark:bg-slate-700;
+    @apply h-1.5 w-full shrink-0 rounded-full overflow-hidden;
+    background-color: rgb(226 232 240);
+  }
+
+  .home-year-bar-wrap:is(.dark *) {
+    background-color: rgb(51 65 85);
   }
 
   .home-year-bar {
-    @apply h-full transition-[width] duration-200;
+    @apply h-full rounded-full;
+    transition: width 0.2s ease;
   }
 
   .home-year-bar-idle {
-    @apply bg-slate-300 dark:bg-slate-600;
+    background-color: rgb(203 213 225);
+  }
+
+  .home-year-bar-idle:is(.dark *) {
+    background-color: rgb(71 85 105);
   }
 
   .home-year-bar-active {
-    @apply bg-indigo-500;
+    background-color: rgb(99 102 241);
+  }
+
+  .home-year-bar-active:is(.dark *) {
+    background-color: rgb(129 140 248);
   }
 
   .home-year-bar-done {
-    @apply bg-emerald-500;
+    background-color: rgb(16 185 129);
+  }
+
+  .home-year-bar-done:is(.dark *) {
+    background-color: rgb(52 211 153);
   }
 
   .home-today-section {

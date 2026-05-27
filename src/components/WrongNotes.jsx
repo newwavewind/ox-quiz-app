@@ -65,7 +65,6 @@ function WrongNoteDismissModal({ onCancel, onConfirm }) {
 }
 
 export default function WrongNotes({
-  kind = 'year',
   exams,
   allExams,
   progress,
@@ -179,7 +178,7 @@ export default function WrongNotes({
             </svg>
           </button>
           <h1 className="flex-1 font-bold text-slate-800 dark:text-slate-100">
-            {kind === 'year' ? '전체 학습' : '전체 학습 · 목차별'}
+            오답노트
           </h1>
           <span className="text-xs bg-red-100 text-red-600 rounded-full px-2.5 py-1 font-medium">
             {displayExams.length}문항
@@ -202,9 +201,16 @@ export default function WrongNotes({
             <button
               type="button"
               onClick={() => startReview()}
-              className="w-full bg-indigo-600 text-white rounded-2xl py-4 font-semibold text-base mb-5 hover:bg-indigo-700 transition-colors shadow-sm"
+              className="w-full inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 shadow-sm hover:border-slate-300 hover:text-indigo-600 dark:hover:border-slate-600 dark:hover:text-indigo-400 transition-all active:scale-[0.98] mb-5"
             >
-              오답 전체 복습 ({displayExams.length}문항)
+              <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} aria-hidden>
+                <path d="M1 4v6h6" />
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+              </svg>
+              <span>오답 전체 복습</span>
+              <span className="ml-auto tabular-nums text-rose-500/90 dark:text-rose-400/90">
+                {displayExams.length}문항
+              </span>
             </button>
 
             <div className="flex items-center justify-between gap-3 mb-3">

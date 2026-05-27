@@ -30,14 +30,15 @@ function ProgressBadge({ answered, total }) {
 function YearStudyButton({ year, round, answered, total, onClick }) {
   const progressRate = total > 0 ? Math.round((answered / total) * 100) : 0
   const state = progressRate === 0 ? 'idle' : progressRate === 100 ? 'done' : 'active'
+  const fillColor = state === 'done' ? '#10b981' : '#6366f1'
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className="w-full flex flex-col items-stretch min-h-[2.75rem] home-year-btn rounded-xl px-3 pt-2.5 pb-0 text-left overflow-hidden active:scale-[0.99]"
+      className="w-full flex flex-col items-stretch min-h-[2.75rem] home-year-btn rounded-xl px-3 pt-2.5 pb-2.5 text-left active:scale-[0.99]"
     >
-      <div className="flex items-start justify-between gap-2 pb-2">
+      <div className="flex items-start justify-between gap-2">
         <span className="min-w-0">
           <span className="block text-sm font-bold tabular-nums leading-tight home-year-text-strong">
             {year}년
@@ -50,11 +51,36 @@ function YearStudyButton({ year, round, answered, total, onClick }) {
           {progressRate}%
         </span>
       </div>
-      <div className="home-year-bar-wrap -mx-3" aria-hidden="true">
-        <div
-          className={`home-year-bar home-year-bar-${state}`}
-          style={{ width: `${progressRate}%` }}
-        />
+      <div
+        className="home-year-bar-wrap mt-2"
+        role="progressbar"
+        aria-valuenow={progressRate}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={`${year}년 학습 진행률 ${progressRate}%`}
+        style={{
+          display: 'block',
+          width: '100%',
+          height: 6,
+          flexShrink: 0,
+          borderRadius: 9999,
+          overflow: 'hidden',
+          backgroundColor: 'rgb(226 232 240)',
+        }}
+      >
+        {progressRate > 0 && (
+          <div
+            className={`home-year-bar home-year-bar-${state}`}
+            style={{
+              display: 'block',
+              height: 6,
+              width: `${progressRate}%`,
+              minWidth: 8,
+              borderRadius: 9999,
+              backgroundColor: fillColor,
+            }}
+          />
+        )}
       </div>
     </button>
   )
@@ -69,19 +95,16 @@ function MetaDivider() {
   )
 }
 
-function WrongNoteShortcut({ kind, count, onOpen }) {
+function WrongNoteShortcut({ count, onOpen }) {
   if (!count || !onOpen) return null
   return (
     <button
       type="button"
-      onClick={() => onOpen(kind)}
-      className="inline-flex items-center gap-1 rounded-md border border-slate-200 dark:border-slate-700 px-2 py-1 text-[11px] font-medium text-slate-500 dark:text-slate-400 hover:border-slate-300 hover:text-indigo-600 dark:hover:border-slate-600 dark:hover:text-indigo-400 transition-colors"
+      onClick={onOpen}
+      className="shrink-0 inline-flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-slate-700 px-2.5 py-1.5 text-[11px] font-bold text-slate-600 dark:text-slate-300 shadow-sm hover:border-slate-300 hover:text-indigo-600 dark:hover:border-slate-600 dark:hover:text-indigo-400 transition-all active:scale-[0.98]"
     >
-      <span>{`오답노트 · ${STUDY_VIEWS[kind].todayTitle}`}</span>
-      <span className="text-slate-300 dark:text-slate-600" aria-hidden="true">
-        ·
-      </span>
-      <span className="tabular-nums text-rose-500/80 dark:text-rose-400/80">{count}문항</span>
+      오답노트
+      <span className="tabular-nums text-rose-500/90 dark:text-rose-400/90">{count}문항</span>
     </button>
   )
 }
@@ -314,7 +337,7 @@ export default function HomeScreen({
   exams,
   progress,
   notes,
-  wrongCounts = { year: 0, category: 0 },
+  wrongCount = 0,
   onStartStudy,
   onStartStudyByYear,
   onResumeTodayStudy,
@@ -401,18 +424,21 @@ export default function HomeScreen({
             <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100">공인중개사 민법</h1>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">기출 OX · 연도별 · 목차별</p>
           </button>
-          {onOpenStats && (
-            <button
-              type="button"
-              onClick={onOpenStats}
-              className="shrink-0 inline-flex items-center gap-1.5 rounded-xl home-today-stats-btn px-2.5 py-1.5 text-[11px] font-bold shadow-sm active:scale-[0.98] transition-all"
-            >
-              <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-              출제 통계
-            </button>
-          )}
+          <div className="shrink-0 flex items-center gap-1.5">
+            <WrongNoteShortcut count={wrongCount} onOpen={onOpenWrongNotes} />
+            {onOpenStats && (
+              <button
+                type="button"
+                onClick={onOpenStats}
+                className="shrink-0 inline-flex items-center gap-1.5 rounded-xl home-today-stats-btn px-2.5 py-1.5 text-[11px] font-bold shadow-sm active:scale-[0.98] transition-all"
+              >
+                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                출제 통계
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -438,13 +464,7 @@ export default function HomeScreen({
           <StudyViewSwitcher view={studyView} onChange={setStudyView} />
 
           {studyView === 'year' ? (
-            <>
-              <WrongNoteShortcut
-                kind="year"
-                count={wrongCounts.year ?? 0}
-                onOpen={onOpenWrongNotes}
-              />
-              <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               {activeYears.map(({ year, round, answered, total }) => (
                 <YearStudyButton
                   key={year}
@@ -455,16 +475,9 @@ export default function HomeScreen({
                   onClick={() => onStartStudyByYear(year)}
                 />
               ))}
-              </div>
-            </>
+            </div>
           ) : (
-            <>
-              <WrongNoteShortcut
-                kind="category"
-                count={wrongCounts.category ?? 0}
-                onOpen={onOpenWrongNotes}
-              />
-              <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2">
               <div className="grid grid-cols-2 gap-2 items-start">
                 {CURRICULUM.parts.slice(0, 2).map(part => (
                   <CurriculumPartBlock
@@ -496,7 +509,6 @@ export default function HomeScreen({
                 ))}
               </div>
             </div>
-            </>
           )}
         </section>
 
