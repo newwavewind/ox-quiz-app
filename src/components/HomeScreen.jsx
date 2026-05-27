@@ -15,22 +15,54 @@ const STUDY_VIEWS = {
   category: { label: '목차별 학습', todayTitle: '목차별' },
 }
 
-function ProgressBadge({ answered, total }) {
-  if (answered === 0) return null
+function getProgressState(progressRate) {
+  if (progressRate === 0) return 'idle'
+  if (progressRate === 100) return 'done'
+  return 'active'
+}
 
-  const progressRate = total > 0 ? Math.round((answered / total) * 100) : 0
+function StudyProgressBar({ progressRate, ariaLabel, className = 'mt-2' }) {
+  const state = getProgressState(progressRate)
+  const fillColor = state === 'done' ? '#10b981' : '#6366f1'
 
   return (
-    <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 tabular-nums whitespace-nowrap">
-      {answered}/{total} · {progressRate}%
-    </span>
+    <div
+      className={`home-year-bar-wrap ${className}`}
+      role="progressbar"
+      aria-valuenow={progressRate}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-label={ariaLabel}
+      style={{
+        display: 'block',
+        width: '100%',
+        height: 6,
+        flexShrink: 0,
+        borderRadius: 9999,
+        overflow: 'hidden',
+        backgroundColor: 'rgb(226 232 240)',
+      }}
+    >
+      {progressRate > 0 && (
+        <div
+          className={`home-year-bar home-year-bar-${state}`}
+          style={{
+            display: 'block',
+            height: 6,
+            width: `${progressRate}%`,
+            minWidth: 8,
+            borderRadius: 9999,
+            backgroundColor: fillColor,
+          }}
+        />
+      )}
+    </div>
   )
 }
 
 function YearStudyButton({ year, round, answered, total, onClick }) {
   const progressRate = total > 0 ? Math.round((answered / total) * 100) : 0
-  const state = progressRate === 0 ? 'idle' : progressRate === 100 ? 'done' : 'active'
-  const fillColor = state === 'done' ? '#10b981' : '#6366f1'
+  const state = getProgressState(progressRate)
 
   return (
     <button
@@ -51,37 +83,10 @@ function YearStudyButton({ year, round, answered, total, onClick }) {
           {progressRate}%
         </span>
       </div>
-      <div
-        className="home-year-bar-wrap mt-2"
-        role="progressbar"
-        aria-valuenow={progressRate}
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-label={`${year}년 학습 진행률 ${progressRate}%`}
-        style={{
-          display: 'block',
-          width: '100%',
-          height: 6,
-          flexShrink: 0,
-          borderRadius: 9999,
-          overflow: 'hidden',
-          backgroundColor: 'rgb(226 232 240)',
-        }}
-      >
-        {progressRate > 0 && (
-          <div
-            className={`home-year-bar home-year-bar-${state}`}
-            style={{
-              display: 'block',
-              height: 6,
-              width: `${progressRate}%`,
-              minWidth: 8,
-              borderRadius: 9999,
-              backgroundColor: fillColor,
-            }}
-          />
-        )}
-      </div>
+      <StudyProgressBar
+        progressRate={progressRate}
+        ariaLabel={`${year}년 학습 진행률 ${progressRate}%`}
+      />
     </button>
   )
 }
@@ -217,12 +222,17 @@ function CurriculumPartBlock({
             const sectionsOpen = expandedChapters.has(chapter.id)
             const orderNo = String(chapterIndex + 1).padStart(2, '0')
 
+            const progressRate = chapterStats.total > 0
+              ? Math.round((chapterStats.answered / chapterStats.total) * 100)
+              : 0
+            const progressState = getProgressState(progressRate)
+
             return (
               <div
                 key={chapter.id}
                 className={`${style.light} ${style.border} border rounded-xl p-2.5 hover:shadow-sm transition-all`}
               >
-                <div className="flex items-center gap-1.5 min-h-5">
+                <div className="flex items-start gap-1.5">
                   <button
                     type="button"
                     onClick={() =>
@@ -233,53 +243,62 @@ function CurriculumPartBlock({
                       })
                     }
                     disabled={chapterStats.total === 0}
-                    className="flex-1 min-w-0 flex items-center gap-2 text-left active:scale-[0.99] transition-transform disabled:opacity-50 min-h-5"
+                    className="flex-1 min-w-0 text-left active:scale-[0.99] transition-transform disabled:opacity-50"
                   >
-                    <span className={`shrink-0 w-5 h-5 rounded-md bg-white flex items-center justify-center text-[9px] font-bold ${style.text}`}>
-                      {orderNo}
-                    </span>
-                    <div className="flex-1 min-w-0 min-h-5 flex items-center">
-                      <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
-                        <p className={`min-w-0 text-[10px] sm:text-[11px] font-bold ${style.text} leading-snug line-clamp-2`}>
-                          {chapter.shortLabel}
-                        </p>
-                        {chapterStats.answered > 0 && (
-                          <>
-                            <MetaDivider />
-                            <ProgressBadge
-                              answered={chapterStats.answered}
-                              total={chapterStats.total}
-                            />
-                          </>
-                        )}
-                        <MetaDivider />
-                        <span className="shrink-0 text-[10px] text-slate-500 dark:text-slate-400 tabular-nums">
-                          {chapterStats.total}문항
-                        </span>
-                      </div>
+                    <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
+                      <span className={`shrink-0 w-5 h-5 rounded-md bg-white flex items-center justify-center text-[9px] font-bold ${style.text}`}>
+                        {orderNo}
+                      </span>
+                      <span className={`min-w-0 text-[11px] sm:text-sm font-bold ${style.text} leading-snug line-clamp-2`}>
+                        {chapter.shortLabel}
+                      </span>
+                      <MetaDivider />
+                      <span className="shrink-0 text-[11px] text-slate-500 dark:text-slate-400 tabular-nums">
+                        {chapterStats.total}문항
+                      </span>
+                      <MetaDivider />
+                      <span className={`shrink-0 text-[11px] font-bold tabular-nums home-year-pct home-year-pct-${progressState}`}>
+                        {progressRate}%
+                      </span>
                     </div>
                   </button>
                   {sections.length > 1 && (
-                    <>
-                      <MetaDivider />
-                      <button
-                        type="button"
-                        onClick={() => toggleChapterSections(chapter.id)}
-                        aria-expanded={sectionsOpen}
-                        aria-label={`${chapter.shortLabel} 소분류 ${sectionsOpen ? '접기' : '펼치기'}`}
-                        className={`shrink-0 h-5 flex items-center rounded-md border px-1.5 text-[9px] font-bold leading-none shadow-sm transition-colors ${
-                          sectionsOpen
-                            ? `bg-white dark:bg-slate-900 ${style.border} ${style.text}`
-                            : `bg-white/90 dark:bg-slate-900/70 ${style.border} ${style.text} hover:bg-white dark:hover:bg-slate-900`
-                        }`}
-                      >
-                        {sectionsOpen ? '접기' : '펼치기'}
-                      </button>
-                    </>
+                    <button
+                      type="button"
+                      onClick={() => toggleChapterSections(chapter.id)}
+                      aria-expanded={sectionsOpen}
+                      aria-label={`${chapter.shortLabel} 소분류 ${sectionsOpen ? '접기' : '펼치기'}`}
+                      className={`shrink-0 mt-0.5 h-5 flex items-center rounded-md border px-1.5 text-[9px] font-bold leading-none shadow-sm transition-colors ${
+                        sectionsOpen
+                          ? `bg-white dark:bg-slate-900 ${style.border} ${style.text}`
+                          : `bg-white/90 dark:bg-slate-900/70 ${style.border} ${style.text} hover:bg-white dark:bg-slate-900`
+                      }`}
+                    >
+                      {sectionsOpen ? '접기' : '펼치기'}
+                    </button>
                   )}
                 </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    onStartStudy({
+                      chapterId: chapter.id,
+                      category: null,
+                      subcategory: null,
+                    })
+                  }
+                  disabled={chapterStats.total === 0}
+                  className="w-full mt-2 text-left active:scale-[0.99] transition-transform disabled:opacity-50"
+                  aria-label={`${chapter.shortLabel} 학습 시작`}
+                >
+                  <StudyProgressBar
+                    progressRate={progressRate}
+                    ariaLabel={`${chapter.shortLabel} 학습 진행률 ${progressRate}%`}
+                    className=""
+                  />
+                </button>
                 {sections.length > 1 && sectionsOpen && (
-                  <ul className="mt-2 space-y-0.5 border-t border-white/60 dark:border-slate-600/40 pt-2">
+                  <ul className="mt-2 space-y-1 border-t border-white/60 dark:border-slate-600/40 pt-2">
                     {sections.map(section => {
                       const sectionExams = chapterExams.filter(e =>
                         e.category === section.filter.category
@@ -298,23 +317,14 @@ function CurriculumPartBlock({
                               })
                             }
                             disabled={sectionStats.total === 0}
-                            className="w-full flex items-center gap-1.5 rounded-lg px-1.5 py-1 text-left hover:bg-white/60 dark:hover:bg-slate-700/40 active:scale-[0.98] transition-all disabled:opacity-40"
+                            className="w-full flex items-center gap-1.5 rounded-lg px-2 py-2 text-left hover:bg-white/60 dark:hover:bg-slate-700/40 active:scale-[0.98] transition-all disabled:opacity-40"
                           >
-                            <div className="flex-1 min-w-0 flex items-center gap-1.5 flex-wrap">
-                              <span className={`min-w-0 text-[10px] font-medium ${style.text} leading-tight line-clamp-2`}>
+                            <div className="flex-1 min-w-0 flex items-center gap-1.5 flex-wrap min-h-[1.125rem]">
+                              <span className={`min-w-0 text-[11px] font-medium ${style.text} leading-snug line-clamp-2`}>
                                 {section.label}
                               </span>
-                              {sectionStats.answered > 0 && (
-                                <>
-                                  <MetaDivider />
-                                  <ProgressBadge
-                                    answered={sectionStats.answered}
-                                    total={sectionStats.total}
-                                  />
-                                </>
-                              )}
                               <MetaDivider />
-                              <span className="shrink-0 text-[9px] text-slate-400 tabular-nums">
+                              <span className="shrink-0 text-[10px] text-slate-400 tabular-nums">
                                 {sectionStats.total}문항
                               </span>
                             </div>
@@ -388,7 +398,7 @@ export default function HomeScreen({
     : null
 
   const [studyView, setStudyView] = useState('year')
-  const [expandedParts, setExpandedParts] = useState(() => new Set(CURRICULUM.parts.map(p => p.id)))
+  const [expandedParts, setExpandedParts] = useState(() => new Set())
   const [expandedChapters, setExpandedChapters] = useState(() => new Set())
 
   const togglePart = (partId) => {
@@ -478,36 +488,19 @@ export default function HomeScreen({
             </div>
           ) : (
             <div className="flex flex-col gap-2">
-              <div className="grid grid-cols-2 gap-2 items-start">
-                {CURRICULUM.parts.slice(0, 2).map(part => (
-                  <CurriculumPartBlock
-                    key={part.id}
-                    part={part}
-                    exams={exams}
-                    getExamStats={getExamStats}
-                    expandedParts={expandedParts}
-                    togglePart={togglePart}
-                    expandedChapters={expandedChapters}
-                    toggleChapterSections={toggleChapterSections}
-                    onStartStudy={onStartStudy}
-                  />
-                ))}
-              </div>
-              <div className="grid grid-cols-2 gap-2 items-start">
-                {CURRICULUM.parts.slice(2).map(part => (
-                  <CurriculumPartBlock
-                    key={part.id}
-                    part={part}
-                    exams={exams}
-                    getExamStats={getExamStats}
-                    expandedParts={expandedParts}
-                    togglePart={togglePart}
-                    expandedChapters={expandedChapters}
-                    toggleChapterSections={toggleChapterSections}
-                    onStartStudy={onStartStudy}
-                  />
-                ))}
-              </div>
+              {CURRICULUM.parts.map(part => (
+                <CurriculumPartBlock
+                  key={part.id}
+                  part={part}
+                  exams={exams}
+                  getExamStats={getExamStats}
+                  expandedParts={expandedParts}
+                  togglePart={togglePart}
+                  expandedChapters={expandedChapters}
+                  toggleChapterSections={toggleChapterSections}
+                  onStartStudy={onStartStudy}
+                />
+              ))}
             </div>
           )}
         </section>
