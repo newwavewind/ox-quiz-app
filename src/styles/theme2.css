@@ -264,20 +264,21 @@ html[data-design-theme='theme2']:not(.dark) #root .home-year-btn:hover {
   background-color: #faf6f3 !important;
 }
 
-html[data-design-theme='theme2']:not(.dark) #root .home-year-chip {
-  background-color: var(--color-fog) !important;
-  border-color: rgba(93, 42, 26, 0.35) !important;
-}
-
 html[data-design-theme='theme2']:not(.dark) #root .home-year-text-strong,
-html[data-design-theme='theme2']:not(.dark) #root .home-year-text-soft,
-html[data-design-theme='theme2']:not(.dark) #root .home-year-progress-rate,
-html[data-design-theme='theme2']:not(.dark) #root .home-year-progress-count {
+html[data-design-theme='theme2']:not(.dark) #root .home-year-text-soft {
   color: var(--color-ink) !important;
 }
 
-html[data-design-theme='theme2']:not(.dark) #root .home-year-progress-badge {
-  background-color: var(--color-warm-mist) !important;
+html[data-design-theme='theme2']:not(.dark) #root .home-year-pct-active {
+  color: var(--color-terracotta) !important;
+}
+
+html[data-design-theme='theme2']:not(.dark) #root .home-year-bar-wrap {
+  background-color: rgba(93, 42, 26, 0.12) !important;
+}
+
+html[data-design-theme='theme2']:not(.dark) #root .home-year-bar-active {
+  background-color: var(--color-terracotta) !important;
 }
 
 html[data-design-theme='theme2']:not(.dark) #root .home-today-section {
@@ -365,20 +366,21 @@ html.dark[data-design-theme='theme2'] #root .home-year-btn:hover {
   background-color: #2c3038 !important;
 }
 
-html.dark[data-design-theme='theme2'] #root .home-year-chip {
-  background-color: rgba(251, 225, 209, 0.08) !important;
-  border-color: rgba(196, 154, 138, 0.4) !important;
-}
-
 html.dark[data-design-theme='theme2'] #root .home-year-text-strong,
-html.dark[data-design-theme='theme2'] #root .home-year-text-soft,
-html.dark[data-design-theme='theme2'] #root .home-year-progress-rate,
-html.dark[data-design-theme='theme2'] #root .home-year-progress-count {
+html.dark[data-design-theme='theme2'] #root .home-year-text-soft {
   color: #f7f7f8 !important;
 }
 
-html.dark[data-design-theme='theme2'] #root .home-year-progress-badge {
+html.dark[data-design-theme='theme2'] #root .home-year-pct-active {
+  color: var(--color-warm-mist) !important;
+}
+
+html.dark[data-design-theme='theme2'] #root .home-year-bar-wrap {
   background-color: rgba(251, 225, 209, 0.12) !important;
+}
+
+html.dark[data-design-theme='theme2'] #root .home-year-bar-active {
+  background-color: rgba(196, 154, 138, 0.85) !important;
 }
 
 html.dark[data-design-theme='theme2'] #root .home-today-section {

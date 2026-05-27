@@ -15,21 +15,7 @@ const STUDY_VIEWS = {
   category: { label: '목차별 학습', todayTitle: '목차별' },
 }
 
-function ProgressBadge({ answered, total, rate, variant = 'default' }) {
-  if (variant === 'year') {
-    const progressRate = total > 0 ? Math.round((answered / total) * 100) : 0
-    return (
-      <span className="mt-1 inline-flex items-center gap-1 rounded-lg home-year-progress-badge px-1.5 py-0.5 tabular-nums shadow-sm">
-        <span className="text-xs font-extrabold leading-none home-year-progress-rate">
-          {progressRate}%
-        </span>
-        <span className="text-xs font-semibold leading-none home-year-progress-count">
-          {answered}/{total}
-        </span>
-      </span>
-    )
-  }
-
+function ProgressBadge({ answered, total }) {
   if (answered === 0) return null
 
   const progressRate = total > 0 ? Math.round((answered / total) * 100) : 0
@@ -38,6 +24,39 @@ function ProgressBadge({ answered, total, rate, variant = 'default' }) {
     <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 tabular-nums whitespace-nowrap">
       {answered}/{total} · {progressRate}%
     </span>
+  )
+}
+
+function YearStudyButton({ year, round, answered, total, onClick }) {
+  const progressRate = total > 0 ? Math.round((answered / total) * 100) : 0
+  const state = progressRate === 0 ? 'idle' : progressRate === 100 ? 'done' : 'active'
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="w-full flex flex-col items-stretch min-h-[2.75rem] home-year-btn rounded-xl px-3 pt-2.5 pb-0 text-left overflow-hidden active:scale-[0.99]"
+    >
+      <div className="flex items-start justify-between gap-2 pb-2">
+        <span className="min-w-0">
+          <span className="block text-sm font-bold tabular-nums leading-tight home-year-text-strong">
+            {year}년
+          </span>
+          <span className="block text-[11px] home-year-text-soft mt-0.5">
+            {round != null ? `제${round}회 · ` : ''}{total}문항
+          </span>
+        </span>
+        <span className={`shrink-0 text-[11px] font-bold tabular-nums home-year-pct home-year-pct-${state}`}>
+          {progressRate}%
+        </span>
+      </div>
+      <div className="home-year-bar-wrap -mx-3" aria-hidden="true">
+        <div
+          className={`home-year-bar home-year-bar-${state}`}
+          style={{ width: `${progressRate}%` }}
+        />
+      </div>
+    </button>
   )
 }
 
@@ -207,7 +226,6 @@ function CurriculumPartBlock({
                             <ProgressBadge
                               answered={chapterStats.answered}
                               total={chapterStats.total}
-                              rate={chapterStats.rate}
                             />
                           </>
                         )}
@@ -269,7 +287,6 @@ function CurriculumPartBlock({
                                   <ProgressBadge
                                     answered={sectionStats.answered}
                                     total={sectionStats.total}
-                                    rate={sectionStats.rate}
                                   />
                                 </>
                               )}
@@ -428,25 +445,15 @@ export default function HomeScreen({
                 onOpen={onOpenWrongNotes}
               />
               <div className="grid grid-cols-2 gap-2">
-              {activeYears.map(({ year, round, answered, total, rate }) => (
-                <button
+              {activeYears.map(({ year, round, answered, total }) => (
+                <YearStudyButton
                   key={year}
-                  type="button"
+                  year={year}
+                  round={round}
+                  answered={answered}
+                  total={total}
                   onClick={() => onStartStudyByYear(year)}
-                  className="w-full flex flex-col items-center justify-center min-h-[2.75rem] home-year-btn rounded-xl px-3 py-2.5 text-center active:scale-[0.99]"
-                >
-                  <span className="flex flex-col items-center gap-1">
-                    <span className="inline-flex items-center rounded-lg home-year-chip px-2.5 py-1 shadow-sm">
-                      <span className="text-lg font-extrabold tabular-nums leading-none tracking-tight home-year-text-strong">
-                        {year}년
-                      </span>
-                    </span>
-                    {round != null && (
-                      <span className="text-xs font-medium home-year-text-soft">제{round}회</span>
-                    )}
-                  </span>
-                  <ProgressBadge answered={answered} total={total} rate={rate} variant="year" />
-                </button>
+                />
               ))}
               </div>
             </>

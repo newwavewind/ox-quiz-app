@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>기출연도 버튼 디자인 미리보기</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --soft: #94a3b8;
+      --border: #e2e8f0;
+      --violet-50: #f5f3ff;
+      --violet-200: #ddd6fe;
+      --violet-400: #a78bfa;
+      --violet-600: #7c3aed;
+      --violet-950: #2e1065;
+      --indigo-500: #6366f1;
+      --emerald-500: #10b981;
+    }
+    html.dark {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --soft: #64748b;
+      --border: #334155;
+      --violet-50: rgba(46, 16, 101, 0.4);
+      --violet-200: #5b21b6;
+      --violet-400: #8b5cf6;
+      --violet-600: #c4b5fd;
+      --violet-950: rgba(46, 16, 101, 0.6);
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 20px 16px 48px;
+    }
+    h1 { font-size: 18px; margin: 0 0 6px; }
+    .sub { font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.5; }
+    .controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
+    .controls button {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .controls button.active {
+      background: var(--indigo-500);
+      color: #fff;
+      border-color: var(--indigo-500);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 14px;
+      max-width: 720px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+    }
+    .card h2 { font-size: 13px; margin: 0 0 4px; }
+    .card p { font-size: 11px; color: var(--muted); margin: 0 0 12px; line-height: 1.45; }
+    .year-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .year-btn {
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      text-align: center;
+      transition: transform 0.1s, box-shadow 0.15s;
+    }
+    .year-btn:active { transform: scale(0.99); }
+
+    /* Current */
+    .current-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 2.75rem;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--violet-50);
+      border: 1px solid var(--violet-200);
+    }
+    .current-btn:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .current-chip {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 8px;
+      border: 1px solid var(--violet-400);
+      background: rgba(255,255,255,0.95);
+      padding: 4px 10px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
+    html.dark .current-chip { background: var(--violet-950); }
+    .current-year { font-size: 18px; font-weight: 800; color: var(--violet-950); line-height: 1; }
+    html.dark .current-year { color: #f5f3ff; }
+    .current-round { font-size: 12px; font-weight: 500; color: var(--violet-600); margin-top: 4px; }
+    .current-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.95);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+      font-variant-numeric: tabular-nums;
+    }
+    html.dark .current-badge { background: var(--violet-950); }
+    .current-rate { font-size: 12px; font-weight: 800; color: #6d28d9; }
+    html.dark .current-rate { color: #ddd6fe; }
+    .current-count { font-size: 12px; font-weight: 600; color: #8b5cf6; }
+    html.dark .current-count { color: #a78bfa; }
+
+    /* A · Simple card */
+    .a-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 3.25rem;
+      padding: 12px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+    }
+    html.dark .a-btn { background: rgba(51, 65, 85, 0.5); }
+    .a-btn:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-color: #cbd5e1; }
+    .a-year { font-size: 14px; font-weight: 700; color: var(--text); }
+    .a-round { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .a-count { font-size: 10px; color: var(--soft); margin-top: 2px; }
+    .a-progress { font-size: 10px; font-weight: 600; color: var(--muted); margin-top: 4px; font-variant-numeric: tabular-nums; }
+
+    /* B · One-line meta */
+    .b-btn {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-height: 2.75rem;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      text-align: left;
+    }
+    .b-btn:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-color: #cbd5e1; }
+    .b-left { min-width: 0; }
+    .b-year { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .b-round { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .b-meta {
+      flex-shrink: 0;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .b-meta.empty { color: var(--soft); }
+
+    /* C · Progress bar */
+    .c-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      min-height: 2.75rem;
+      padding: 10px 12px 0;
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .c-btn:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .c-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; padding-bottom: 8px; }
+    .c-year { font-size: 14px; font-weight: 700; color: var(--text); }
+    .c-round { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .c-pct { font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--muted); }
+    .c-pct.done { color: var(--emerald-500); }
+    .c-pct.active { color: var(--indigo-500); }
+    .c-bar-wrap {
+      height: 4px;
+      background: #e2e8f0;
+      margin: 0 -12px;
+    }
+    html.dark .c-bar-wrap { background: #334155; }
+    .c-bar {
+      height: 100%;
+      border-radius: 0 2px 2px 0;
+      transition: width 0.2s;
+    }
+    .c-bar.idle { background: #cbd5e1; width: 0%; }
+    html.dark .c-bar.idle { background: #475569; }
+    .c-bar.active { background: var(--indigo-500); }
+    .c-bar.done { background: var(--emerald-500); }
+
+    .legend {
+      margin-top: 20px;
+      max-width: 720px;
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .legend strong { color: var(--text); }
+  </style>
+</head>
+<body>
+  <h1>기출연도 버튼 디자인 미리보기</h1>
+  <p class="sub">현재 디자인과 A/B/C안을 2열 그리드로 비교합니다. 진행 중·미시작·완료 상태를 함께 확인하세요.</p>
+  <div class="controls">
+    <button type="button" id="btn-light" class="active">라이트</button>
+    <button type="button" id="btn-dark">다크</button>
+  </div>
+  <div class="grid" id="grid"></div>
+  <p class="legend">
+    <strong>현재</strong> violet chip + progress badge ·
+    <strong>A</strong> ExamScreen 톤 심플 카드 ·
+    <strong>B</strong> 목차별 장과 동일 한 줄 메타 ·
+    <strong>C</strong> 하단 진행률 바<br />
+    마음에 드는 안(A/B/C)을 채팅으로 알려주세요.
+  </p>
+  <script>
+    const samples = [
+      { year: 2025, round: 36, answered: 10, total: 40, label: '진행 중' },
+      { year: 2024, round: 35, answered: 0, total: 40, label: '미시작' },
+      { year: 2023, round: 34, answered: 40, total: 40, label: '완료' },
+    ]
+
+    function pct(answered, total) {
+      return total > 0 ? Math.round((answered / total) * 100) : 0
+    }
+
+    function renderCurrent(item) {
+      const p = pct(item.answered, item.total)
+      return `<button type="button" class="year-btn current-btn">
+        <span style="display:flex;flex-direction:column;align-items:center;gap:4px">
+          <span class="current-chip"><span class="current-year">${item.year}년</span></span>
+          <span class="current-round">제${item.round}회</span>
+        </span>
+        <span class="current-badge">
+          <span class="current-rate">${p}%</span>
+          <span class="current-count">${item.answered}/${item.total}</span>
+        </span>
+      </button>`
+    }
+
+    function renderA(item) {
+      const p = pct(item.answered, item.total)
+      const progress = item.answered > 0
+        ? `<span class="a-progress">${item.answered}/${item.total} · ${p}%</span>`
+        : ''
+      return `<button type="button" class="year-btn a-btn">
+        <span class="a-year">${item.year}년</span>
+        <span class="a-round">제${item.round}회</span>
+        <span class="a-count">${item.total}문항</span>
+        ${progress}
+      </button>`
+    }
+
+    function renderB(item) {
+      const p = pct(item.answered, item.total)
+      const meta = item.answered > 0
+        ? `${item.answered}/${item.total} · ${p}%`
+        : `${item.total}문항`
+      const metaClass = item.answered > 0 ? 'b-meta' : 'b-meta empty'
+      return `<button type="button" class="year-btn b-btn">
+        <span class="b-left">
+          <div class="b-year">${item.year}년</div>
+          <div class="b-round">제${item.round}회</div>
+        </span>
+        <span class="${metaClass}">${meta}</span>
+      </button>`
+    }
+
+    function renderC(item) {
+      const p = pct(item.answered, item.total)
+      const barClass = p === 0 ? 'idle' : p === 100 ? 'done' : 'active'
+      const pctClass = p === 0 ? 'c-pct' : p === 100 ? 'c-pct done' : 'c-pct active'
+      return `<button type="button" class="year-btn c-btn">
+        <div class="c-top">
+          <span>
+            <div class="c-year">${item.year}년</div>
+            <div class="c-round">제${item.round}회 · ${item.total}문항</div>
+          </span>
+          <span class="${pctClass}">${p}%</span>
+        </div>
+        <div class="c-bar-wrap"><div class="c-bar ${barClass}" style="width:${p}%"></div></div>
+      </button>`
+    }
+
+    const blocks = [
+      { id: 'current', title: '현재', desc: 'violet chip + progress badge. 3겹 구조로 다소 무거움.', render: renderCurrent },
+      { id: 'A', title: 'A · 심플 카드', desc: '시험 탭과 같은 슬레이트 톤. 진행 시에만 작은 progress 텍스트.', render: renderA },
+      { id: 'B', title: 'B · 한 줄 메타', desc: '왼쪽 연도·회차, 오른쪽 10/40 · 25%. 목차별 장 버튼과 톤 통일.', render: renderB },
+      { id: 'C', title: 'C · 진행률 바', desc: '카드 하단 얇은 progress bar. 0% 회색 / 진행 indigo / 100% emerald.', render: renderC },
+    ]
+
+    function yearGrid(renderFn) {
+      return `<div class="year-grid">${samples.map(renderFn).join('')}</div>`
+    }
+
+    function paint() {
+      document.getElementById('grid').innerHTML = blocks.map(b => `
+        <div class="card">
+          <h2>${b.title}</h2>
+          <p>${b.desc}</p>
+          ${yearGrid(b.render)}
+        </div>
+      `).join('')
+    }
+
+    document.getElementById('btn-light').onclick = () => {
+      document.documentElement.classList.remove('dark')
+      document.getElementById('btn-light').classList.add('active')
+      document.getElementById('btn-dark').classList.remove('active')
+    }
+    document.getElementById('btn-dark').onclick = () => {
+      document.documentElement.classList.add('dark')
+      document.getElementById('btn-dark').classList.add('active')
+      document.getElementById('btn-light').classList.remove('active')
+    }
+    paint()
+  </script>
+</body>
+</html>

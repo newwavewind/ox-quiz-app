@@ -411,33 +411,48 @@
   }
 
   .home-year-btn {
-    @apply bg-violet-50 border border-violet-200
-      dark:bg-violet-950/40 dark:border-violet-800
-      hover:shadow-md dark:hover:bg-violet-950/60 transition-all duration-150;
-  }
-
-  .home-year-chip {
-    @apply border border-violet-400/80 dark:border-violet-500 bg-white/95 dark:bg-violet-950/80;
+    @apply bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700
+      hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-150;
   }
 
   .home-year-text-strong {
-    @apply text-violet-950 dark:text-violet-50;
+    @apply text-slate-800 dark:text-slate-100;
   }
 
   .home-year-text-soft {
-    @apply text-violet-600/90 dark:text-violet-300/90;
+    @apply text-slate-500 dark:text-slate-400;
   }
 
-  .home-year-progress-badge {
-    @apply bg-white/95 dark:bg-violet-950/60;
+  .home-year-pct-idle {
+    @apply text-slate-400 dark:text-slate-500;
   }
 
-  .home-year-progress-rate {
-    @apply text-violet-700 dark:text-violet-200;
+  .home-year-pct-active {
+    @apply text-indigo-600 dark:text-indigo-400;
   }
 
-  .home-year-progress-count {
-    @apply text-violet-500 dark:text-violet-400;
+  .home-year-pct-done {
+    @apply text-emerald-600 dark:text-emerald-400;
+  }
+
+  .home-year-bar-wrap {
+    @apply h-1 bg-slate-200 dark:bg-slate-700;
+  }
+
+  .home-year-bar {
+    @apply h-full transition-[width] duration-200;
+  }
+
+  .home-year-bar-idle {
+    @apply bg-slate-300 dark:bg-slate-600;
+  }
+
+  .home-year-bar-active {
+    @apply bg-indigo-500;
+  }
+
+  .home-year-bar-done {
+    @apply bg-emerald-500;
   }
 
   .home-today-section {
