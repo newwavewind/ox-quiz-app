@@ -821,6 +821,19 @@ function App() {
       )}
       {renderStudySlot('home')}
       {renderStudySlot('exam')}
+      <div className={screen === 'index' ? undefined : 'hidden'} aria-hidden={screen !== 'index'}>
+        <IndexScreen exams={allExams} savedNotes={notes} onToggleNote={toggleStudyNote} />
+      </div>
+      <div className={screen === 'notes' ? undefined : 'hidden'} aria-hidden={screen !== 'notes'}>
+        <NotesScreen
+          notes={notes}
+          onToggleNote={removeStudyNote}
+          onToggleImportant={toggleNoteImportant}
+          onOpenQuestion={examId => {
+            openStudy({ examId, highlightTerm: null }, 'notes')
+          }}
+        />
+      </div>
       {screen === 'exam' ? (
         <ExamScreen
           exams={allExams}
@@ -848,17 +861,6 @@ function App() {
               year: null,
               examId: null,
             }, 'home')
-          }}
-        />
-      ) : screen === 'index' ? (
-        <IndexScreen exams={allExams} savedNotes={notes} onToggleNote={toggleStudyNote} />
-      ) : screen === 'notes' ? (
-        <NotesScreen
-          notes={notes}
-          onToggleNote={removeStudyNote}
-          onToggleImportant={toggleNoteImportant}
-          onOpenQuestion={examId => {
-            openStudy({ examId, highlightTerm: null }, 'notes')
           }}
         />
       ) : screen === 'community' ? (
