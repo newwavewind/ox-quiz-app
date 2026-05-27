@@ -66,6 +66,7 @@ import {
   removeExamWrongNote,
   sortExamWrongNoteIds,
 } from './data/examWrongNotes'
+import { buildStudyNote, makeNoteId } from './data/studyNotes'
 
 const STORAGE_KEY = 'ox_quiz_progress_v2'
 const NOTES_STORAGE_KEY = 'ox_quiz_notes_v1'

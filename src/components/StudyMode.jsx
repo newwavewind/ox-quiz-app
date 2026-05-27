@@ -1165,6 +1165,8 @@ export default function StudyMode({
                       isPastExamRetry ? undefined : no => setPastExamDraftFinal(e.id, no)
                     }
                     highlightTerm={highlightTerm}
+                    savedNotes={savedNotes}
+                    onToggleNote={onToggleNote}
                     inExamWrongNotes={isInExamWrongNotes?.(e.id)}
                     onToggleExamWrongNote={onToggleExamWrongNote}
                     perQuestionReveal={isExamWrongNotes}
