@@ -50,6 +50,23 @@ function MetaDivider() {
   )
 }
 
+function WrongNoteShortcut({ kind, count, onOpen }) {
+  if (!count || !onOpen) return null
+  return (
+    <button
+      type="button"
+      onClick={() => onOpen(kind)}
+      className="inline-flex items-center gap-1 rounded-md border border-slate-200 dark:border-slate-700 px-2 py-1 text-[11px] font-medium text-slate-500 dark:text-slate-400 hover:border-slate-300 hover:text-indigo-600 dark:hover:border-slate-600 dark:hover:text-indigo-400 transition-colors"
+    >
+      <span>{`오답노트 · ${STUDY_VIEWS[kind].todayTitle}`}</span>
+      <span className="text-slate-300 dark:text-slate-600" aria-hidden="true">
+        ·
+      </span>
+      <span className="tabular-nums text-rose-500/80 dark:text-rose-400/80">{count}문항</span>
+    </button>
+  )
+}
+
 function StudyViewSwitcher({ view, onChange }) {
   const tabClass = (active, id) => {
     if (!active) {
@@ -354,8 +371,6 @@ export default function HomeScreen({
 
   const chapterCount = countCurriculumChapters()
 
-  const wrongNoteKinds = ['year', 'category'].filter(kind => (wrongCounts[kind] ?? 0) > 0)
-
   return (
     <div className="home-screen-bg">
       <div className="home-header sticky top-0 z-10 pt-[env(safe-area-inset-top,0px)]">
@@ -402,31 +417,17 @@ export default function HomeScreen({
           </div>
         </section>
 
-        {wrongNoteKinds.length > 0 && onOpenWrongNotes && (
-          <div className={`grid gap-2 ${wrongNoteKinds.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
-            {wrongNoteKinds.map(kind => (
-              <button
-                key={kind}
-                type="button"
-                onClick={() => onOpenWrongNotes(kind)}
-                className="w-full flex items-center justify-center gap-2 home-card-interactive px-3 py-3.5 text-center"
-              >
-                <span className="text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 leading-tight">
-                  {`오답노트 · ${STUDY_VIEWS[kind].todayTitle}`}
-                </span>
-                <span className="shrink-0 text-xs font-semibold home-wrong-count rounded-full px-2 py-1 tabular-nums">
-                  {wrongCounts[kind]}문항
-                </span>
-              </button>
-            ))}
-          </div>
-        )}
-
         <section className="space-y-2">
           <StudyViewSwitcher view={studyView} onChange={setStudyView} />
 
           {studyView === 'year' ? (
-            <div className="grid grid-cols-2 gap-2">
+            <>
+              <WrongNoteShortcut
+                kind="year"
+                count={wrongCounts.year ?? 0}
+                onOpen={onOpenWrongNotes}
+              />
+              <div className="grid grid-cols-2 gap-2">
               {activeYears.map(({ year, round, answered, total, rate }) => (
                 <button
                   key={year}
@@ -447,9 +448,16 @@ export default function HomeScreen({
                   <ProgressBadge answered={answered} total={total} rate={rate} variant="year" />
                 </button>
               ))}
-            </div>
+              </div>
+            </>
           ) : (
-            <div className="flex flex-col gap-2">
+            <>
+              <WrongNoteShortcut
+                kind="category"
+                count={wrongCounts.category ?? 0}
+                onOpen={onOpenWrongNotes}
+              />
+              <div className="flex flex-col gap-2">
               <div className="grid grid-cols-2 gap-2 items-start">
                 {CURRICULUM.parts.slice(0, 2).map(part => (
                   <CurriculumPartBlock
@@ -481,6 +489,7 @@ export default function HomeScreen({
                 ))}
               </div>
             </div>
+            </>
           )}
         </section>
 
