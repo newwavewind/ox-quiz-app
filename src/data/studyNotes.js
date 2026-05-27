@@ -62,10 +62,10 @@ export function noteToAiContext(note) {
 
 export { formatStudyTime }
 
-export function listNotes(notesMap, { importantOnly = false } = {}) {
+export function listNotes(notesMap, { importantOnly = false, sort = 'recent' } = {}) {
   let list = Object.values(notesMap)
   if (importantOnly) list = list.filter(n => n.important)
-  return list.sort((a, b) => b.savedAt - a.savedAt)
+  return list.sort((a, b) => (sort === 'oldest' ? a.savedAt - b.savedAt : b.savedAt - a.savedAt))
 }
 
 export function countImportantNotes(notesMap) {

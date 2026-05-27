@@ -51,25 +51,34 @@ function MetaDivider() {
 }
 
 function StudyViewSwitcher({ view, onChange }) {
+  const tabClass = (active, id) => {
+    if (!active) {
+      return 'font-medium text-slate-400 dark:text-slate-500 border-transparent hover:text-slate-600 dark:hover:text-slate-300'
+    }
+    return id === 'year'
+      ? 'font-bold text-slate-900 dark:text-slate-100 border-indigo-500'
+      : 'font-bold text-slate-900 dark:text-slate-100 border-violet-500'
+  }
+
   return (
-    <div className="grid grid-cols-2 gap-2" role="tablist" aria-label="학습 보기">
-      {(['year', 'category']).map(id => {
-        const active = view === id
-        return (
-          <button
-            key={id}
-            type="button"
-            role="tab"
-            aria-selected={active}
-            onClick={() => onChange(id)}
-            className={`py-2.5 px-2 rounded-xl text-sm font-semibold text-center transition-all active:scale-[0.99] ${
-              active ? 'home-view-label' : 'home-view-tab'
-            }`}
-          >
-            {STUDY_VIEWS[id].label}
-          </button>
-        )
-      })}
+    <div className="border-b border-slate-200 dark:border-slate-700" role="tablist" aria-label="학습 보기">
+      <div className="flex gap-4">
+        {(['year', 'category']).map(id => {
+          const active = view === id
+          return (
+            <button
+              key={id}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => onChange(id)}
+              className={`flex-1 pb-2.5 pt-1 text-sm text-center transition-colors border-b-2 -mb-px active:scale-[0.99] ${tabClass(active, id)}`}
+            >
+              {STUDY_VIEWS[id].label}
+            </button>
+          )
+        })}
+      </div>
     </div>
   )
 }
@@ -403,7 +412,7 @@ export default function HomeScreen({
                 className="w-full flex items-center justify-center gap-2 home-card-interactive px-3 py-3.5 text-center"
               >
                 <span className="text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 leading-tight">
-                  {`전체 학습 · ${STUDY_VIEWS[kind].todayTitle}`}
+                  {`오답노트 · ${STUDY_VIEWS[kind].todayTitle}`}
                 </span>
                 <span className="shrink-0 text-xs font-semibold home-wrong-count rounded-full px-2 py-1 tabular-nums">
                   {wrongCounts[kind]}문항

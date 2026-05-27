@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import AiLinkButtons from './AiLinkButtons'
 
@@ -27,10 +27,110 @@ const PAGE_SIZE_OPTIONS = [
 
 ]
 
-function noteChipClass(active) {
-  return active
-    ? 'bg-indigo-50 text-indigo-700 border-indigo-300 ring-1 ring-indigo-200/80 dark:bg-indigo-950/40 dark:text-indigo-200 dark:border-indigo-700 dark:ring-indigo-800/60'
-    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-600 dark:hover:border-slate-500'
+const SORT_OPTIONS = [
+  { value: 'recent', label: '최신순' },
+  { value: 'oldest', label: '과거순' },
+]
+
+function noteFilterTabClass(active, kind) {
+  if (!active) {
+    return 'font-medium text-slate-400 dark:text-slate-500 border-transparent hover:text-slate-600 dark:hover:text-slate-300'
+  }
+  if (kind === 'important') {
+    return 'font-bold text-slate-900 dark:text-slate-100 border-amber-500'
+  }
+  return 'font-bold text-slate-900 dark:text-slate-100 border-indigo-500'
+}
+
+function NoteSelectChip({ value, options, onChange, ariaLabel, align = 'left' }) {
+  const [open, setOpen] = useState(false)
+  const rootRef = useRef(null)
+  const selected = options.find(opt => String(opt.value) === String(value)) ?? options[0]
+
+  useEffect(() => {
+    if (!open) return undefined
+    const onDocClick = e => {
+      if (!rootRef.current?.contains(e.target)) setOpen(false)
+    }
+    const onKey = e => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('mousedown', onDocClick)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onDocClick)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [open])
+
+  return (
+    <div ref={rootRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(prev => !prev)}
+        aria-label={ariaLabel}
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        className={`inline-flex items-center gap-0.5 rounded-md px-1 py-0.5 text-[11px] font-medium transition-colors ${
+          open
+            ? 'text-slate-700 dark:text-slate-200'
+            : 'text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300'
+        }`}
+      >
+        <span className="whitespace-nowrap">{selected.label}</span>
+        <svg
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden
+          className={`w-2.5 h-2.5 shrink-0 opacity-45 transition-transform ${open ? 'rotate-180' : ''}`}
+        >
+          <path
+            fillRule="evenodd"
+            d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
+            clipRule="evenodd"
+          />
+        </svg>
+      </button>
+      {open && (
+        <ul
+          role="listbox"
+          aria-label={ariaLabel}
+          className={`absolute top-full mt-1.5 z-20 min-w-[8.75rem] overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-600 dark:bg-slate-800 ${
+            align === 'right' ? 'right-0' : 'left-0'
+          }`}
+        >
+          {options.map(opt => {
+            const active = String(opt.value) === String(value)
+            return (
+              <li key={String(opt.value)} role="presentation">
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={active}
+                  onClick={() => {
+                    onChange(opt.value)
+                    setOpen(false)
+                  }}
+                  className={`flex w-full items-center justify-between gap-2 px-3 py-2 text-[11px] font-medium transition-colors whitespace-nowrap ${
+                    active
+                      ? 'text-indigo-700 bg-indigo-50/80 dark:text-indigo-200 dark:bg-indigo-950/40'
+                      : 'text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/40'
+                  }`}
+                >
+                  <span>{opt.label}</span>
+                  {active ? (
+                    <span className="text-indigo-500 dark:text-indigo-300 text-[10px]" aria-hidden>
+                      ✓
+                    </span>
+                  ) : null}
+                </button>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </div>
+  )
 }
 
 
@@ -207,12 +307,13 @@ function NoteCard({ note, onToggleNote, onToggleImportant, onOpenQuestion }) {
 
 export default function NotesScreen({ notes, onToggleNote, onToggleImportant, onOpenQuestion }) {
   const [noteFilter, setNoteFilter] = useState('all')
+  const [sortOrder, setSortOrder] = useState('recent')
 
   const importantCount = useMemo(() => countImportantNotes(notes), [notes])
 
   const sorted = useMemo(
-    () => listNotes(notes, { importantOnly: noteFilter === 'important' }),
-    [notes, noteFilter]
+    () => listNotes(notes, { importantOnly: noteFilter === 'important', sort: sortOrder }),
+    [notes, noteFilter, sortOrder]
   )
 
   const [pageSize, setPageSize] = useState(10)
@@ -254,7 +355,7 @@ export default function NotesScreen({ notes, onToggleNote, onToggleImportant, on
 
   useEffect(() => {
     setPage(1)
-  }, [pageSize, sorted.length, noteFilter])
+  }, [pageSize, sorted.length, noteFilter, sortOrder])
 
 
 
@@ -292,47 +393,53 @@ export default function NotesScreen({ notes, onToggleNote, onToggleImportant, on
       <div className="max-w-2xl mx-auto px-4 py-5 space-y-4">
 
         {Object.keys(notes).length > 0 && (
-          <div className="space-y-3">
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setNoteFilter('all')}
-                className={`flex-1 py-2 rounded-lg text-xs font-semibold border transition-colors ${noteChipClass(noteFilter === 'all')}`}
-              >
-                전체
-              </button>
-              <button
-                type="button"
-                onClick={() => setNoteFilter('important')}
-                className={`flex-1 py-2 rounded-lg text-xs font-semibold border transition-colors ${
-                  noteFilter === 'important'
-                    ? 'bg-amber-500 text-white border-amber-500'
-                    : 'bg-white text-slate-600 border-slate-200 hover:border-amber-300'
-                }`}
-              >
-                ★ 중요만 ({importantCount})
-              </button>
+          <div className="space-y-2">
+            <div className="border-b border-slate-200 dark:border-slate-700">
+              <div className="flex gap-4">
+                <button
+                  type="button"
+                  onClick={() => setNoteFilter('all')}
+                  className={`flex-1 pb-2.5 pt-1 text-xs transition-colors border-b-2 -mb-px ${noteFilterTabClass(noteFilter === 'all', 'all')}`}
+                >
+                  전체
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setNoteFilter('important')}
+                  className={`flex-1 pb-2.5 pt-1 text-xs transition-colors border-b-2 -mb-px ${noteFilterTabClass(noteFilter === 'important', 'important')}`}
+                >
+                  ★ 중요만 ({importantCount})
+                </button>
+              </div>
             </div>
 
             {sorted.length > 0 && (
               <>
-                <div className="flex flex-wrap gap-1.5">
-                  {PAGE_SIZE_OPTIONS.map(opt => (
-                    <button
-                      key={String(opt.value)}
-                      type="button"
-                      onClick={() => changePageSize(opt.value)}
-                      className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${noteChipClass(pageSize === opt.value)}`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                {!isAll && sorted.length > pageSize && (
-                  <p className="text-xs text-slate-500">
-                    {rangeStart}–{rangeEnd} / {sorted.length}개 · {page} / {totalPages}페이지
+                <div className="flex items-center justify-between gap-3 pt-0.5">
+                  <p className="text-[11px] text-slate-400 tabular-nums">
+                    {!isAll && sorted.length > pageSize
+                      ? `${rangeStart}–${rangeEnd} / ${sorted.length}개 · ${page}/${totalPages}`
+                      : `${sorted.length}개`}
                   </p>
-                )}
+                  <div className="flex items-center gap-1 shrink-0 rounded-lg border border-slate-200/70 dark:border-slate-600/45 px-2 py-1">
+                    <NoteSelectChip
+                      value={pageSize}
+                      options={PAGE_SIZE_OPTIONS}
+                      onChange={changePageSize}
+                      ariaLabel="페이지당 표시 개수"
+                    />
+                    <span className="text-slate-300 dark:text-slate-600 text-[10px]" aria-hidden>
+                      ·
+                    </span>
+                    <NoteSelectChip
+                      value={sortOrder}
+                      options={SORT_OPTIONS}
+                      onChange={setSortOrder}
+                      ariaLabel="정렬 순서"
+                      align="right"
+                    />
+                  </div>
+                </div>
               </>
             )}
           </div>
