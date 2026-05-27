@@ -7,25 +7,25 @@ export const PART_STYLES = {
     light: 'bg-blue-50 dark:bg-blue-950/30',
     border: 'border-blue-200 dark:border-blue-800',
     text: 'text-blue-700 dark:text-blue-300',
-    header: 'bg-blue-600 text-white border-blue-600',
+    header: 'bg-blue-50/90 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-100 dark:border-blue-800/60',
   },
   emerald: {
     light: 'bg-emerald-50 dark:bg-emerald-950/30',
     border: 'border-emerald-200 dark:border-emerald-800',
     text: 'text-emerald-700 dark:text-emerald-300',
-    header: 'bg-emerald-600 text-white border-emerald-600',
+    header: 'bg-emerald-50/90 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-100 dark:border-emerald-800/60',
   },
   amber: {
     light: 'bg-amber-50 dark:bg-amber-950/30',
     border: 'border-amber-200 dark:border-amber-800',
     text: 'text-amber-800 dark:text-amber-300',
-    header: 'bg-amber-600 text-white border-amber-600',
+    header: 'bg-amber-50/90 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border-amber-100 dark:border-amber-800/60',
   },
   rose: {
     light: 'bg-rose-50 dark:bg-rose-950/30',
     border: 'border-rose-200 dark:border-rose-800',
     text: 'text-rose-700 dark:text-rose-300',
-    header: 'bg-rose-600 text-white border-rose-600',
+    header: 'bg-rose-50/90 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-100 dark:border-rose-800/60',
   },
 }
 

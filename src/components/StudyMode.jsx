@@ -2092,7 +2092,13 @@ function QuestionJumpBar({
             statusClass = 'bg-red-100 text-red-800 border-red-300 hover:bg-red-200'
           }
           if (isCurrent) {
-            statusClass = 'bg-slate-800 text-white border-slate-800 ring-2 ring-offset-1 ring-slate-400'
+            if (status === 'correct') {
+              statusClass = 'bg-green-600 text-white border-green-600 ring-2 ring-offset-1 ring-green-300'
+            } else if (status === 'wrong') {
+              statusClass = 'bg-red-500 text-white border-red-500 ring-2 ring-offset-1 ring-red-300'
+            } else {
+              statusClass = 'bg-indigo-600 text-white border-indigo-600 ring-2 ring-offset-1 ring-indigo-300'
+            }
           }
           const roundLabel = `${e.round}회`
           const attemptCount = !pastExamResults ? countExamStudyRoundAttempts(progress, e) : 0
@@ -2113,9 +2119,7 @@ function QuestionJumpBar({
               ref={isCurrent ? currentBtnRef : undefined}
               aria-label={`${ariaDetail}${studyRoundAria}${status === 'unanswered' ? ' 미풀이' : status === 'correct' ? ' 정답' : ' 오답'}`}
               aria-current={isCurrent ? 'true' : undefined}
-              className={`relative snap-center shrink-0 min-w-[2.25rem] rounded-md border text-[11px] font-semibold transition-colors flex flex-col items-center justify-center gap-0.5 py-1 ${
-                hasTopLabel ? 'min-h-[2.75rem]' : 'h-8'
-              } ${statusClass}`}
+              className={`relative snap-center shrink-0 min-w-[2.25rem] min-h-[2.75rem] rounded-md border text-[11px] font-semibold transition-colors flex flex-col items-center justify-center gap-0.5 py-1 ${statusClass}`}
             >
               {hasTopLabel && (
                 <span

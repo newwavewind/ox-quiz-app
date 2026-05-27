@@ -198,7 +198,7 @@ function CurriculumPartBlock({
         type="button"
         onClick={() => togglePart(part.id)}
         aria-expanded={partOpen}
-        className={`w-full rounded-xl px-2.5 py-2 text-left text-[11px] font-bold border ${style.header}`}
+        className={`w-full rounded-xl px-2.5 py-4 text-left text-[11px] font-bold border ${style.header}`}
       >
         <span className="flex items-center justify-between gap-2">
           <span className="leading-tight line-clamp-2">{part.label}</span>

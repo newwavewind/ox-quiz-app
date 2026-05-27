@@ -411,8 +411,9 @@
   }
 
   .home-year-btn {
-    @apply bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700
-      hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-150;
+    @apply border border-slate-200 bg-transparent dark:border-slate-600 dark:bg-slate-900/20
+      hover:bg-white hover:border-slate-300 dark:hover:bg-slate-800/70 dark:hover:border-slate-500
+      transition-colors duration-150;
   }
 
   .home-year-text-strong {
