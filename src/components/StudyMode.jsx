@@ -2079,7 +2079,7 @@ function QuestionJumpBar({
       </div>
 
       <div
-        className="flex gap-1 overflow-x-auto overscroll-x-contain pb-0.5 -mx-0.5 px-0.5 snap-x snap-mandatory"
+        className="flex gap-1 overflow-x-auto overscroll-x-contain py-1 px-0.5 -mx-0.5 snap-x snap-mandatory"
         role="list"
       >
         {exams.map(e => {
@@ -2093,11 +2093,11 @@ function QuestionJumpBar({
           }
           if (isCurrent) {
             if (status === 'correct') {
-              statusClass = 'bg-green-600 text-white border-green-600 ring-2 ring-offset-1 ring-green-300'
+              statusClass = 'bg-green-600 text-white border-2 border-green-400 ring-2 ring-inset ring-white/35'
             } else if (status === 'wrong') {
-              statusClass = 'bg-red-500 text-white border-red-500 ring-2 ring-offset-1 ring-red-300'
+              statusClass = 'bg-red-500 text-white border-2 border-red-400 ring-2 ring-inset ring-white/35'
             } else {
-              statusClass = 'bg-indigo-600 text-white border-indigo-600 ring-2 ring-offset-1 ring-indigo-300'
+              statusClass = 'bg-indigo-600 text-white border-2 border-indigo-400 ring-2 ring-inset ring-white/35'
             }
           }
           const roundLabel = `${e.round}회`
