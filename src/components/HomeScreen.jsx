@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
+import { APP_TAGLINE } from '../data/brand'
 import { isExamComplete, isExamCorrect } from '../data/loadExam'
+import BomGichulWordmark from './BomGichulWordmark'
 import { buildTodayDashboard } from '../data/studyDashboard'
 import { formatTodayStudySpot } from '../data/todayStudySpot'
 import {
@@ -23,7 +25,7 @@ function getProgressState(progressRate) {
 
 function StudyProgressBar({ progressRate, ariaLabel, className = 'mt-2' }) {
   const state = getProgressState(progressRate)
-  const fillColor = state === 'done' ? '#10b981' : '#6366f1'
+  const fillColor = state === 'done' ? '#10b981' : '#22c55e'
 
   return (
     <div
@@ -431,8 +433,10 @@ export default function HomeScreen({
             className="flex-1 text-left touch-manipulation min-w-0"
             aria-label="맨 위로"
           >
-            <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100">공인중개사 민법</h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">기출 OX · 연도별 · 목차별</p>
+            <BomGichulWordmark />
+            <p className="home-brand-tagline text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              {APP_TAGLINE}
+            </p>
           </button>
           <div className="shrink-0 flex items-center gap-1.5">
             <WrongNoteShortcut count={wrongCount} onOpen={onOpenWrongNotes} />

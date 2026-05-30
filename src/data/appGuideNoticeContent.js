@@ -1,4 +1,5 @@
 /** 커뮤니티 공지용 앱 설명서 (버전 올리면 기존 공지 본문이 갱신됨) */
+import { APP_GUIDE_GREETING } from './brand'
 import { RECOMMENDED_LIKE_MIN } from './communityBoards'
 
 export const APP_GUIDE_NOTICE_VERSION = 5
@@ -20,7 +21,7 @@ const em = (text, color, weight = 700) =>
   `<span style="color:${color};font-weight:${weight}">${text}</span>`
 
 export function getAppGuideNoticeContent() {
-  return `안녕하세요! ${hi('공인중개사 민법 OX 기출')} 앱 사용법을 정리했습니다. ${bold('아래 굵은 글·색·밑줄·형광펜')} 표시는 꼭 눌러 볼 메뉴입니다.
+  return `안녕하세요! ${hi(APP_GUIDE_GREETING)} 앱 사용법을 정리했습니다. ${bold('아래 굵은 글·색·밑줄·형광펜')} 표시는 꼭 눌러 볼 메뉴입니다.
 
 ${hi('★★★ 가장 중요한 한 가지 ★★★', '#fde68a')}
 이 앱은 ${em('「문제만 푸는 앱」', '#64748b', 600)}이 ${ul('아닙니다')}.

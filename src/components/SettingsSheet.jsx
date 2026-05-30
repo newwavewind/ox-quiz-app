@@ -5,6 +5,7 @@ import {
   FONT_SIZE_OPTIONS,
   THEME_OPTIONS,
 } from '../data/appearanceSettings'
+import { APP_NAME } from '../data/brand'
 
 function OptionGroup({ label, options, value, onChange }) {
   return (
@@ -137,6 +138,10 @@ export default function SettingsSheet({
         >
           적용하기
         </button>
+
+        <p className="text-center text-[11px] text-slate-400 dark:text-slate-500 mt-4">
+          {APP_NAME}
+        </p>
       </div>
     </div>
   )

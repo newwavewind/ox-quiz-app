@@ -7,6 +7,13 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --brand-spring-pink: #ff7f7f;
+    --brand-spring-green: #2d5a27;
+    --brand-spring-sky: #e8f4fc;
+    --brand-spring-mint: #f0f7ee;
+  }
+
   * {
     -webkit-tap-highlight-color: transparent;
   }
@@ -379,11 +386,53 @@
 
   /* HomeScreen — theme1 기본 + theme2~4는 각 theme*.css에서 오버라이드 */
   .home-screen-bg {
-    @apply min-h-screen bg-slate-50 dark:bg-slate-900 pb-bottom-nav;
+    min-height: 100vh;
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(
+      180deg,
+      var(--brand-spring-sky) 0%,
+      var(--brand-spring-mint) 42%,
+      rgb(248 250 252) 100%
+    );
+  }
+
+  html.dark #root .home-screen-bg {
+    background: linear-gradient(
+      180deg,
+      rgb(15 23 42) 0%,
+      rgb(20 35 28) 38%,
+      rgb(15 23 42) 100%
+    );
   }
 
   .home-header {
-    @apply bg-white border-b border-slate-200 dark:bg-slate-800 dark:border-slate-700;
+    @apply border-b border-emerald-100/80 dark:border-emerald-900/40;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+  }
+
+  html.dark #root .home-header {
+    @apply bg-slate-800/95;
+  }
+
+  /* 봄기출 워드마크 — 테마2(Steep) 헤딩과 동일: Noto Serif KR */
+  .bom-gichul-wordmark {
+    font-family: 'Noto Serif KR', Georgia, 'Times New Roman', serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .bom-gichul-wordmark__spring {
+    color: var(--brand-spring-pink);
+  }
+
+  .bom-gichul-wordmark__gichul {
+    color: var(--brand-spring-green);
+  }
+
+  .home-brand-tagline {
+    font-family: 'Noto Sans KR', system-ui, sans-serif;
+    letter-spacing: -0.01em;
   }
 
   .home-card {
@@ -395,13 +444,27 @@
   }
 
   .home-accent-panel {
-    @apply bg-indigo-50 border border-indigo-200 text-indigo-900
-      dark:bg-indigo-950/50 dark:border-indigo-700 dark:text-indigo-100;
+    @apply border text-emerald-950
+      dark:text-emerald-100;
+    background-color: rgb(240 253 244);
+    border-color: rgb(167 243 208);
+  }
+
+  html.dark #root .home-accent-panel {
+    background-color: rgb(6 78 59 / 0.35);
+    border-color: rgb(6 95 70);
   }
 
   .home-view-label {
-    @apply bg-indigo-50 border-2 border-indigo-400 text-indigo-900 shadow-sm
-      dark:bg-indigo-950/50 dark:border-indigo-500 dark:text-indigo-100;
+    @apply border-2 shadow-sm text-emerald-900
+      dark:text-emerald-100;
+    background-color: rgb(236 253 245);
+    border-color: rgb(52 211 153);
+  }
+
+  html.dark #root .home-view-label {
+    background-color: rgb(6 78 59 / 0.4);
+    border-color: rgb(16 185 129);
   }
 
   .home-view-tab {
@@ -433,11 +496,11 @@
   }
 
   .home-year-pct-active {
-    color: rgb(79 70 229);
+    color: var(--brand-spring-green);
   }
 
   .home-year-pct-active:is(.dark *) {
-    color: rgb(129 140 248);
+    color: rgb(110 231 183);
   }
 
   .home-year-pct-done {
@@ -471,11 +534,11 @@
   }
 
   .home-year-bar-active {
-    background-color: rgb(99 102 241);
+    background-color: rgb(34 197 94);
   }
 
   .home-year-bar-active:is(.dark *) {
-    background-color: rgb(129 140 248);
+    background-color: rgb(74 222 128);
   }
 
   .home-year-bar-done {
@@ -514,33 +577,33 @@
   }
 
   .home-accent-btn {
-    @apply bg-indigo-50 border border-indigo-200
-      dark:bg-indigo-950/50 dark:border-indigo-800
-      hover:shadow-md dark:hover:bg-indigo-950/70 transition-all duration-150;
+    @apply border border-emerald-200 bg-emerald-50
+      dark:bg-emerald-950/50 dark:border-emerald-800
+      hover:shadow-md dark:hover:bg-emerald-950/70 transition-all duration-150;
   }
 
   .home-accent-chip {
-    @apply border border-indigo-400/80 dark:border-indigo-500 bg-white/95 dark:bg-indigo-950/80;
+    @apply border border-emerald-400/80 dark:border-emerald-500 bg-white/95 dark:bg-emerald-950/80;
   }
 
   .home-accent-text-strong {
-    @apply text-indigo-950 dark:text-indigo-50;
+    @apply text-emerald-950 dark:text-emerald-50;
   }
 
   .home-accent-text {
-    @apply text-indigo-900 dark:text-indigo-100;
+    @apply text-emerald-900 dark:text-emerald-100;
   }
 
   .home-accent-text-muted {
-    @apply text-indigo-600 dark:text-indigo-300;
+    @apply text-emerald-600 dark:text-emerald-300;
   }
 
   .home-accent-text-soft {
-    @apply text-indigo-600/90 dark:text-indigo-300/90;
+    @apply text-emerald-600/90 dark:text-emerald-300/90;
   }
 
   .home-accent-link {
-    @apply text-indigo-600 dark:text-indigo-400;
+    @apply text-emerald-600 dark:text-emerald-400;
   }
 
   .home-muted-panel {
@@ -548,8 +611,8 @@
   }
 
   .home-stats-btn {
-    @apply border border-indigo-200 dark:border-indigo-700 bg-indigo-50 dark:bg-indigo-950/50
-      text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-950/70;
+    @apply border border-emerald-200 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-950/50
+      text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-950/70;
   }
 
   .home-nav-btn {
@@ -558,15 +621,15 @@
   }
 
   .home-progress-badge {
-    @apply bg-white/95 dark:bg-indigo-950/60;
+    @apply bg-white/95 dark:bg-emerald-950/60;
   }
 
   .home-progress-rate {
-    @apply text-indigo-700 dark:text-indigo-200;
+    @apply text-emerald-700 dark:text-emerald-200;
   }
 
   .home-progress-count {
-    @apply text-indigo-500 dark:text-indigo-400;
+    @apply text-emerald-500 dark:text-emerald-400;
   }
 
   .home-wrong-count {

@@ -237,6 +237,25 @@ html[data-design-theme='theme2']:not(.dark) #root .home-header {
   border-color: rgba(93, 42, 26, 0.12) !important;
 }
 
+html[data-design-theme='theme2']:not(.dark) #root .bom-gichul-wordmark {
+  font-family: 'Noto Serif KR', Georgia, serif;
+  letter-spacing: -0.02em;
+}
+
+html[data-design-theme='theme2']:not(.dark) #root .bom-gichul-wordmark__spring {
+  color: #a84a32;
+}
+
+html[data-design-theme='theme2']:not(.dark) #root .bom-gichul-wordmark__gichul {
+  color: var(--color-terracotta);
+}
+
+html[data-design-theme='theme2']:not(.dark) #root .home-brand-tagline {
+  font-family: 'Noto Sans KR', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+  color: var(--color-light-steel) !important;
+}
+
 html[data-design-theme='theme2']:not(.dark) #root .home-card,
 html[data-design-theme='theme2']:not(.dark) #root .home-card-interactive {
   background-color: var(--color-canvas) !important;
@@ -343,6 +362,25 @@ html.dark[data-design-theme='theme2'] #root .home-screen-bg {
 html.dark[data-design-theme='theme2'] #root .home-header {
   background-color: #1e2024 !important;
   border-color: rgba(251, 225, 209, 0.12) !important;
+}
+
+html.dark[data-design-theme='theme2'] #root .bom-gichul-wordmark {
+  font-family: 'Noto Serif KR', Georgia, serif;
+  letter-spacing: -0.02em;
+}
+
+html.dark[data-design-theme='theme2'] #root .bom-gichul-wordmark__spring {
+  color: #e8b4a0;
+}
+
+html.dark[data-design-theme='theme2'] #root .bom-gichul-wordmark__gichul {
+  color: var(--color-warm-mist);
+}
+
+html.dark[data-design-theme='theme2'] #root .home-brand-tagline {
+  font-family: 'Noto Sans KR', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+  color: var(--color-hint-of-grey) !important;
 }
 
 html.dark[data-design-theme='theme2'] #root .home-card,
