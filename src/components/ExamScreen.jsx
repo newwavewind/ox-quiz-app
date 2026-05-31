@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { RANDOM_EXAM_COUNTS } from '../data/randomExamSet'
+import BomGichulWordmark from './BomGichulWordmark'
 
 function ExamWrongNoteInlineHint({ checked = true }) {
   return (
@@ -48,7 +49,7 @@ export default function ExamScreen({
             className="flex-1 text-left touch-manipulation min-w-0"
             aria-label="맨 위로"
           >
-            <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100">시험 모드</h1>
+            <BomGichulWordmark suffix="시험 모드" />
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">회차별 기출 · 랜덤 세트</p>
           </button>
           {onOpenStats && (

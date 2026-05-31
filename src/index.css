@@ -430,6 +430,15 @@
     color: var(--brand-spring-green);
   }
 
+  .bom-gichul-wordmark__suffix {
+    color: #17191c;
+    font-weight: 700;
+  }
+
+  html.dark #root .bom-gichul-wordmark__suffix {
+    color: rgb(241 245 249);
+  }
+
   .home-brand-tagline {
     font-family: 'Noto Sans KR', system-ui, sans-serif;
     letter-spacing: -0.01em;

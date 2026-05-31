@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import BomGichulWordmark from './BomGichulWordmark'
 import {
   buildPost,
   canViewPost,
@@ -1030,7 +1031,7 @@ export default function CommunityScreen({
       <div className="max-w-4xl mx-auto px-4 py-4">
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="min-w-0 flex-1">
-            <h1 className="text-2xl font-bold text-slate-900">커뮤니티</h1>
+            <BomGichulWordmark suffix="커뮤니티" />
             <p className="text-sm text-slate-500 mt-1">
               {activeTab?.label ?? '전체'} {visiblePosts.length}개
               {tabBoardHint ? ` · ${tabBoardHint}` : ''}

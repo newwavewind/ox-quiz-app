@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { CHOSUNG_NAV, getTermChosungKey } from '../utils/koreanChosung'
 import AiLinkButtons from './AiLinkButtons'
+import BomGichulWordmark from './BomGichulWordmark'
 import GlossaryExamModal from './GlossaryExamModal'
 import HighlightText from './HighlightText'
 import { buildGlossaryTermAiPrompt } from '../utils/aiLinks'
@@ -58,7 +59,7 @@ export default function IndexScreen({ exams, savedNotes = {}, onToggleNote }) {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex flex-col pb-bottom-nav">
       <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4">
-          <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100">민법 용어집</h1>
+          <BomGichulWordmark suffix="용어집" />
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import AiLinkButtons from './AiLinkButtons'
+import BomGichulWordmark from './BomGichulWordmark'
 
 import { getSubcategoryDisplayLabel } from '../data/curriculum'
 import {
@@ -377,7 +378,7 @@ export default function NotesScreen({ notes, onToggleNote, onToggleImportant, on
 
         <div className="max-w-2xl mx-auto px-4 py-4">
 
-          <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100">암기노트</h1>
+          <BomGichulWordmark suffix="암기노트" />
 
           <p className="text-xs text-slate-500 mt-0.5">
             학습 중 「암기노트저장」한 지문·보기·해설 ({Object.keys(notes).length}개
