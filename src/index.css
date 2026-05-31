@@ -648,6 +648,18 @@
 
   .community-post-body {
     word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .community-post-body .guide-section-rule {
+    border: 0;
+    height: 0;
+    margin: 1.25rem 0;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  html.dark #root .community-post-body .guide-section-rule {
+    border-top-color: #475569;
   }
 
   .community-post-body img {

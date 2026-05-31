@@ -88,6 +88,28 @@ export async function insertCommunityPost(authorId, post, meta = {}) {
   return mapRowToPost(data)
 }
 
+export async function updateCommunityPost(postId, { title, body, meta }) {
+  const sb = getSupabase()
+  if (!sb || !isCloudPostId(postId)) return null
+
+  const { data, error } = await sb
+    .from('ox_community_posts')
+    .update({
+      title,
+      body,
+      meta,
+    })
+    .eq('id', postId)
+    .select('id, author_id, nickname, title, body, created_at, meta')
+    .single()
+
+  if (error) {
+    console.error('[ox] updateCommunityPost', error)
+    return null
+  }
+  return mapRowToPost(data)
+}
+
 export async function updateCommunityPostMeta(postId, meta) {
   const sb = getSupabase()
   if (!sb || !isCloudPostId(postId)) return false

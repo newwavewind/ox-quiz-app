@@ -1,4 +1,5 @@
 import { DEFAULT_BOARD, getPostBoard, isErrorBoard, isRecommendedPost, normalizeBoard } from './communityBoards'
+import { normalizeExtras } from './communityExtras'
 import { formatStudyTime } from './studyHistory'
 import { DEFAULT_POST_EXTRA } from './communityPostMeta'
 
@@ -122,6 +123,7 @@ export function buildPost(draft) {
     viewCount: draft.viewCount ?? 0,
     likeCount: draft.likeCount ?? 0,
     commentCount: draft.commentCount ?? 0,
+    extras: normalizeExtras(draft.extras),
   }
 }
 

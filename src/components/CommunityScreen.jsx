@@ -29,8 +29,10 @@ import {
   getBoardConfig,
   getPostBoard,
   isRecommendedPost,
+  normalizeBoard,
   RECOMMENDED_LIKE_MIN,
 } from '../data/communityBoards'
+import { normalizeExtras } from '../data/communityExtras'
 import { hasRichHtml, sanitizePostHtml } from '../utils/communityRichText'
 import { getBrokerExamDdayInfo } from '../data/examDday'
 import {
@@ -169,33 +171,52 @@ function WriteForm({
   authorLabel,
   defaultBoard = 'general',
   writePrefill = null,
+  editPost = null,
   round5CertYears = [],
   onSubmit,
   onCancel,
   canPostNotice = false,
 }) {
-  const lockRound5Board = defaultBoard === 'round5_cert'
-  const [title, setTitle] = useState(writePrefill?.title ?? '')
+  const isEdit = Boolean(editPost)
+  const editBoard = editPost ? getPostBoard(editPost) : defaultBoard
+  const lockRound5Board = isEdit ? editBoard === 'round5_cert' : defaultBoard === 'round5_cert'
+
+  const [title, setTitle] = useState(() => {
+    if (editPost) return editPost.title ?? ''
+    return writePrefill?.title ?? ''
+  })
   const [content, setContent] = useState(() => {
+    if (editPost) {
+      if (editBoard === 'round5_cert') return ''
+      if (hasRichHtml(editPost.content)) return editPost.content
+      return editPost.content ? plainTextToEditorHtml(editPost.content) : ''
+    }
     if (lockRound5Board || writePrefill?.certYear) return ''
     return writePrefill?.content ? plainTextToEditorHtml(writePrefill.content) : ''
   })
   const [freeContent, setFreeContent] = useState(() => {
+    if (editPost && editBoard === 'round5_cert') {
+      return plainTextToEditorHtml(extractRound5CertFreePlain(editPost.content ?? ''))
+    }
     if (!writePrefill?.content) return ''
     if (lockRound5Board || writePrefill?.certYear) {
       return plainTextToEditorHtml(extractRound5CertFreePlain(writePrefill.content))
     }
     return ''
   })
-  const [extras, setExtras] = useState(EMPTY_EXTRAS)
+  const [extras, setExtras] = useState(() =>
+    editPost ? normalizeExtras(editPost.extras) : EMPTY_EXTRAS,
+  )
   const [nickname, setNickname] = useState(authorLabel)
   const [editingNick, setEditingNick] = useState(false)
-  const [visibility, setVisibility] = useState('public')
-  const [board, setBoard] = useState(defaultBoard)
+  const [visibility, setVisibility] = useState(editPost?.visibility ?? 'public')
+  const [board, setBoard] = useState(isEdit ? editBoard : defaultBoard)
   const [certYear, setCertYear] = useState(
-    writePrefill?.certYear ?? (lockRound5Board ? round5CertYears[0] ?? null : null),
+    editPost?.certYear ??
+      writePrefill?.certYear ??
+      (lockRound5Board ? round5CertYears[0] ?? null : null),
   )
-  const [isNotice, setIsNotice] = useState(false)
+  const [isNotice, setIsNotice] = useState(Boolean(editPost?.isNotice))
   const [error, setError] = useState('')
   const editorRef = useRef(null)
 
@@ -257,25 +278,28 @@ function WriteForm({
       }
     }
     saveNickname(nick)
+    const pollPatch = pollValid
+      ? {
+          ...poll,
+          votes: editPost?.extras?.poll?.votes ?? {},
+          votedBy: editPost?.extras?.poll?.votedBy ?? {},
+        }
+      : null
+    const nextExtras = {
+      ...extras,
+      poll: pollPatch,
+    }
     onSubmit(
       buildPost({
+        ...(editPost ?? {}),
         title: t,
         content: c,
         nickname: nick,
-        visibility,
-        board: postBoard,
-        certYear: postBoard === 'round5_cert' ? certYear : undefined,
-        isNotice: canPostNotice && isNotice,
-        extras: {
-          ...extras,
-          poll: pollValid
-            ? {
-                ...poll,
-                votes: {},
-                votedBy: {},
-              }
-            : null,
-        },
+        visibility: isEdit ? editPost.visibility : visibility,
+        board: isEdit ? normalizeBoard(getPostBoard(editPost)) : postBoard,
+        certYear: (isEdit ? getPostBoard(editPost) : postBoard) === 'round5_cert' ? certYear : undefined,
+        isNotice: isEdit ? Boolean(editPost.isNotice) : canPostNotice && isNotice,
+        extras: nextExtras,
       }),
     )
   }
@@ -283,7 +307,7 @@ function WriteForm({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 bg-white">
       <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-5 max-w-3xl mx-auto w-full">
-        <h2 className="text-2xl font-bold text-slate-900 mb-4">글쓰기</h2>
+        <h2 className="text-2xl font-bold text-slate-900 mb-4">{isEdit ? '글 수정' : '글쓰기'}</h2>
 
         <div className="flex flex-wrap items-center gap-2 text-sm text-slate-700 mb-6">
           <span>
@@ -320,7 +344,12 @@ function WriteForm({
 
         <div className="mb-5">
           <span className="block text-sm font-medium text-slate-600 mb-2">게시판</span>
-          {lockRound5Board ? (
+          {isEdit ? (
+            <p className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-semibold text-slate-700">
+              {boardConfig.label}
+              {editPost?.isNotice ? ' · 공지' : ''}
+            </p>
+          ) : lockRound5Board ? (
             <p className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm font-semibold text-emerald-800">
               5회독 인증
             </p>
@@ -418,6 +447,7 @@ function WriteForm({
           {isRound5CertWrite ? ' · 회독 점수는 자동 입력(수정 불가)' : ''}
         </p>
 
+        {!isEdit && (
         <div className="flex flex-wrap items-center gap-4 mb-2">
           <span className="text-sm font-medium text-slate-600 shrink-0">공개</span>
           <div className="flex flex-wrap gap-2">
@@ -432,8 +462,9 @@ function WriteForm({
             ))}
           </div>
         </div>
+        )}
 
-        {canPostNotice && (
+        {!isEdit && canPostNotice && (
           <label className="inline-flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
             <input
               type="checkbox"
@@ -641,9 +672,11 @@ function PostDetail({
   user,
   myNickname,
   onBack,
+  onEdit,
   onDelete,
   onLike,
   onSyncPostMeta,
+  canEdit,
   canDelete,
   onLoadComments,
   onAddComment,
@@ -718,6 +751,15 @@ function PostDetail({
         >
           추천
         </button>
+        {canEdit && (
+          <button
+            type="button"
+            onClick={onEdit}
+            className="text-sm font-semibold text-slate-600 hover:text-slate-900"
+          >
+            수정
+          </button>
+        )}
         {canDelete && (
           <button
             type="button"
@@ -742,6 +784,7 @@ function PostDetail({
 export default function CommunityScreen({
   posts,
   onAddPost,
+  onUpdatePost,
   onDeletePost,
   onSyncPostMeta,
   onLoadComments,
@@ -889,9 +932,27 @@ export default function CommunityScreen({
     backToList()
   }
 
-  const canDeletePost = post => {
+  const canEditPost = post => {
     if (post.authorId && user) return post.authorId === user.id
     return post.nickname === myNickname
+  }
+
+  const canDeletePost = post => canEditPost(post)
+
+  const openEdit = () => {
+    if (!selectedPost || !canEditPost(selectedPost)) return
+    setView('edit')
+  }
+
+  const handleUpdated = async draft => {
+    const saved = await onUpdatePost?.(draft)
+    if (saved) {
+      setSelectedId(saved.id)
+      setView('detail')
+      bumpMeta()
+      return
+    }
+    window.alert('글 수정에 실패했습니다. 로그인 상태를 확인한 뒤 다시 시도해 주세요.')
   }
 
   if (view === 'write') {
@@ -911,6 +972,22 @@ export default function CommunityScreen({
     )
   }
 
+  if (view === 'edit' && selectedPost) {
+    return (
+      <div className="min-h-screen bg-slate-50 pb-bottom-nav flex flex-col">
+        <WriteForm
+          key={`edit-${selectedPost.id}`}
+          authorLabel={myNickname}
+          editPost={selectedPost}
+          round5CertYears={round5CertYears}
+          onSubmit={handleUpdated}
+          onCancel={() => setView('detail')}
+          canPostNotice={isCommunityAdmin}
+        />
+      </div>
+    )
+  }
+
   if (view === 'detail' && selectedPost) {
     return (
       <div className="min-h-screen bg-slate-50 pb-bottom-nav flex flex-col">
@@ -919,9 +996,11 @@ export default function CommunityScreen({
           user={user}
           myNickname={myNickname}
           onBack={backToList}
+          onEdit={openEdit}
           onDelete={handleDelete}
           onLike={bumpMeta}
           onSyncPostMeta={onSyncPostMeta}
+          canEdit={canEditPost(selectedPost)}
           canDelete={canDeletePost(selectedPost)}
           onLoadComments={onLoadComments}
           onAddComment={onAddComment}

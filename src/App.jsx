@@ -19,6 +19,7 @@ import {
   isCloudCommentId,
   isCloudPostId,
   updateCommunityComment,
+  updateCommunityPost,
   updateCommunityPostMeta,
 } from './data/supabaseCommunity'
 import {
@@ -273,6 +274,29 @@ function App() {
       removePostMeta(postId)
       removeCommentsForPost(postId)
       setCommunityPosts(prev => prev.filter(p => p.id !== postId))
+    },
+    [user],
+  )
+
+  const updateCommunityPostHandler = useCallback(
+    async post => {
+      const meta = pickMetaFields(post)
+      if (user && isCloudPostId(post.id)) {
+        const saved = await updateCommunityPost(post.id, {
+          title: post.title,
+          body: post.content,
+          meta,
+        })
+        if (!saved) return null
+        savePostMeta(post.id, meta)
+        const full = enrichPost({ ...saved, authorId: post.authorId ?? user.id })
+        setCommunityPosts(prev => prev.map(p => (p.id === post.id ? full : p)))
+        return full
+      }
+      savePostMeta(post.id, meta)
+      const full = enrichPost(post)
+      setCommunityPosts(prev => prev.map(p => (p.id === post.id ? full : p)))
+      return full
     },
     [user],
   )
@@ -856,6 +880,7 @@ function App() {
           posts={communityPosts}
           onAddPost={addCommunityPost}
           onDeletePost={deleteCommunityPostHandler}
+          onUpdatePost={updateCommunityPostHandler}
           onSyncPostMeta={syncPostMetaToCloud}
           onLoadComments={loadPostComments}
           onAddComment={addPostComment}
