@@ -16,15 +16,12 @@ export function getContentPlainText(raw) {
   if (!hasRichHtml(raw)) return raw.trim()
   const div = document.createElement('div')
   div.innerHTML = raw
-  return (div.textContent || '').trim()
+  // textContent는 <div>/<br> 줄바꿈을 무시함 → innerText 사용
+  return (div.innerText || div.textContent || '').trim()
 }
 
 export function getContentTextLength(raw) {
-  if (!raw) return 0
-  if (!hasRichHtml(raw)) return raw.length
-  const div = document.createElement('div')
-  div.innerHTML = raw
-  return (div.textContent || '').length
+  return getContentPlainText(raw).length
 }
 
 /** @param {{ value: string, onChange: (html: string) => void, editorRef?: import('react').MutableRefObject<HTMLElement|null>, maxLength?: number, placeholder?: string, className?: string }} props */

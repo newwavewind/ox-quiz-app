@@ -13,6 +13,7 @@ import {
 import { requestScrollToTop } from '../utils/scrollToTop'
 import SettingsGearButton from './SettingsGearButton'
 import SettingsSheet from './SettingsSheet'
+import ExamDdayChip from './ExamDdayChip'
 import ThemePickerMenu from './ThemePickerMenu'
 
 export default function AuthBar({ appearance, onAppearanceChange }) {
@@ -79,7 +80,8 @@ export default function AuthBar({ appearance, onAppearanceChange }) {
   }
 
   const toolbar = (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1.5">
+      <ExamDdayChip />
       {settingsAvailable && (
         <>
           <ThemePickerMenu

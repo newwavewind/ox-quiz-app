@@ -420,6 +420,7 @@
     font-family: 'Noto Serif KR', Georgia, 'Times New Roman', serif;
     font-weight: 700;
     letter-spacing: -0.02em;
+    white-space: nowrap;
   }
 
   .bom-gichul-wordmark__spring {
@@ -658,6 +659,16 @@
   .community-post-body {
     word-break: break-word;
     overflow-wrap: anywhere;
+  }
+
+  .community-post-body div,
+  .community-post-body p {
+    margin: 0 0 0.65em;
+  }
+
+  .community-post-body div:last-child,
+  .community-post-body p:last-child {
+    margin-bottom: 0;
   }
 
   .community-post-body .guide-section-rule {

@@ -106,6 +106,14 @@ export function hasRichHtml(raw) {
   return /<[a-z][\s\S]*>/i.test(raw || '')
 }
 
+/** contentEditable HTML → 저장용 본문 (서식·줄바꿈 유지) */
+export function getPostBodyForSave(editorHtml) {
+  const raw = !editorHtml || editorHtml === '<br>' ? '' : editorHtml
+  if (!raw) return ''
+  if (hasRichHtml(raw)) return sanitizePostHtml(raw)
+  return raw.trim()
+}
+
 /** contentEditable 선택 영역에 스타일 span 적용 */
 export function applyEditorSpanStyle(editor, cssText) {
   if (!editor || !cssText) return false

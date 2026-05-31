@@ -20,7 +20,7 @@ export default function BomGichulWordmark({ suffix = '학습', className = '', s
         />
       )}
       <h1
-        className="bom-gichul-wordmark text-2xl truncate leading-tight"
+        className="bom-gichul-wordmark text-xl sm:text-2xl leading-tight"
         aria-label={label}
       >
         <span className="bom-gichul-wordmark__spring">봄</span>

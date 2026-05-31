@@ -301,6 +301,23 @@ function App() {
     [user],
   )
 
+  const setCommunityPostNotice = useCallback(
+    async (postId, isNotice) => {
+      const flag = Boolean(isNotice)
+      savePostMeta(postId, { isNotice: flag })
+      if (user && isCloudPostId(postId)) {
+        const meta = pickMetaFields({ ...getPostMeta(postId), isNotice: flag })
+        const ok = await updateCommunityPostMeta(postId, meta)
+        if (!ok) return false
+      }
+      setCommunityPosts(prev =>
+        prev.map(p => (p.id === postId ? enrichPost({ ...p, isNotice: flag }) : p)),
+      )
+      return true
+    },
+    [user],
+  )
+
   const loadPostComments = useCallback(async postId => {
     const cloud = await fetchCommentsForPost(postId)
     if (cloud) return mergeCommentsForPost(postId, cloud)
@@ -881,6 +898,7 @@ function App() {
           onAddPost={addCommunityPost}
           onDeletePost={deleteCommunityPostHandler}
           onUpdatePost={updateCommunityPostHandler}
+          onSetPostNotice={setCommunityPostNotice}
           onSyncPostMeta={syncPostMetaToCloud}
           onLoadComments={loadPostComments}
           onAddComment={addPostComment}

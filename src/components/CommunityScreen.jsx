@@ -34,8 +34,7 @@ import {
   RECOMMENDED_LIKE_MIN,
 } from '../data/communityBoards'
 import { normalizeExtras } from '../data/communityExtras'
-import { hasRichHtml, sanitizePostHtml } from '../utils/communityRichText'
-import { getBrokerExamDdayInfo } from '../data/examDday'
+import { getPostBodyForSave, hasRichHtml, sanitizePostHtml } from '../utils/communityRichText'
 import {
   buildRound5CertDraft,
   buildRoundScoresAutoText,
@@ -91,29 +90,6 @@ function saveNickname(name) {
   } catch {
     /* ignore */
   }
-}
-
-function ExamDdayChip() {
-  const info = useMemo(() => getBrokerExamDdayInfo(), [])
-
-  return (
-    <div
-      className="inline-flex h-9 flex-col items-end justify-center rounded-xl border border-lime-300 bg-lime-50 px-2.5 shrink-0"
-      title={`${info.title} ${info.examDateLabel}`}
-    >
-      <span className="text-[10px] font-semibold text-lime-800/80 leading-none">
-        {info.roundLabel} {info.title}
-      </span>
-      <div className="flex items-baseline gap-1.5 mt-0.5">
-        <span className="text-sm font-bold text-slate-900 tabular-nums leading-none">
-          {info.ddayLabel}
-        </span>
-        <span className="text-[10px] font-medium text-slate-500 tabular-nums leading-none">
-          {info.examDateLabel}
-        </span>
-      </div>
-    </div>
-  )
 }
 
 function LimeButton({ children, className = '', ...props }) {
@@ -252,7 +228,11 @@ function WriteForm({
     const c =
       board === 'round5_cert' && certYear
         ? composeRound5CertContent(certYear, getContentPlainText(freeContent))
-        : getContentPlainText(content)
+        : getPostBodyForSave(content)
+    const bodyTextLen =
+      board === 'round5_cert' && certYear
+        ? getContentPlainText(freeContent).length
+        : getContentPlainText(content).length
     const nick = nickname.trim() || '익명'
     const poll = extras.poll
     const pollValid =
@@ -263,7 +243,7 @@ function WriteForm({
       setError('제목을 입력하세요.')
       return
     }
-    if ((!c || c.length < 2) && !hasExtrasContent(extras)) {
+    if ((bodyTextLen < 2 || !c) && !hasExtrasContent(extras)) {
       setError('내용을 2자 이상 입력하거나 사진·투표를 추가하세요.')
       return
     }
@@ -503,6 +483,8 @@ function PostComments({
   post,
   user,
   myNickname,
+  canManageNotice = false,
+  onSetPostNotice,
   onLoadComments,
   onAddComment,
   onUpdateComment,
@@ -512,6 +494,7 @@ function PostComments({
   const [loading, setLoading] = useState(true)
   const [body, setBody] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [noticeBusy, setNoticeBusy] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [editBody, setEditBody] = useState('')
 
@@ -576,11 +559,42 @@ function PostComments({
     if (ok) setComments(await onLoadComments(post.id))
   }
 
+  const handleToggleNotice = async () => {
+    if (!onSetPostNotice || noticeBusy) return
+    const next = !post.isNotice
+    const ok = window.confirm(
+      next
+        ? '이 글을 공지로 등록할까요? 공지 탭·전체글 상단에 노출됩니다.'
+        : '이 글의 공지를 해제할까요?',
+    )
+    if (!ok) return
+    setNoticeBusy(true)
+    const done = await onSetPostNotice(post.id, next)
+    setNoticeBusy(false)
+    if (!done) window.alert('공지 설정에 실패했습니다. 로그인·관리자 권한을 확인해 주세요.')
+  }
+
   return (
     <section className="mt-8 border-t border-slate-100 pt-6">
-      <h3 className="text-sm font-bold text-slate-800">
-        댓글 {comments.length > 0 ? comments.length : ''}
-      </h3>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h3 className="text-sm font-bold text-slate-800">
+          댓글 {comments.length > 0 ? comments.length : ''}
+        </h3>
+        {canManageNotice && (
+          <button
+            type="button"
+            onClick={handleToggleNotice}
+            disabled={noticeBusy}
+            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-bold border transition-colors disabled:opacity-50 ${
+              post.isNotice
+                ? 'border-amber-300 bg-amber-50 text-amber-900 hover:bg-amber-100'
+                : 'border-amber-400 bg-white text-amber-800 hover:bg-amber-50'
+            }`}
+          >
+            {noticeBusy ? '처리 중…' : post.isNotice ? '공지 해제' : '공지로 등록'}
+          </button>
+        )}
+      </div>
       {loading ? (
         <p className="mt-3 text-xs text-slate-400">댓글 불러오는 중…</p>
       ) : comments.length === 0 ? (
@@ -679,6 +693,8 @@ function PostDetail({
   onSyncPostMeta,
   canEdit,
   canDelete,
+  canManageNotice,
+  onSetPostNotice,
   onLoadComments,
   onAddComment,
   onUpdateComment,
@@ -734,6 +750,8 @@ function PostDetail({
           post={post}
           user={user}
           myNickname={myNickname}
+          canManageNotice={canManageNotice}
+          onSetPostNotice={onSetPostNotice}
           onLoadComments={onLoadComments}
           onAddComment={onAddComment}
           onUpdateComment={onUpdateComment}
@@ -787,6 +805,7 @@ export default function CommunityScreen({
   onAddPost,
   onUpdatePost,
   onDeletePost,
+  onSetPostNotice,
   onSyncPostMeta,
   onLoadComments,
   onAddComment,
@@ -1003,6 +1022,8 @@ export default function CommunityScreen({
           onSyncPostMeta={onSyncPostMeta}
           canEdit={canEditPost(selectedPost)}
           canDelete={canDeletePost(selectedPost)}
+          canManageNotice={isCommunityAdmin}
+          onSetPostNotice={onSetPostNotice}
           onLoadComments={onLoadComments}
           onAddComment={onAddComment}
           onUpdateComment={onUpdateComment}
@@ -1038,7 +1059,6 @@ export default function CommunityScreen({
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <ExamDdayChip />
             <LimeButton
               onClick={openWrite}
               disabled={tab === 'round5_cert' && !canWriteRound5Cert}
